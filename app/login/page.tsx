@@ -1,19 +1,33 @@
+import Image from 'next/image';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'Login | BARZA',
 };
 
 export default function LoginPage() {
+  async function handleLogin(formData: FormData) {
+    'use server';
+    // Simulates login - in production, verify credentials here
+    redirect('/community');
+  }
   return (
     <div className="bg-surface font-body text-on-surface min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-fixed">
       <div className="ambient-glow"></div>
       
       {/* Header Section */}
-      <header className="fixed top-0 left-0 w-full z-50">
+      <header className="fixed top-0 left-0 w-full z-50 bg-transparent">
         <div className="flex justify-between items-center w-full px-6 py-4 bg-transparent">
-          <Link href="/" className="text-2xl font-bold tracking-tighter text-primary-container font-headline">
-            Barza
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/barza_logo.png"
+              alt="BARZA Logo"
+              width={80}
+              height={80}
+              className="h-20 w-auto"
+              style={{ mixBlendMode: 'screen' }}
+            />
           </Link>
           <div className="flex gap-4 items-center">
             <button className="text-zinc-500 hover:text-white transition-colors">
@@ -56,7 +70,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          <form action={handleLogin} className="space-y-6">
             {/* Email Field */}
             <div className="space-y-2">
               <label className="block font-label text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-semibold">

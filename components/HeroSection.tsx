@@ -30,7 +30,7 @@ export function HeroSection() {
             <Link href="/criar-conta" className="border border-outline-variant px-10 py-5 text-lg font-bold rounded-lg hover:bg-surface-variant/30 transition-all inline-flex items-center justify-center">
               Criar Conta Grátis
             </Link>
-            <a className="text-primary-container font-bold underline underline-offset-8 decoration-2 hover:text-white transition-all" href="#">Usar Versão Web</a>
+            <Link className="text-primary-container font-bold underline underline-offset-8 decoration-2 hover:text-white transition-all" href="/community">Usar Versão Web</Link>
           </div>
           <div className="pt-12 flex items-center gap-6 opacity-60">
             <div className="flex -space-x-3">

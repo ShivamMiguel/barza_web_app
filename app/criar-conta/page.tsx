@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata = {
@@ -6,9 +7,21 @@ export const metadata = {
 
 export default function CriarContaPage() {
   return (
-    <main className="relative min-h-screen flex items-center justify-center obsidian-glow px-6 py-24">
-      <div className="absolute top-[15%] -left-[10%] w-[40%] h-[60%] bg-primary-container opacity-[0.03] blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-[10%] -right-[5%] w-[30%] h-[50%] bg-tertiary-container opacity-[0.02] blur-[100px] rounded-full pointer-events-none"></div>
+    <main className="relative min-h-screen flex flex-col items-center justify-center px-6 py-24">
+      <div className="absolute top-0 left-0 w-full p-6 z-10">
+        <Link href="/">
+          <Image
+            src="/barza_logo.png"
+            alt="Barza Logo"
+            width={80}
+            height={80}
+            className="h-20 w-auto"
+            style={{ mixBlendMode: 'screen' }}
+          />
+        </Link>
+      </div>
+      <div className="absolute top-[15%] left-[-10%] w-[40%] h-[60%] bg-primary-container opacity-[0.02] blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[50%] bg-tertiary-container opacity-[0.01] blur-[100px] rounded-full pointer-events-none"></div>
       <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
         <div className="md:col-span-5 lg:col-span-6 space-y-8 pr-0 md:pr-12">
           <h1 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter leading-[0.9] text-on-surface">
