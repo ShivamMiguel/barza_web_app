@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@layer theme {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+@layer utilities {
+  /* BARZA Custom Color Utilities */
+  .bg-primary-container {
+    background-color: #ff9156 !important;
+  }
+  
+  .text-primary-container {
+    color: #ff9156 !important;
+  }
+  
+  .border-primary-container {
+    border-color: #ff9156 !important;
+  }
+
+  .bg-primary {
+    background-color: #ffba98 !important;
+  }
+  
+  .text-primary {
+    color: #ffba98 !important;
+  }
+
+  .bg-surface-container-lowest {
+    background-color: #0e0e0e !important;
+  }
+
+  .text-on-primary-container {
+    color: #712d00 !important;
+  }
+
+  .bg-surface-container-low {
+    background-color: #1c1b1b !important;
+  }
+
+  .bg-surface-container {
+    background-color: #201f1f !important;
+  }
+
+  .bg-surface-variant {
+    background-color: #353534 !important;
+  }
+
+  .text-on-surface {
+    color: #e5e2e1 !important;
+  }
+
+  .text-on-background {
+    color: #e5e2e1 !important;
+  }
+
+  .border-outline-variant {
+    border-color: #56433a !important;
+  }
+
+  .shadow-primary-container {
+    --tw-shadow-color: #ff9156;
+  }
+}

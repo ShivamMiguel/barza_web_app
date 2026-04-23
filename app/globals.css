@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer utilities {
+  /* BARZA Custom Color Palette - Tailwind v4 Utilities */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* PRIMARY CONTAINER (Orange) - Most important color */
+  .bg-primary-container {
+    background-color: #ff9156 !important;
+  }
+  
+  .text-primary-container {
+    color: #ff9156 !important;
+  }
+  
+  .border-primary-container {
+    border-color: #ff9156 !important;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  .shadow-primary-container\/20 {
+    --tw-shadow-color: rgb(255 145 86 / 0.2);
+  }
+
+  /* PRIMARY */
+  .bg-primary {
+    background-color: #ffba98 !important;
+  }
+  
+  .text-primary {
+    color: #ffba98 !important;
+  }
+
+  .border-primary {
+    border-color: #ffba98 !important;
+  }
+
+  /* TEXT ON PRIMARY CONTAINER */
+  .text-on-primary-container {
+    color: #712d00 !important;
+  }
+
+  .bg-on-primary-container {
+    background-color: #712d00 !important;
+  }
+
+  /* SURFACE COLORS */
+  .bg-surface-container-lowest {
+    background-color: #0e0e0e !important;
+  }
+
+  .bg-surface-container-low {
+    background-color: #1c1b1b !important;
+  }
+
+  .bg-surface-container {
+    background-color: #201f1f !important;
+  }
+
+  .bg-surface-container-high {
+    background-color: #2a2a2a !important;
+  }
+
+  .bg-surface-variant {
+    background-color: #353534 !important;
+  }
+
+  /* TEXT COLORS */
+  .text-on-surface {
+    color: #e5e2e1 !important;
+  }
+
+  .text-on-background {
+    color: #e5e2e1 !important;
+  }
+
+  .text-on-surface-variant {
+    color: #dcc1b5 !important;
+  }
+
+  /* OUTLINE COLORS */
+  .border-outline-variant {
+    border-color: #56433a !important;
+  }
+
+  .border-outline {
+    border-color: #a48c81 !important;
+  }
+
+  /* TERTIARY */
+  .bg-tertiary-container {
+    background-color: #ff9156 !important;
+  }
+
+  .text-tertiary-container {
+    color: #ff9156 !important;
+  }
+
+  /* Custom Effects */
+  .liquid-obsidian {
+    background: linear-gradient(135deg, #131313 0%, #000000 100%);
+  }
+
+  .volcanic-glow {
+    filter: blur(80px);
+    background: radial-gradient(circle, #ff9156 0%, transparent 70%);
+  }
+
+  .refractive-edge {
+    border-top: 1px solid rgba(255, 145, 86, 0.2);
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  .glass-panel {
+    background: rgba(53, 53, 52, 0.6);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 145, 86, 0.2);
+    box-shadow: 0 40px 60px -15px rgba(255, 255, 255, 0.04);
+  }
+
+  .volcanic-gradient {
+    background: linear-gradient(135deg, #ff9156 0%, #fc7c31 100%);
+  }
+
+  .obsidian-glow {
+    background: radial-gradient(circle at 50% -20%, rgba(255, 145, 86, 0.15) 0%, rgba(14, 14, 14, 0) 60%);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0e0e0e;
+  color: #e5e2e1;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
+
