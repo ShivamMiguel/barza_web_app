@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-export function TopNav() {
+type TopNavProps = {
+  onDownloadClick: () => void;
+};
+
+export function TopNav({ onDownloadClick }: TopNavProps) {
   return (
     <nav className="fixed top-0 w-full z-50 bg-transparent backdrop-blur-xl border-t border-[#ff9156]/20 shadow-[0_-40px_60px_-15px_rgba(255,255,255,0.04)]">
       <div className="flex justify-between items-center w-full px-8 py-4 max-w-none">
@@ -23,7 +27,7 @@ export function TopNav() {
         </div>
         <div className="flex gap-6 items-center">
           <Link className="text-[#e5e2e1] opacity-80 font-bold hover:text-[#ff9156] transition-all" href="/community">Login</Link>
-          <button className="bg-primary-container text-on-primary-container px-6 py-2.5 font-bold rounded-lg active:scale-95 transition-transform">Get the App</button>
+          <button onClick={onDownloadClick} className="bg-primary-container text-on-primary-container px-6 py-2.5 font-bold rounded-lg active:scale-95 transition-transform">Get the App</button>
         </div>
       </div>
     </nav>
