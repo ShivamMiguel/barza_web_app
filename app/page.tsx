@@ -22,7 +22,7 @@ export default function Home() {
   return (
     <main className="w-full">
       <TopNav onDownloadClick={() => setIsDownloadOpen(true)} />
-      <HeroSection />
+      <HeroSection onDownloadClick={() => setIsDownloadOpen(true)} />
       <ProblemSection />
       <SolutionSection />
       <ClientExperienceSection />

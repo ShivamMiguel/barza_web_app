@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-export function HeroSection() {
+type HeroSectionProps = {
+  onDownloadClick: () => void;
+};
+
+export function HeroSection({ onDownloadClick }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen flex items-center pt-24 overflow-hidden px-8">
       <div className="absolute inset-0 z-0">
@@ -23,7 +27,7 @@ export function HeroSection() {
             Barza junta comunidade, serviços e produtos numa só plataforma. Descobre tendências, marca profissionais e compra com confiança.
           </p>
           <div className="flex flex-wrap gap-6 items-center">
-            <button className="bg-primary-container text-on-primary-container px-10 py-5 text-lg font-black uppercase tracking-widest rounded-lg transition-all hover:brightness-110 shadow-2xl shadow-primary-container/20 flex items-center gap-2">
+            <button onClick={onDownloadClick} className="bg-primary-container text-on-primary-container px-10 py-5 text-lg font-black uppercase tracking-widest rounded-lg transition-all hover:brightness-110 shadow-2xl shadow-primary-container/20 flex items-center gap-2">
               Baixar App
               <span className="material-symbols-outlined">arrow_forward</span>
             </button>
