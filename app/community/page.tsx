@@ -9,36 +9,27 @@ export default function CommunityPage() {
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex flex-col lg:flex-row">
       {/* Sidebar Navigation - Hidden on mobile */}
-      <aside className="hidden lg:flex lg:h-screen lg:w-64 lg:fixed lg:left-0 lg:top-0 bg-[#0e0e0e] lg:flex-col pt-8 pb-8 px-4 gap-y-6 z-50 transition-all duration-200 ease-in-out">
-        <div className="px-4 mb-8">
-          <img
-            src="/barza_logo.png"
-            alt="Barza Logo"
-            className="h-16 w-auto mb-4"
-            style={{ mixBlendMode: "screen" }}
-          />
-          <p className="text-[0.6875rem] font-label tracking-widest uppercase opacity-50">
-            Community
-          </p>
+      <aside className="hidden lg:flex lg:h-screen lg:w-64 lg:fixed lg:left-0 lg:top-0 bg-[#0e0e0e] lg:flex-col z-50">
+        {/* Logo */}
+        <div className="px-8 pt-8 pb-4 flex-shrink-0">
+          <img src="/barza_logo.png" alt="Barza Logo" className="h-10 w-auto mb-3" style={{ mixBlendMode: "screen" }} />
+          <p className="text-[0.6875rem] font-label tracking-widest uppercase opacity-50">Community</p>
         </div>
-        <nav className="flex flex-col gap-y-1">
+
+        {/* Scrollable nav */}
+        <nav className="flex-1 overflow-y-auto px-4 flex flex-col gap-y-1 pb-2">
           <a
             className="flex items-center gap-4 px-4 py-3 text-on-surface/60 font-label text-sm tracking-wide uppercase hover:text-on-surface hover:bg-[#201f1f] transition-all rounded-xl group"
             href="#"
           >
-            <span className="material-symbols-outlined transition-transform group-active:scale-95">
-              home
-            </span>
+            <span className="material-symbols-outlined transition-transform group-active:scale-95">home</span>
             <span>Home</span>
           </a>
           <a
             className="flex items-center gap-4 px-4 py-3 text-primary-container border-r-2 border-primary-container bg-primary-container/5 font-label text-sm tracking-wide uppercase transition-all rounded-xl"
             href="#"
           >
-            <span
-              className="material-symbols-outlined"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
               dynamic_feed
             </span>
             <span>Feed</span>
@@ -47,24 +38,37 @@ export default function CommunityPage() {
             className="flex items-center gap-4 px-4 py-3 text-on-surface/60 font-label text-sm tracking-wide uppercase hover:text-on-surface hover:bg-[#201f1f] transition-all rounded-xl group"
             href="#"
           >
-            <span className="material-symbols-outlined transition-transform group-active:scale-95">
-              event
-            </span>
+            <span className="material-symbols-outlined transition-transform group-active:scale-95">event</span>
             <span>Agenda</span>
           </a>
           <a
             className="flex items-center gap-4 px-4 py-3 text-on-surface/60 font-label text-sm tracking-wide uppercase hover:text-on-surface hover:bg-[#201f1f] transition-all rounded-xl group"
             href="#"
           >
-            <span className="material-symbols-outlined transition-transform group-active:scale-95">
-              local_mall
-            </span>
+            <span className="material-symbols-outlined transition-transform group-active:scale-95">local_mall</span>
             <span>Shop</span>
           </a>
+
+          {/* My Pages */}
+          <p className="px-4 pt-5 pb-1 text-[9px] font-label tracking-[0.2em] uppercase text-on-surface-variant/30">My Pages</p>
+          <Link
+            href="/profile/andre_santos/pro"
+            className="flex items-center gap-4 px-4 py-3 text-on-surface/60 font-label text-sm tracking-wide uppercase hover:text-on-surface hover:bg-[#201f1f] transition-all rounded-xl group"
+          >
+            <span className="material-symbols-outlined transition-transform group-active:scale-95">store</span>
+            <span className="truncate">André Santos Studio</span>
+          </Link>
         </nav>
 
-        {/* Sidebar FAB */}
-        <div className="mt-auto px-4 flex flex-col gap-4">
+        {/* Bottom actions — always visible */}
+        <div className="flex-shrink-0 px-4 pb-4 pt-4 border-t border-white/5 flex flex-col gap-3">
+          <Link
+            href="/profile/create-page"
+            className="w-full border border-primary-container/40 text-primary-container py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-container/10 transition-all text-sm"
+          >
+            <span className="material-symbols-outlined text-sm">add_business</span>
+            <span>Create Page</span>
+          </Link>
           <button className="w-full volcanic-gradient text-on-primary py-4 rounded-full font-bold flex items-center justify-center gap-2 shadow-[0_20px_40px_-10px_rgba(255,145,86,0.3)] active:scale-95 transition-transform">
             <span className="material-symbols-outlined">add</span>
             <span>Create Post</span>
@@ -72,7 +76,7 @@ export default function CommunityPage() {
           {/* User Profile Card */}
           <Link
             href="/community/profile"
-            className="flex items-center gap-3 px-2 py-3 rounded-2xl hover:bg-[#201f1f] transition-all group border-t border-white/5 pt-4"
+            className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-[#201f1f] transition-all group border-t border-white/5 pt-3"
           >
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
               <Image
@@ -87,9 +91,7 @@ export default function CommunityPage() {
               <p className="text-sm font-bold text-on-surface group-hover:text-[#ff9156] transition-colors truncate">
                 Beatriz Luanda
               </p>
-              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">
-                Ambassador
-              </p>
+              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">Ambassador</p>
             </div>
             <span className="material-symbols-outlined text-on-surface-variant/30 text-sm group-hover:text-[#ff9156]/60 transition-colors">
               chevron_right
@@ -110,9 +112,7 @@ export default function CommunityPage() {
           </div>
           <div className="flex items-center gap-4">
             <button className="p-2 sm:p-3 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined text-lg sm:text-base">
-                tune
-              </span>
+              <span className="material-symbols-outlined text-lg sm:text-base">tune</span>
             </button>
           </div>
         </header>
@@ -137,10 +137,7 @@ export default function CommunityPage() {
               img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCnkomdXPuuum3ck-BkVaClvauz1bc_Ucin4yMhP6c1AZ31OQHMfe3_xO9dFkto8-A-ugOAxJSZ3FLg1ThG2jBNRkL4_xMPS01xzm01ElcLzcjQPvAyVh0jj3Qdno2vyZfQxc28zPXKuURUrt6xn2QO5FWCiohty5Tq0puhk9AGoZTNel9bkxV4d1tE9pOXveoVuQ6qrDFKluLhhTCNOZ8ajqB2Wzibo8tB-14JrL6q6x5_B9qOPHge8yKoVL3A_6BBG-dc1Jw4j2E",
             },
           ].map((story, idx) => (
-            <div
-              key={idx}
-              className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group"
-            >
+            <div key={idx} className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer group">
               <div className="w-20 h-20 rounded-full p-[3px] volcanic-gradient">
                 <div className="w-full h-full rounded-full border-4 border-surface-container-lowest overflow-hidden">
                   <img
@@ -150,9 +147,7 @@ export default function CommunityPage() {
                   />
                 </div>
               </div>
-              <span className="text-[0.6875rem] font-label uppercase tracking-widest font-bold">
-                {story.name}
-              </span>
+              <span className="text-[0.6875rem] font-label uppercase tracking-widest font-bold">{story.name}</span>
             </div>
           ))}
         </section>
@@ -178,14 +173,10 @@ export default function CommunityPage() {
                       verified
                     </span>
                   </div>
-                  <p className="text-xs text-on-surface-variant opacity-60">
-                    Luanda, Angola • 2h ago
-                  </p>
+                  <p className="text-xs text-on-surface-variant opacity-60">Luanda, Angola • 2h ago</p>
                 </div>
               </div>
-              <button className="material-symbols-outlined opacity-50 hover:opacity-100">
-                more_horiz
-              </button>
+              <button className="material-symbols-outlined opacity-50 hover:opacity-100">more_horiz</button>
             </div>
             <div className="relative aspect-square w-full bg-surface-container-highest overflow-hidden">
               <img
@@ -204,34 +195,24 @@ export default function CommunityPage() {
                 </div>
               </div>
               <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md p-2 rounded-full">
-                <span className="material-symbols-outlined text-white">
-                  videocam
-                </span>
+                <span className="material-symbols-outlined text-white">videocam</span>
               </div>
             </div>
             <div className="p-6 flex justify-between items-center">
               <div className="flex items-center gap-6">
                 <button className="flex items-center gap-2 hover:text-primary-container transition-colors">
                   <span className="material-symbols-outlined">favorite</span>
-                  <span className="text-xs font-bold uppercase tracking-wider">
-                    1.2k
-                  </span>
+                  <span className="text-xs font-bold uppercase tracking-wider">1.2k</span>
                 </button>
                 <button className="flex items-center gap-2 hover:text-primary-container transition-colors">
-                  <span className="material-symbols-outlined">
-                    mode_comment
-                  </span>
-                  <span className="text-xs font-bold uppercase tracking-wider">
-                    84
-                  </span>
+                  <span className="material-symbols-outlined">mode_comment</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">84</span>
                 </button>
                 <button className="flex items-center gap-2 hover:text-primary-container transition-colors">
                   <span className="material-symbols-outlined">share</span>
                 </button>
               </div>
-              <button className="material-symbols-outlined hover:text-primary-container transition-colors">
-                bookmark
-              </button>
+              <button className="material-symbols-outlined hover:text-primary-container transition-colors">bookmark</button>
             </div>
           </article>
 
@@ -245,9 +226,7 @@ export default function CommunityPage() {
               />
               <div>
                 <h3 className="font-bold text-sm">Elena Kizua</h3>
-                <p className="text-xs text-on-surface-variant opacity-60">
-                  Client • 4h ago
-                </p>
+                <p className="text-xs text-on-surface-variant opacity-60">Client • 4h ago</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mb-6">
@@ -258,21 +237,14 @@ export default function CommunityPage() {
               />
               <div className="flex flex-col justify-between">
                 <p className="text-sm italic font-light leading-relaxed">
-                  "Quando cuidas da imagem, a alma agradece. O melhor toque de
-                  Luanda! ✨"
+                  &ldquo;Quando cuidas da imagem, a alma agradece. O melhor toque de Luanda! ✨&rdquo;
                 </p>
                 <div className="bg-surface-container-lowest p-4 rounded-2xl border-t border-primary/10">
-                  <p className="text-[10px] font-label uppercase tracking-widest opacity-40 mb-2">
-                    Verified Experience
-                  </p>
-                  <p className="text-xs font-bold">
-                    Atendido por Carlos Fade Studio
-                  </p>
+                  <p className="text-[10px] font-label uppercase tracking-widest opacity-40 mb-2">Verified Experience</p>
+                  <p className="text-xs font-bold">Atendido por Carlos Fade Studio</p>
                   <button className="mt-4 text-primary-container font-bold text-xs flex items-center gap-1 uppercase tracking-wider">
                     Reservar Também
-                    <span className="material-symbols-outlined text-sm">
-                      arrow_forward
-                    </span>
+                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
                   </button>
                 </div>
               </div>
@@ -294,13 +266,9 @@ export default function CommunityPage() {
                 5 tendências masculinas que estão a crescer em Luanda
               </h2>
               <button className="w-fit flex items-center gap-3 group">
-                <span className="text-sm font-bold uppercase tracking-widest">
-                  Ler Artigo
-                </span>
+                <span className="text-sm font-bold uppercase tracking-widest">Ler Artigo</span>
                 <div className="w-10 h-10 rounded-full volcanic-gradient flex items-center justify-center transition-transform group-hover:translate-x-2">
-                  <span className="material-symbols-outlined text-on-primary">
-                    north_east
-                  </span>
+                  <span className="material-symbols-outlined text-on-primary">north_east</span>
                 </div>
               </button>
             </div>
@@ -320,19 +288,14 @@ export default function CommunityPage() {
             </div>
             <div className="flex-1 p-6 flex flex-col justify-between">
               <div>
-                <p className="text-[10px] font-label uppercase tracking-widest opacity-40 mb-1">
-                  Essential Oils
-                </p>
+                <p className="text-[10px] font-label uppercase tracking-widest opacity-40 mb-1">Essential Oils</p>
                 <h3 className="text-lg font-bold">Silk Texture Beard Oil</h3>
                 <p className="text-xs text-on-surface-variant mt-2 line-clamp-2">
-                  Premium hydration for the modern gentleman. Infused with
-                  Angolan Marula oil.
+                  Premium hydration for the modern gentleman. Infused with Angolan Marula oil.
                 </p>
               </div>
               <div className="flex items-center justify-between mt-4">
-                <span className="text-xl font-headline font-black text-primary-container">
-                  12.500 Kz
-                </span>
+                <span className="text-xl font-headline font-black text-primary-container">12.500 Kz</span>
                 <button className="bg-surface-variant px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-primary-container transition-colors hover:text-on-primary">
                   Comprar
                 </button>
@@ -352,22 +315,15 @@ export default function CommunityPage() {
                 </span>
               </div>
               <div className="flex-1">
-                <p className="text-[10px] font-label uppercase tracking-widest text-primary-container mb-2">
-                  Barza AI Insight
-                </p>
-                <h4 className="text-xl font-bold mb-3">
-                  O que África pode aprender com a digitalização da beleza
-                  global?
-                </h4>
+                <p className="text-[10px] font-label uppercase tracking-widest text-primary-container mb-2">Barza AI Insight</p>
+                <h4 className="text-xl font-bold mb-3">O que África pode aprender com a digitalização da beleza global?</h4>
                 <p className="text-sm text-on-surface-variant leading-relaxed mb-6">
-                  Exploramos como as ferramentas de Realidade Aumentada estão a
-                  transformar a experiência de consumo em Luanda e Joanesburgo.
+                  Exploramos como as ferramentas de Realidade Aumentada estão a transformar a experiência de consumo em Luanda e
+                  Joanesburgo.
                 </p>
                 <button className="flex items-center gap-2 text-primary-container font-bold text-xs uppercase tracking-[0.15em]">
                   Explorar
-                  <span className="material-symbols-outlined text-sm">
-                    open_in_new
-                  </span>
+                  <span className="material-symbols-outlined text-sm">open_in_new</span>
                 </button>
               </div>
             </div>
@@ -376,7 +332,7 @@ export default function CommunityPage() {
       </main>
 
       {/* Right Sidebar - Discovery - Hidden on mobile/tablet */}
-      <aside className="hidden xl:flex xl:w-80 xl:h-screen xl:fixed xl:right-0 xl:top-0 bg-[#0e0e0e] border-l border-white/5 p-6 obsidian-scroll overflow-y-auto">
+      <aside className="hidden xl:block xl:w-80 xl:h-screen xl:fixed xl:right-0 xl:top-0 bg-[#0e0e0e] border-l border-white/5 p-6">
         {/* Search & Tabs */}
         <div className="mb-10">
           <div className="relative group mb-6">
@@ -404,9 +360,7 @@ export default function CommunityPage() {
 
         {/* Trending Professionals */}
         <section className="mb-10">
-          <h3 className="text-[10px] font-label uppercase tracking-[0.2em] opacity-40 mb-6">
-            Trending Professionals
-          </h3>
+          <h3 className="text-[10px] font-label uppercase tracking-[0.2em] opacity-40 mb-6">Trending Professionals</h3>
           <div className="space-y-6">
             {[
               {
@@ -429,22 +383,12 @@ export default function CommunityPage() {
                 href={`/profile/${pro.handle}`}
                 className="flex items-center gap-4 group cursor-pointer hover:opacity-80 transition-opacity"
               >
-                <img
-                  src={pro.img}
-                  alt={pro.name}
-                  className="w-12 h-12 rounded-2xl object-cover"
-                />
+                <img src={pro.img} alt={pro.name} className="w-12 h-12 rounded-2xl object-cover" />
                 <div className="flex-1">
-                  <p className="text-xs font-bold group-hover:text-primary-container transition-colors">
-                    {pro.name}
-                  </p>
-                  <p className="text-[10px] text-on-surface-variant opacity-60">
-                    {pro.role}
-                  </p>
+                  <p className="text-xs font-bold group-hover:text-primary-container transition-colors">{pro.name}</p>
+                  <p className="text-[10px] text-on-surface-variant opacity-60">{pro.role}</p>
                 </div>
-                <span className="text-[10px] font-bold text-primary-container">
-                  {pro.trend}
-                </span>
+                <span className="text-[10px] font-bold text-primary-container">{pro.trend}</span>
               </Link>
             ))}
           </div>
@@ -453,21 +397,13 @@ export default function CommunityPage() {
         {/* Market Insights */}
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-[10px] font-label uppercase tracking-[0.2em] opacity-40">
-              Market Insights
-            </h3>
-            <span className="material-symbols-outlined text-xs opacity-40">
-              info
-            </span>
+            <h3 className="text-[10px] font-label uppercase tracking-[0.2em] opacity-40">Market Insights</h3>
+            <span className="material-symbols-outlined text-xs opacity-40">info</span>
           </div>
           <div className="bg-surface-container rounded-2xl p-6 border-t border-white/5">
             <div className="flex justify-between items-end gap-2 h-32 mb-4">
               {[40, 65, 30, 85, 55].map((height, idx) => (
-                <div
-                  key={idx}
-                  className="flex-1 volcanic-gradient rounded-t-lg"
-                  style={{ height: `${height}%` }}
-                ></div>
+                <div key={idx} className="flex-1 volcanic-gradient rounded-t-lg" style={{ height: `${height}%` }}></div>
               ))}
             </div>
             <div className="flex justify-between text-[8px] font-label uppercase tracking-widest opacity-40">
@@ -478,12 +414,8 @@ export default function CommunityPage() {
               <span>Fri</span>
             </div>
             <div className="mt-6 pt-6 border-t border-white/5">
-              <p className="text-xs font-bold leading-tight">
-                Agendamentos subiram 12% nesta semana em Luanda Sul
-              </p>
-              <p className="text-[10px] text-on-surface-variant mt-2">
-                Maior demanda: Barbearia Clássica
-              </p>
+              <p className="text-xs font-bold leading-tight">Agendamentos subiram 12% nesta semana em Luanda Sul</p>
+              <p className="text-[10px] text-on-surface-variant mt-2">Maior demanda: Barbearia Clássica</p>
             </div>
           </div>
         </section>
