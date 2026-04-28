@@ -22,12 +22,14 @@ export function TopNav({ onDownloadClick, onLoginClick }: TopNavProps) {
         </Link>
 
         <div className="flex gap-3 sm:gap-4 lg:gap-6 items-center">
+          {/* TODO: descomentar quando o login estiver pronto
           <button
             onClick={onLoginClick}
             className="text-[#e5e2e1] opacity-80 font-bold hover:text-[#ff9156] transition-all hidden sm:block text-sm lg:text-base"
           >
             Login
           </button>
+          */}
           <button
             onClick={onDownloadClick}
             className="bg-primary-container text-on-primary-container px-4 sm:px-6 py-2 sm:py-2.5 font-bold rounded-lg active:scale-95 transition-transform text-xs sm:text-sm lg:text-base whitespace-nowrap"
