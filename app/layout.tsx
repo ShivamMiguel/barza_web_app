@@ -1,24 +1,81 @@
-import type { Metadata } from 'next';
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
-import './globals.css';
+import type { Metadata } from "next";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { schemaWebSite, schemaOrganization } from "@/lib/schema";
+import "./globals.css";
+
+// ─── Fonts ────────────────────────────────────────────────────────────────────
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
 });
 
 const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['700', '800'],
-  variable: '--font-plus-jakarta',
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["700", "800"],
+  variable: "--font-plus-jakarta",
 });
 
+// ─── Root Metadata ────────────────────────────────────────────────────────────
+
 export const metadata: Metadata = {
-  title: 'BARZA | A Beleza é Presença',
-  description: 'Barza junta comunidade, serviços e produtos numa só plataforma. Descobre tendências, marca profissionais e compra com confiança.',
+  metadataBase: new URL("https://barza.app"),
+
+  title: {
+    default: "BARZA | A Beleza é Presença",
+    template: "%s | Barza",
+  },
+  description:
+    "Barza junta comunidade, serviços e produtos numa só plataforma. Descobre tendências, marca profissionais e compra com confiança.",
+
+  alternates: {
+    canonical: "/",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
+
+  openGraph: {
+    siteName: "Barza",
+    type: "website",
+    locale: "pt_AO",
+    url: "https://barza.app",
+    title: "BARZA | A Beleza é Presença",
+    description:
+      "Barza junta comunidade, serviços e produtos numa só plataforma. Descobre tendências, marca profissionais e compra com confiança.",
+    images: [
+      {
+        url: "/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Barza — A Beleza é Presença",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    site: "@barzaapp",
+    title: "BARZA | A Beleza é Presença",
+    description: "Barza junta comunidade, serviços e produtos numa só plataforma.",
+    images: ["/og-default.jpg"],
+  },
+
+  verification: {
+    google: "REPLACE_WITH_GOOGLE_SEARCH_CONSOLE_TOKEN",
+  },
 };
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
 
 export default function RootLayout({
   children,
@@ -32,8 +89,19 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
+        {/* ── Global JSON-LD: WebSite (SiteLinksSearchBox) ── */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaWebSite()) }} />
+        {/* ── Global JSON-LD: Organization ── */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schemaOrganization()),
+          }}
+        />
       </head>
-      <body className={`${inter.variable} ${plusJakarta.variable} bg-surface-container-lowest selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden`}>
+      <body
+        className={`${inter.variable} ${plusJakarta.variable} bg-surface-container-lowest selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden`}
+      >
         {children}
       </body>
     </html>
