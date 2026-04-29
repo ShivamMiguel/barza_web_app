@@ -70,6 +70,12 @@ export const metadata: Metadata = {
     images: ["/og-default.jpg"],
   },
 
+  icons: {
+    icon: [{ url: "/barza_logo.png", type: "image/png" }],
+    apple: [{ url: "/barza_logo.png", type: "image/png" }],
+    shortcut: "/barza_logo.png",
+  },
+
   verification: {
     google: "REPLACE_WITH_GOOGLE_SEARCH_CONSOLE_TOKEN",
   },
