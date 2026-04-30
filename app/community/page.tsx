@@ -1,11 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getSignals } from "@/lib/beauty-signals/scraper";
+import { BeautySignalCard } from "@/components/BeautySignalCard";
 
 export const metadata = {
   title: "Community | BARZA",
 };
 
-export default function CommunityPage() {
+export default async function CommunityPage() {
+  const signals = await getSignals();
+  const firstSignal = signals[0] ?? null;
+  const secondSignal = signals[1] ?? null;
+
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex flex-col lg:flex-row">
       {/* Sidebar Navigation - Hidden on mobile */}
@@ -251,28 +257,7 @@ export default function CommunityPage() {
             </div>
           </article>
 
-          {/* Trending Article */}
-          <article className="relative h-[400px] rounded-3xl overflow-hidden group cursor-pointer border border-primary/10">
-            <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiAxnKPk4Jxz6fwJXcYdS6Tr6NtVz66SuXfie4I6eD1WYUkTbg2Nb4p0R66gfLSqkFUkaCvTB8aupO5KgLvJujSSu3eOTInaTt0HpHHC7TIAE5KOn8NzENFufFUqMbevQRwXP6pJLjjw2TtGe1KOaHAvWK5Stux9BiSFQZLgHABzbVVbmDN2RNCLA3_68l9vO0u0fJaVoibD1V3ejrQ4MW2N4EYXWN0MvPgsPune-1wuZGqn3e5yreQS2DvT8bw-sJs32b9eZjl_4"
-              alt="Luanda skyline"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#0e0e0e]/40 to-transparent p-10 flex flex-col justify-end">
-              <span className="bg-primary-container/20 backdrop-blur-md text-primary-container text-[10px] font-label uppercase tracking-[0.2em] px-3 py-1 rounded-full w-fit mb-4">
-                Trending Article
-              </span>
-              <h2 className="text-3xl font-headline font-bold tracking-tight mb-6 max-w-md leading-tight">
-                5 tendências masculinas que estão a crescer em Luanda
-              </h2>
-              <button className="w-fit flex items-center gap-3 group">
-                <span className="text-sm font-bold uppercase tracking-widest">Ler Artigo</span>
-                <div className="w-10 h-10 rounded-full volcanic-gradient flex items-center justify-center transition-transform group-hover:translate-x-2">
-                  <span className="material-symbols-outlined text-on-primary">north_east</span>
-                </div>
-              </button>
-            </div>
-          </article>
+          {firstSignal && <BeautySignalCard signal={firstSignal} />}
 
           {/* Product Post */}
           <article className="bg-surface-container rounded-3xl p-2 flex border-t border-primary/5">
@@ -303,31 +288,7 @@ export default function CommunityPage() {
             </div>
           </article>
 
-          {/* AI Insight Card */}
-          <article className="glass-panel rounded-3xl p-8 border-l-4 border-primary-container">
-            <div className="flex items-start gap-6">
-              <div className="w-14 h-14 bg-primary-container/10 rounded-2xl flex items-center justify-center flex-shrink-0">
-                <span
-                  className="material-symbols-outlined text-primary-container text-3xl"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
-                  psychology
-                </span>
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] font-label uppercase tracking-widest text-primary-container mb-2">Barza AI Insight</p>
-                <h4 className="text-xl font-bold mb-3">O que África pode aprender com a digitalização da beleza global?</h4>
-                <p className="text-sm text-on-surface-variant leading-relaxed mb-6">
-                  Exploramos como as ferramentas de Realidade Aumentada estão a transformar a experiência de consumo em Luanda e
-                  Joanesburgo.
-                </p>
-                <button className="flex items-center gap-2 text-primary-container font-bold text-xs uppercase tracking-[0.15em]">
-                  Explorar
-                  <span className="material-symbols-outlined text-sm">open_in_new</span>
-                </button>
-              </div>
-            </div>
-          </article>
+          {secondSignal && <BeautySignalCard signal={secondSignal} />}
         </div>
       </main>
 

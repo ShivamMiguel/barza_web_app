@@ -17,20 +17,24 @@ import { Footer } from "@/components/Footer";
 import { DownloadModal } from "@/components/DownloadModal";
 import { LoginModal } from "@/components/LoginModal";
 import { SignupModal } from "@/components/SignupModal";
+import { OtpModal } from "@/components/OtpModal";
 
 export default function Home() {
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [isOtpOpen, setIsOtpOpen] = useState(false);
+  const [signupEmail, setSignupEmail] = useState("");
+
+  function handleSignupSuccess(email: string) {
+    setSignupEmail(email);
+    setIsOtpOpen(true);
+  }
 
   return (
     <main className="w-full">
       <TopNav onDownloadClick={() => setIsDownloadOpen(true)} onLoginClick={() => setIsLoginOpen(true)} />
-      <HeroSection
-        onDownloadClick={() => setIsDownloadOpen(true)}
-        onLoginClick={() => setIsLoginOpen(true)}
-        onSignupClick={() => setIsSignupOpen(true)}
-      />
+      <HeroSection onDownloadClick={() => setIsDownloadOpen(true)} onSignupClick={() => setIsSignupOpen(true)} />
       <ProblemSection />
       <SolutionSection />
       <ClientExperienceSection />
@@ -42,6 +46,7 @@ export default function Home() {
       <FutureVisionSection />
       <FinalCTASection onDownloadClick={() => setIsDownloadOpen(true)} />
       <Footer />
+
       <DownloadModal isOpen={isDownloadOpen} onClose={() => setIsDownloadOpen(false)} />
       <LoginModal
         isOpen={isLoginOpen}
@@ -58,7 +63,9 @@ export default function Home() {
           setIsSignupOpen(false);
           setIsLoginOpen(true);
         }}
+        onSignupSuccess={handleSignupSuccess}
       />
+      <OtpModal isOpen={isOtpOpen} email={signupEmail} onClose={() => setIsOtpOpen(false)} />
     </main>
   );
 }
