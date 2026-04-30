@@ -1,12 +1,9 @@
-import Link from "next/link";
-
 type HeroSectionProps = {
   onDownloadClick: () => void;
-  onLoginClick: () => void;
   onSignupClick: () => void;
 };
 
-export function HeroSection({ onDownloadClick, onLoginClick, onSignupClick }: HeroSectionProps) {
+export function HeroSection({ onDownloadClick, onSignupClick }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 lg:pt-32 overflow-hidden px-4 sm:px-6 lg:px-8">
       <div className="absolute inset-0 z-0">
@@ -38,14 +35,12 @@ export function HeroSection({ onDownloadClick, onLoginClick, onSignupClick }: He
               Baixar App
               <span className="material-symbols-outlined">arrow_forward</span>
             </button>
-            {/* TODO: descomentar quando o registo estiver pronto
             <button
               onClick={onSignupClick}
               className="border border-outline-variant px-6 sm:px-10 py-3 sm:py-5 text-sm sm:text-base lg:text-lg font-bold rounded-lg hover:bg-surface-variant/30 transition-all inline-flex items-center justify-center w-full sm:w-auto"
             >
               Criar Conta Grátis
             </button>
-            */}
           </div>
           <div className="pt-8 sm:pt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4 opacity-60">
             <div className="flex -space-x-3">
