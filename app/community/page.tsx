@@ -1,16 +1,55 @@
+'use client'
+
 import Link from "next/link";
 import Image from "next/image";
 import { getSignals } from "@/lib/beauty-signals/scraper";
 import { BeautySignalCard } from "@/components/BeautySignalCard";
+import { CreatePostBox } from "@/components/CreatePostBox";
+import { useEffect, useState } from "react";
+import { Sidebar } from "@/components/community/Sidebar";
 
-export const metadata = {
-  title: "Community | BARZA",
-};
+interface Signal {
+  id: string;
+  slug: string;
+  headline: string;
+  subtext: string;
+  category: string;
+  image: string;
+  body: {
+    signal: string;
+    whatIsChanging: string;
+    angola: string;
+    opportunity: string;
+  };
+  cta: {
+    label: string;
+    href: string;
+  };
+  source: {
+    name: string;
+    url: string;
+    publishedAt: string;
+  };
+  scrapedAt: string;
+}
 
-export default async function CommunityPage() {
-  const signals = await getSignals();
-  const firstSignal = signals[0] ?? null;
-  const secondSignal = signals[1] ?? null;
+export default function CommunityPage() {
+  const [signals, setSignals] = useState<Signal[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadSignals() {
+      try {
+        const data = await getSignals()
+        setSignals(data)
+      } catch (error) {
+        console.error("Error loading signals:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadSignals()
+  }, [])
 
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex flex-col lg:flex-row">
@@ -160,6 +199,11 @@ export default async function CommunityPage() {
 
         {/* Feed Section */}
         <div className="space-y-12 max-w-3xl mx-auto">
+          {/* Create Post Box */}
+          <CreatePostBox 
+            userImage="https://lh3.googleusercontent.com/aida-public/AB6AXuD91KlW51XeRQF4P1dkcoJJ5JfAMByhxbghht1rt3WJs-pCeLhYrb1Z1rzpgo6w1Jk0J_7XcdHIi02tJPP86eDMSCfwYgT6FAd51GsWConpE02xkbIYcvQVCpe7US5URy9IfApkJVbywf-bDINQ4ZIzrl_K1Mb9ac7dyNK2uOrIX7XcrimxLo0U5JOaWd4U7tgVn1VhRS7eB174XPG1r-f5MmntQhBw0hzr3_WZhEbEUhqvNXoHghn3Z8jdL56Y2IaNUeijSPhkBFY"
+            userName="Beatriz Luanda"
+          />
           {/* Professional Post */}
           <article className="bg-surface-container rounded-3xl overflow-hidden shadow-[0_40px_60px_-15px_rgba(255,255,255,0.04)] border-t border-primary/20">
             <div className="p-6 flex items-center justify-between">
@@ -257,9 +301,7 @@ export default async function CommunityPage() {
             </div>
           </article>
 
-          {firstSignal && <BeautySignalCard signal={firstSignal} />}
-
-          {/* Product Post */}
+          {/* Professional Post */}
           <article className="bg-surface-container rounded-3xl p-2 flex border-t border-primary/5">
             <div className="w-1/3 aspect-square rounded-2xl overflow-hidden relative">
               <img
@@ -288,7 +330,6 @@ export default async function CommunityPage() {
             </div>
           </article>
 
-          {secondSignal && <BeautySignalCard signal={secondSignal} />}
         </div>
       </main>
 
