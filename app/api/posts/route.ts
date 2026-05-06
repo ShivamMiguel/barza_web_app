@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { content } = await request.json()
+    const { content, image_url } = await request.json()
 
     // Validate input
     if (!content || typeof content !== 'string' || content.trim().length === 0) {
@@ -36,15 +36,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // TODO: Save post to database
-    // For now, return success mock
-    const post = {
-      id: crypto.randomUUID?.() || `post-${Date.now()}`,
-      user_id: user.id,
-      content: content.trim(),
-      created_at: new Date().toISOString(),
-      likes_count: 0,
-      comments_count: 0,
+    // Save post to database
+    const { data: post, error: insertError } = await supabase
+      .from('posts')
+      .insert({
+        user_id: user.id,
+        content: content.trim(),
+        image_url: image_url || null,
+        likes_count: 0,
+        comments_count: 0,
+      })
+      .select()
+      .single()
+
+    if (insertError) {
+      console.error('Database error:', insertError)
+      return NextResponse.json(
+        { error: 'Failed to create post' },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json(
@@ -65,26 +75,45 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET /api/posts?limit=20&offset=0
- * Get posts feed
+ * GET /api/posts?limit=20&offset=0&user_id=<optional>
+ * Get posts feed - fetch all posts or filter by user
  */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100)
     const offset = Math.max(parseInt(searchParams.get('offset') || '0'), 0)
+    const filterUserId = searchParams.get('user_id')
 
-    // TODO: Fetch posts from database
-    // For now, return empty array
-    const posts: any[] = []
+    const supabase = await createClient()
+
+    let query = supabase
+      .from('posts')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    if (filterUserId) {
+      query = query.eq('user_id', filterUserId)
+    }
+
+    const { data: posts, count, error } = await query
+
+    if (error) {
+      console.error('Database error:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch posts' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
       success: true,
-      data: posts,
+      data: posts || [],
       pagination: {
         limit,
         offset,
-        total: 0,
+        total: count || 0,
       },
     })
   } catch (error) {

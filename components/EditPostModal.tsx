@@ -1,35 +1,65 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-type CreatePostModalProps = {
-  isOpen: boolean
-  onClose: () => void
-  onPostCreated?: (post: any) => void
+interface Post {
+  id: string
+  user_id?: string
+  content: string
+  image_url?: string
+  likes_count?: number
+  comments_count?: number
+  created_at?: string
+  updated_at?: string
 }
 
-export function CreatePostModal({ isOpen, onClose, onPostCreated }: CreatePostModalProps) {
+type EditPostModalProps = {
+  isOpen: boolean
+  post: Post | null
+  onClose: () => void
+  onPostUpdated?: (post: any) => void
+}
+
+export function EditPostModal({
+  isOpen,
+  post,
+  onClose,
+  onPostUpdated,
+}: EditPostModalProps) {
   const [content, setContent] = useState('')
-  const [isPosting, setIsPosting] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
-  if (!isOpen) return null
+  useEffect(() => {
+    if (post) {
+      setContent(post.content)
+      setError(null)
+      setSuccess(false)
+    }
+  }, [post])
+
+  if (!isOpen || !post) return null
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    
+
+    if (!post) {
+      setError('Post not found')
+      return
+    }
+
     if (!content.trim()) {
       setError('O post não pode estar vazio')
       return
     }
 
     setError(null)
-    setIsPosting(true)
+    setIsUpdating(true)
 
     try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
+      const response = await fetch(`/api/posts/${post.id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: content.trim() }),
       })
@@ -37,19 +67,18 @@ export function CreatePostModal({ isOpen, onClose, onPostCreated }: CreatePostMo
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error ?? 'Erro ao criar post')
-        setIsPosting(false)
+        setError(data.error ?? 'Erro ao atualizar post')
+        setIsUpdating(false)
         return
       }
 
       // Show success message
       setSuccess(true)
-      setContent('')
       setError(null)
-      
+
       // Call callback if provided
-      if (onPostCreated && data.post) {
-        onPostCreated(data.post)
+      if (onPostUpdated && data.post) {
+        onPostUpdated(data.post)
       }
 
       // Close modal after 1 second
@@ -59,13 +88,13 @@ export function CreatePostModal({ isOpen, onClose, onPostCreated }: CreatePostMo
       }, 1000)
     } catch (err) {
       setError('Erro de conexão. Tenta novamente.')
-      setIsPosting(false)
+      setIsUpdating(false)
     }
   }
 
   function handleClose() {
-    if (!isPosting) {
-      setContent('')
+    if (!isUpdating) {
+      setContent(post?.content || '')
       setError(null)
       setSuccess(false)
       onClose()
@@ -78,7 +107,7 @@ export function CreatePostModal({ isOpen, onClose, onPostCreated }: CreatePostMo
         {/* Close button */}
         <button
           onClick={handleClose}
-          disabled={isPosting}
+          disabled={isUpdating}
           className="absolute top-6 right-6 z-50 text-on-surface/60 hover:text-on-surface transition-colors p-2 hover:bg-white/5 rounded-full disabled:opacity-50"
         >
           <span className="material-symbols-outlined text-3xl">close</span>
@@ -87,7 +116,7 @@ export function CreatePostModal({ isOpen, onClose, onPostCreated }: CreatePostMo
         {/* Header */}
         <div className="px-8 pt-8 pb-6 border-b border-on-surface/10">
           <h2 className="font-headline text-3xl font-black tracking-tighter text-on-surface">
-            Criar Post
+            Editar Post
           </h2>
           <div className="h-1 w-12 volcanic-gradient rounded-full mt-2" />
         </div>
@@ -97,15 +126,14 @@ export function CreatePostModal({ isOpen, onClose, onPostCreated }: CreatePostMo
           {/* Textarea */}
           <div className="space-y-3">
             <label htmlFor="content" className="block text-sm font-semibold text-on-surface-variant">
-              O que está a pensar?
+              Edita o teu post
             </label>
             <textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Partilha a tua opinião, experiência ou pergunta com a comunidade Barza..."
               className="w-full h-48 p-4 rounded-2xl bg-surface-container border border-on-surface/10 text-on-surface placeholder-on-surface/40 focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent resize-none font-body text-base"
-              disabled={isPosting}
+              disabled={isUpdating}
               maxLength={1000}
             />
             <p className="text-xs text-on-surface/50">
@@ -129,7 +157,7 @@ export function CreatePostModal({ isOpen, onClose, onPostCreated }: CreatePostMo
               <span className="material-symbols-outlined text-success text-xl flex-shrink-0 mt-0.5">
                 check_circle
               </span>
-              <p className="text-sm text-success">Post criado com sucesso!</p>
+              <p className="text-sm text-success">Post atualizado com sucesso!</p>
             </div>
           )}
 
@@ -138,27 +166,27 @@ export function CreatePostModal({ isOpen, onClose, onPostCreated }: CreatePostMo
             <button
               type="button"
               onClick={handleClose}
-              disabled={isPosting}
+              disabled={isUpdating}
               className="px-6 py-3 rounded-full border border-on-surface/20 text-on-surface font-semibold hover:bg-on-surface/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              disabled={isPosting || !content.trim()}
+              disabled={isUpdating || !content.trim() || content === post.content}
               className="px-6 py-3 rounded-full volcanic-gradient text-on-primary font-bold flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
-              {isPosting ? (
+              {isUpdating ? (
                 <>
                   <span className="animate-spin inline-block">
                     <span className="material-symbols-outlined text-base">hourglass_top</span>
                   </span>
-                  <span>A postar...</span>
+                  <span>A atualizar...</span>
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-base">send</span>
-                  <span>Postar</span>
+                  <span className="material-symbols-outlined text-base">check</span>
+                  <span>Atualizar</span>
                 </>
               )}
             </button>
