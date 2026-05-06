@@ -3,17 +3,17 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { CreatePostModal } from './CreatePostModal'
+import type { UserProfile } from '@/lib/supabase/profile'
 
 interface CreatePostBoxProps {
-  userImage?: string
-  userName?: string
+  profile?: UserProfile
 }
 
-export function CreatePostBox({ 
-  userImage = "https://lh3.googleusercontent.com/aida-public/AB6AXuD91KlW51XeRQF4P1dkcoJJ5JfAMByhxbghht1rt3WJs-pCeLhYrb1Z1rzpgo6w1Jk0J_7XcdHIi02tJPP86eDMSCfwYgT6FAd51GsWConpE02xkbIYcvQVCpe7US5URy9IfApkJVbywf-bDINQ4ZIzrl_K1Mb9ac7dyNK2uOrIX7XcrimxLo0U5JOaWd4U7tgVn1VhRS7eB174XPG1r-f5MmntQhBw0hzr3_WZhEbEUhqvNXoHghn3Z8jdL56Y2IaNUeijSPhkBFY",
-  userName = "Beatriz Luanda"
-}: CreatePostBoxProps) {
+export function CreatePostBox({ profile }: CreatePostBoxProps) {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
+
+  const userImage = profile?.avatar_url || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&fit=crop"
+  const userName = profile?.full_name || "User"
 
   return (
     <>

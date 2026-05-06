@@ -7,6 +7,7 @@ import { BeautySignalCard } from "@/components/BeautySignalCard";
 import { CreatePostBox } from "@/components/CreatePostBox";
 import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/community/Sidebar";
+import type { UserProfile } from "@/lib/supabase/profile";
 
 interface Signal {
   id: string;
@@ -36,19 +37,28 @@ interface Signal {
 export default function CommunityPage() {
   const [signals, setSignals] = useState<Signal[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
 
   useEffect(() => {
-    async function loadSignals() {
+    async function loadData() {
       try {
-        const data = await getSignals()
-        setSignals(data)
+        // Load signals
+        const signalsData = await getSignals()
+        setSignals(signalsData)
+
+        // Load user profile
+        const profileRes = await fetch('/api/profile')
+        if (profileRes.ok) {
+          const profileData = await profileRes.json()
+          setUserProfile(profileData)
+        }
       } catch (error) {
-        console.error("Error loading signals:", error)
+        console.error("Error loading data:", error)
       } finally {
         setIsLoading(false)
       }
     }
-    loadSignals()
+    loadData()
   }, [])
 
   return (
@@ -200,10 +210,7 @@ export default function CommunityPage() {
         {/* Feed Section */}
         <div className="space-y-12 max-w-3xl mx-auto">
           {/* Create Post Box */}
-          <CreatePostBox 
-            userImage="https://lh3.googleusercontent.com/aida-public/AB6AXuD91KlW51XeRQF4P1dkcoJJ5JfAMByhxbghht1rt3WJs-pCeLhYrb1Z1rzpgo6w1Jk0J_7XcdHIi02tJPP86eDMSCfwYgT6FAd51GsWConpE02xkbIYcvQVCpe7US5URy9IfApkJVbywf-bDINQ4ZIzrl_K1Mb9ac7dyNK2uOrIX7XcrimxLo0U5JOaWd4U7tgVn1VhRS7eB174XPG1r-f5MmntQhBw0hzr3_WZhEbEUhqvNXoHghn3Z8jdL56Y2IaNUeijSPhkBFY"
-            userName="Beatriz Luanda"
-          />
+          <CreatePostBox profile={userProfile || undefined} />
           {/* Professional Post */}
           <article className="bg-surface-container rounded-3xl overflow-hidden shadow-[0_40px_60px_-15px_rgba(255,255,255,0.04)] border-t border-primary/20">
             <div className="p-6 flex items-center justify-between">

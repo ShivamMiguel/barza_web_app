@@ -1,10 +1,29 @@
 import Link from 'next/link';
+import { getLoggedUserProfile } from '@/lib/supabase/profile';
 
 export const metadata = {
   title: 'Perfil | BARZA',
 };
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const profile = await getLoggedUserProfile();
+
+  if (!profile) {
+    return (
+      <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Perfil não encontrado</h2>
+          <p className="text-on-surface-variant mb-4">Não conseguimos carregar seu perfil</p>
+          <Link href="/community" className="text-primary-container hover:underline">
+            Voltar para comunidade
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const firstName = profile.full_name.split(' ')[0];
+
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex">
       {/* Sidebar Navigation */}
@@ -42,14 +61,14 @@ export default function ProfilePage() {
           <div className="flex items-center gap-3 px-2 py-3 rounded-2xl bg-[#ff9156]/5 border-t border-white/5 pt-4">
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#ff9156] flex-shrink-0">
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD91KlW51XeRQF4P1dkcoJJ5JfAMByhxbghht1rt3WJs-pCeLhYrb1Z1rzpgo6w1Jk0J_7XcdHIi02tJPP86eDMSCfwYgT6FAd51GsWConpE02xkbIYcvQVCpe7US5URy9IfApkJVbywf-bDINQ4ZIzrl_K1Mb9ac7dyNK2uOrIX7XcrimxLo0U5JOaWd4U7tgVn1VhRS7eB174XPG1r-f5MmntQhBw0hzr3_WZhEbEUhqvNXoHghn3Z8jdL56Y2IaNUeijSPhkBFY"
-                alt="Beatriz Luanda"
+                src={profile.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop'}
+                alt={profile.full_name}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-[#ff9156] truncate">Beatriz Luanda</p>
-              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">Ambassador</p>
+              <p className="text-sm font-bold text-[#ff9156] truncate">{profile.full_name}</p>
+              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">{profile.role_profile || 'User'}</p>
             </div>
           </div>
         </div>
@@ -68,8 +87,8 @@ export default function ProfilePage() {
                 <div className="w-48 h-48 md:w-56 md:h-56 rounded-full p-1 volcanic-gradient">
                   <div className="w-full h-full rounded-full overflow-hidden border-[6px] border-[#1c1b1b]">
                     <img
-                      alt="High-end avatar of a stylish user"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuD91KlW51XeRQF4P1dkcoJJ5JfAMByhxbghht1rt3WJs-pCeLhYrb1Z1rzpgo6w1Jk0J_7XcdHIi02tJPP86eDMSCfwYgT6FAd51GsWConpE02xkbIYcvQVCpe7US5URy9IfApkJVbywf-bDINQ4ZIzrl_K1Mb9ac7dyNK2uOrIX7XcrimxLo0U5JOaWd4U7tgVn1VhRS7eB174XPG1r-f5MmntQhBw0hzr3_WZhEbEUhqvNXoHghn3Z8jdL56Y2IaNUeijSPhkBFY"
+                      alt={profile.full_name}
+                      src={profile.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=600&fit=crop'}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -81,28 +100,34 @@ export default function ProfilePage() {
               {/* Info Area */}
               <div className="flex-1 text-center md:text-left">
                 <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
-                  <h1 className="text-5xl md:text-6xl font-black text-on-surface font-display tracking-[-0.04em]">Beatriz Luanda</h1>
-                  <span className="bg-surface-variant px-4 py-1 rounded-full text-[10px] uppercase tracking-widest text-primary-container font-bold mb-2">Ambassador</span>
+                  <h1 className="text-5xl md:text-6xl font-black text-on-surface font-display tracking-[-0.04em]">{profile.full_name}</h1>
+                  {profile.role_profile && (
+                    <span className="bg-surface-variant px-4 py-1 rounded-full text-[10px] uppercase tracking-widest text-primary-container font-bold mb-2">
+                      {profile.role_profile}
+                    </span>
+                  )}
                 </div>
-                <p className="text-on-surface-variant text-lg max-w-xl mb-8 leading-relaxed font-light">
-                  Apaixonada por autocuidado e tendências de Luanda. Redefining African beauty through the lens of modern minimalism.
-                </p>
-                {/* Stats Bento */}
+                {profile.profile_location?.bio && (
+                  <p className="text-on-surface-variant text-lg max-w-xl mb-8 leading-relaxed font-light">
+                    {profile.profile_location.bio}
+                  </p>
+                )}
+                {/* Stats Bento - Placeholder */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-surface-container p-4 rounded-2xl border-t border-[#ff9156]/10">
-                    <span className="block text-2xl font-black text-on-surface font-display">124</span>
+                    <span className="block text-2xl font-black text-on-surface font-display">0</span>
                     <span className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant/60 font-bold">Posts</span>
                   </div>
                   <div className="bg-surface-container p-4 rounded-2xl border-t border-[#ff9156]/10">
-                    <span className="block text-2xl font-black text-on-surface font-display">12.8k</span>
+                    <span className="block text-2xl font-black text-on-surface font-display">0</span>
                     <span className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant/60 font-bold">Followers</span>
                   </div>
                   <div className="bg-surface-container p-4 rounded-2xl border-t border-[#ff9156]/10">
-                    <span className="block text-2xl font-black text-on-surface font-display">842</span>
+                    <span className="block text-2xl font-black text-on-surface font-display">0</span>
                     <span className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant/60 font-bold">Following</span>
                   </div>
                   <div className="bg-surface-container p-4 rounded-2xl border-t border-[#ff9156]/10">
-                    <span className="block text-2xl font-black text-on-surface font-display">48</span>
+                    <span className="block text-2xl font-black text-on-surface font-display">0</span>
                     <span className="text-[10px] uppercase tracking-[0.15em] text-on-surface-variant/60 font-bold">Bookings</span>
                   </div>
                 </div>
@@ -128,125 +153,10 @@ export default function ProfilePage() {
 
         {/* Dynamic Content Area */}
         <section className="max-w-6xl mx-auto">
-          {/* Posts Grid (Active Tab) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Post 1 */}
-            <div className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-surface-container shadow-xl">
-              <img
-                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-                alt="Artistic makeup transformation"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfDG9XvFYSmHTn4ozUr6Nsbyucley3dpL_m6GDAkFF6Yuk-a8XzFTnC_cMRhMmvmq_242-7SsjAJ4Bt3VxAPiE6dH8N9C2vicrlt5CtSuPuF8tn9b1wxV1NlTL4PO9gBYqm1VJRLD47Wb1XWynU81ahNXsTFy7IsK-nJx-E6mzpXoj_bPBmRxAu-LZDv4GYgrfNOPBId5OGIjCgLd0qnDzZTp_Pc55w1qsas61eKAoe9atRHwU1YlAVNWj7BE5OLXByNx9MM_3oJU"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
-                <span className="text-primary-container text-[10px] font-bold uppercase tracking-widest mb-1">Makeup Art</span>
-                <h4 className="text-on-surface font-bold text-lg mb-2">Golden Hour Transformation</h4>
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1 text-xs text-on-surface/60"><span className="material-symbols-outlined text-sm">favorite</span> 1.2k</span>
-                  <span className="flex items-center gap-1 text-xs text-on-surface/60"><span className="material-symbols-outlined text-sm">chat_bubble</span> 42</span>
-                </div>
-              </div>
-            </div>
-            {/* Post 2 */}
-            <div className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-surface-container shadow-xl">
-              <img
-                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-                alt="Intricate braided hair design"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-RnzI87zoM9AzedqXQ8NWMq6N94Yz3bO2IINZ7x1DSKy4B67c4Cy1rmNCloVW39r6woNgQWY-1STscYjSFp9SjRFhEkWPHgoUZ5gLkLcdl03rO9yq6JD8YalYwzzc91Xt18B8XJGtF0bD9a19PKIyAbWyv6IwyBFBG3YTYy9mk7zCVrqh0dCcKIpq9NMHzt_5IwQPwiU176g7VNNHXo5DMaqfd3BL11p8opQBDGckniENyT1_BXtotxopOAJBiDYfwr9dwH0dGnQ"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
-                <span className="text-primary-container text-[10px] font-bold uppercase tracking-widest mb-1">Hair Styling</span>
-                <h4 className="text-on-surface font-bold text-lg mb-2">Tribal Weave Concept</h4>
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1 text-xs text-on-surface/60"><span className="material-symbols-outlined text-sm">favorite</span> 890</span>
-                  <span className="flex items-center gap-1 text-xs text-on-surface/60"><span className="material-symbols-outlined text-sm">chat_bubble</span> 18</span>
-                </div>
-              </div>
-            </div>
-            {/* Post 3 */}
-            <div className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-surface-container shadow-xl">
-              <img
-                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-                alt="Detailed nail art"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgjZ2Q_FRYy0dCeGBOmni57oFcrtB-OWteAQsibGZ7VrHrhP9V3Rn1XBOK6K16uRhubU-BbbVkN0oefT7VmfOqD8zx_ftv_ia_m1dCyTg0Or8Jd1MwuWzR_x8LDnyWZifPtt23ZG_wceBGTrXDW_WaZ-xxmlkkXcCgm0OIxJNFaR4nYA9Yd4f_ClWrsvepSFq6ZU5lpK8q2boxbBoGbhFJ9IYx52Sxk1uvOrUpJwkSDZC1JPisx7Pmu-P2Lub2olKwP2pJ6SYhSHE"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
-                <span className="text-primary-container text-[10px] font-bold uppercase tracking-widest mb-1">Nail Art</span>
-                <h4 className="text-on-surface font-bold text-lg mb-2">Emerald Geometry</h4>
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1 text-xs text-on-surface/60"><span className="material-symbols-outlined text-sm">favorite</span> 2.4k</span>
-                  <span className="flex items-center gap-1 text-xs text-on-surface/60"><span className="material-symbols-outlined text-sm">chat_bubble</span> 156</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Subsection: Produtos Comprados (Preview) */}
-          <div className="mt-20">
-            <div className="flex justify-between items-end mb-8">
-              <div>
-                <h3 className="text-3xl font-black text-on-surface font-display tracking-tight">Recent Purchases</h3>
-                <p className="text-on-surface-variant/60 text-sm mt-2">Curated beauty essentials from the Aura Marketplace</p>
-              </div>
-              <button className="text-primary-container text-xs font-bold uppercase tracking-widest hover:underline transition-all">View All Products</button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {/* Product 1 */}
-              <div className="bg-surface-container p-4 rounded-2xl border-t border-white/5 group hover:bg-surface-container-high transition-colors">
-                <div className="aspect-square rounded-xl overflow-hidden bg-surface-container-lowest mb-4">
-                  <img
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                    alt="Luxury black perfume bottle"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCp2Smh40FbyW1P_XjN-0Tz-dZlVy7k4njp2SZnVLcg_2wBlZ72n6IOZYxdCE4iO8grl71Td17WIqMuwegOcZbfRmo-uYGXO9R2IfOS5EnwX2GJbhqkSHdOeqHYufIFX07gjmyKAxUoyJE1WuISbs3Zkvnbq1FXKaCewsxIVtPVtrv9Kj3Y0qAjpGI800-OqQJIhJzyck7yfWKRmtejY2Kw7pUUlNl3bP1fzeyQpefFizqHuBIVj5QqLGFsmkTOkhUGA7T2Osejpt4"
-                  />
-                </div>
-                <span className="text-[10px] text-primary-container uppercase font-bold tracking-widest">Fragrance</span>
-                <h5 className="text-on-surface font-medium mt-1">Noir de Obsidian EDP</h5>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-on-surface-variant font-bold">14.500 Kz</span>
-                  <span className="material-symbols-outlined text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                </div>
-              </div>
-              {/* Product 2 */}
-              <div className="bg-surface-container p-4 rounded-2xl border-t border-white/5 group hover:bg-surface-container-high transition-colors">
-                <div className="aspect-square rounded-xl overflow-hidden bg-surface-container-lowest mb-4">
-                  <img
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                    alt="Premium beard oil glass dropper bottle"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDorM6VjJrbf4ExWfkeI2lqn8Jw0HM6nTvzzgnKXIGcwgdAXBRAZpUemIO_6iSmxEkjMI-rrRxJ_K_JoL50YOp5PkDVd1ju61D79C40BqSyJrETYSnRalzug917ektwp5CG0F5j0z4kn8Z3oVJw1VXK48zONlz9ink7d8-7Kn8vU9Nmaro05f6JSjztqp2KBvxL7AzzzrNCQr9911IlzzNHIkr6E9_3vN-6WyMVmK3dFZN4F8ZGDgrLYgzKdk3ykYrkGsnktfQ4XeA"
-                  />
-                </div>
-                <span className="text-[10px] text-primary-container uppercase font-bold tracking-widest">Grooming</span>
-                <h5 className="text-on-surface font-medium mt-1">Sandalwood Beard Elixir</h5>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-on-surface-variant font-bold">8.200 Kz</span>
-                  <span className="material-symbols-outlined text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                </div>
-              </div>
-              {/* Product 3 */}
-              <div className="bg-surface-container p-4 rounded-2xl border-t border-white/5 group hover:bg-surface-container-high transition-colors">
-                <div className="aspect-square rounded-xl overflow-hidden bg-surface-container-lowest mb-4">
-                  <img
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                    alt="High-end face cream in frosted glass jar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdy2XlxYxOPBzqRt8zBrCQB2yFEYVHRwKw72DY29TCVc2TfuGt6-Z4yo2AokD8aZpjpNN_wMJCK7p-qDyvherUNuPX8zRYtG8D9cuxQvno3AbUKWbcmexC8T3UDucmr4JBDyY4b1Wjywn2q2JAwC_WmBcd1_Wfi022pn9evYDc0nmwgMzc04p_89jzJdulMms8R_IjtcHLCM_PrJ5ASmz-OHi7JjTKgz777OHtTiRlRC_ob8_CSACpI9vcUoRaGnd2BEdFGHtXKwA"
-                  />
-                </div>
-                <span className="text-[10px] text-primary-container uppercase font-bold tracking-widest">Skincare</span>
-                <h5 className="text-on-surface font-medium mt-1">Hydra-Obsidian Serum</h5>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-on-surface-variant font-bold">19.900 Kz</span>
-                  <span className="material-symbols-outlined text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                </div>
-              </div>
-              {/* Product 4 - Explore */}
-              <div className="bg-surface-container p-4 rounded-2xl border-t border-white/5 group hover:bg-surface-container-high transition-colors">
-                <div className="aspect-square rounded-xl overflow-hidden bg-surface-container-lowest mb-4 flex items-center justify-center border border-white/5">
-                  <span className="material-symbols-outlined text-4xl text-on-surface-variant/20">add_shopping_cart</span>
-                </div>
-                <span className="text-[10px] text-on-surface-variant/40 uppercase font-bold tracking-widest">Explore</span>
-                <h5 className="text-on-surface-variant/40 font-medium mt-1 italic">Shop more looks...</h5>
-              </div>
-            </div>
+          {/* Empty Posts State */}
+          <div className="text-center py-12">
+            <span className="material-symbols-outlined text-6xl text-on-surface-variant/20 mb-4 block">post_add</span>
+            <p className="text-on-surface-variant text-lg">Nenhum post publicado ainda</p>
           </div>
         </section>
       </main>
