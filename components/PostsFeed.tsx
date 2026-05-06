@@ -16,10 +16,11 @@ interface Post {
 
 interface PostsFeedProps {
   currentUserId?: string
+  userId?: string
   limit?: number
 }
 
-export function PostsFeed({ currentUserId, limit = 20 }: PostsFeedProps) {
+export function PostsFeed({ currentUserId, userId, limit = 20 }: PostsFeedProps) {
   const [posts, setPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -33,9 +34,12 @@ export function PostsFeed({ currentUserId, limit = 20 }: PostsFeedProps) {
   const loadPosts = async (newOffset = 0) => {
     try {
       setIsLoading(true)
-      const res = await fetch(
-        `/api/posts?limit=${limit}&offset=${newOffset}`
-      )
+      const params = new URLSearchParams()
+        params.set('limit', String(limit))
+        params.set('offset', String(newOffset))
+        if (userId) params.set('user_id', userId)
+
+        const res = await fetch(`/api/posts?${params.toString()}`)
 
       if (!res.ok) {
         throw new Error('Failed to load posts')

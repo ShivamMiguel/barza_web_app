@@ -15,14 +15,12 @@ interface Post {
   comments_count: number
   created_at: string
   updated_at: string
-  // Optional: user profile data if joined
+  // User profile data from profiles table
   user?: {
     id: string
-    email?: string
-    user_metadata?: {
-      full_name?: string
-      avatar_url?: string
-    }
+    full_name?: string
+    avatar_url?: string
+    role_profile?: string
   }
 }
 
@@ -95,11 +93,11 @@ export function PostCard({
         {/* Post Header */}
         <div className="px-6 py-4 flex items-start justify-between">
           <div className="flex items-center gap-3 flex-1">
-            {post.user?.user_metadata?.avatar_url && (
+            {post.user?.avatar_url && (
               <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                 <Image
-                  src={post.user.user_metadata.avatar_url}
-                  alt={post.user?.user_metadata?.full_name || 'User'}
+                  src={post.user.avatar_url}
+                  alt={post.user?.full_name || 'User'}
                   fill
                   className="object-cover"
                 />
@@ -107,7 +105,7 @@ export function PostCard({
             )}
             <div className="flex-1 min-w-0">
               <p className="text-base font-semibold text-on-surface truncate">
-                {post.user?.user_metadata?.full_name || 'Anonymous'}
+                {post.user?.full_name || 'Anonymous'}
               </p>
               <p className="text-sm text-on-surface/60">{createdTime}</p>
             </div>

@@ -7,6 +7,7 @@ import { BeautySignalCard } from "@/components/BeautySignalCard";
 import { CreatePostBox } from "@/components/CreatePostBox";
 import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/community/Sidebar";
+import { PostsFeed } from '@/components/PostsFeed';
 import type { UserProfile } from "@/lib/supabase/profile";
 
 interface Signal {
@@ -247,7 +248,11 @@ export default function CommunityPage() {
                     Agendar Agora
                   </button>
                   <button className="flex-1 bg-surface-variant/80 backdrop-blur-md text-on-surface py-3 rounded-xl font-bold border-t border-white/10 active:scale-95 transition-all">
-                    Ver Perfil
+          {/* Create Post Box */}
+          <CreatePostBox profile={userProfile || undefined} />
+
+          {/* Posts Feed */}
+          <PostsFeed currentUserId={userProfile?.id} />
                   </button>
                 </div>
               </div>

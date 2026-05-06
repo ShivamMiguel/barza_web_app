@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { PostsFeed } from '@/components/PostsFeed';
 import { getLoggedUserProfile } from '@/lib/supabase/profile';
 
 export const metadata = {
@@ -153,10 +154,9 @@ export default async function ProfilePage() {
 
         {/* Dynamic Content Area */}
         <section className="max-w-6xl mx-auto">
-          {/* Empty Posts State */}
-          <div className="text-center py-12">
-            <span className="material-symbols-outlined text-6xl text-on-surface-variant/20 mb-4 block">post_add</span>
-            <p className="text-on-surface-variant text-lg">Nenhum post publicado ainda</p>
+          {/* User Posts Feed */}
+          <div className="space-y-8">
+            <PostsFeed userId={profile.id} currentUserId={profile.id} />
           </div>
         </section>
       </main>
