@@ -135,8 +135,8 @@ export default function CommunityPage() {
           >
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
               <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD91KlW51XeRQF4P1dkcoJJ5JfAMByhxbghht1rt3WJs-pCeLhYrb1Z1rzpgo6w1Jk0J_7XcdHIi02tJPP86eDMSCfwYgT6FAd51GsWConpE02xkbIYcvQVCpe7US5URy9IfApkJVbywf-bDINQ4ZIzrl_K1Mb9ac7dyNK2uOrIX7XcrimxLo0U5JOaWd4U7tgVn1VhRS7eB174XPG1r-f5MmntQhBw0hzr3_WZhEbEUhqvNXoHghn3Z8jdL56Y2IaNUeijSPhkBFY"
-                alt="Beatriz Luanda"
+                src={userProfile?.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop'}
+                alt={userProfile?.full_name || 'User'}
                 width={40}
                 height={40}
                 className="w-full h-full object-cover"
@@ -144,9 +144,9 @@ export default function CommunityPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-on-surface group-hover:text-[#ff9156] transition-colors truncate">
-                Beatriz Luanda
+                {userProfile?.full_name || 'Loading...'}
               </p>
-              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">Ambassador</p>
+              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">{userProfile?.role_profile || 'User'}</p>
             </div>
             <span className="material-symbols-outlined text-on-surface-variant/30 text-sm group-hover:text-[#ff9156]/60 transition-colors">
               chevron_right
