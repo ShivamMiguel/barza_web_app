@@ -23,7 +23,7 @@ export interface PostWithUser extends Post {
     id: string
     full_name: string
     avatar_url?: string
-    role_profile?: string
+    profession?: string
   }
 }
 
@@ -44,7 +44,7 @@ export async function getPosts(
       .select(
         `
         *,
-        user:profiles(id, full_name, avatar_url, role_profile)
+        user:profiles(id, full_name, avatar_url, profession:role_profile)
       `,
         { count: 'exact' }
       )
@@ -95,7 +95,7 @@ export async function getPostById(postId: string): Promise<PostWithUser | null> 
       .select(
         `
         *,
-        user:profiles(id, full_name, avatar_url, role_profile)
+        user:profiles(id, full_name, avatar_url, profession:role_profile)
       `
       )
       .eq('id', postId)

@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { Avatar } from '@/components/Avatar';
 import { CreatePostModal } from '../CreatePostModal';
 import type { UserProfile } from '@/lib/supabase/profile';
 
@@ -75,17 +75,11 @@ export function Sidebar({ profile }: SidebarProps) {
           className="flex items-center gap-3 px-2 py-3 rounded-2xl hover:bg-[#201f1f] transition-all group border-t border-white/5 pt-4"
         >
           <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
-            <Image
-              src={userProfile.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop'}
-              alt={userProfile.full_name}
-              width={40}
-              height={40}
-              className="w-full h-full object-cover"
-            />
+            <Avatar name={userProfile.full_name} avatarUrl={userProfile.avatar_url} textSize="text-xs" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-[#e5e2e1] group-hover:text-[#ff9156] transition-colors truncate">{userProfile.full_name}</p>
-            <p className="text-[10px] text-[#e5e2e1]/40 font-label uppercase tracking-widest">{userProfile.role_profile || 'User'}</p>
+            <p className="text-[10px] text-[#e5e2e1]/40 font-label uppercase tracking-widest">{userProfile.profession || 'User'}</p>
           </div>
           <span className="material-symbols-outlined text-[#e5e2e1]/20 text-sm group-hover:text-[#ff9156]/60 transition-colors">chevron_right</span>
         </Link>

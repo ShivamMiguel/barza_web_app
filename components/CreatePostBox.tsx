@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
+import { Avatar } from '@/components/Avatar'
 import { CreatePostModal } from './CreatePostModal'
 import type { UserProfile } from '@/lib/supabase/profile'
 
@@ -11,9 +11,7 @@ interface CreatePostBoxProps {
 
 export function CreatePostBox({ profile }: CreatePostBoxProps) {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
-
-  const userImage = profile?.avatar_url || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&fit=crop"
-  const userName = profile?.full_name || "User"
+  const userName = profile?.full_name || 'User'
 
   return (
     <>
@@ -21,11 +19,7 @@ export function CreatePostBox({ profile }: CreatePostBoxProps) {
         <div className="flex items-center gap-4">
           {/* User Avatar */}
           <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-primary-container/40">
-            <img
-              src={userImage}
-              alt={userName}
-              className="w-full h-full object-cover"
-            />
+            <Avatar name={userName} avatarUrl={profile?.avatar_url} />
           </div>
 
           {/* Input Box */}
@@ -38,14 +32,14 @@ export function CreatePostBox({ profile }: CreatePostBoxProps) {
 
           {/* Action Icons */}
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => setIsCreatePostOpen(true)}
               className="p-2.5 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary-container"
               title="Criar post com imagem"
             >
               <span className="material-symbols-outlined text-xl">image</span>
             </button>
-            <button 
+            <button
               onClick={() => setIsCreatePostOpen(true)}
               className="p-2.5 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary-container"
               title="Criar post com emoções"
@@ -56,8 +50,7 @@ export function CreatePostBox({ profile }: CreatePostBoxProps) {
         </div>
       </article>
 
-      {/* Create Post Modal */}
-      <CreatePostModal 
+      <CreatePostModal
         isOpen={isCreatePostOpen}
         onClose={() => setIsCreatePostOpen(false)}
       />

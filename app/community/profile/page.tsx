@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { PostsFeed } from '@/components/PostsFeed';
+import { Avatar } from '@/components/Avatar';
 import { PostCardEditorial } from '@/components/PostCardEditorial';
+import { ProfileEditButton } from '@/components/ProfileEditButton';
 import { getPosts } from '@/lib/supabase/posts';
 import { getLoggedUserProfile } from '@/lib/supabase/profile';
 
@@ -66,15 +67,11 @@ export default async function ProfilePage() {
           {/* Active User Profile Card */}
           <div className="flex items-center gap-3 px-2 py-3 rounded-2xl bg-[#ff9156]/5 border-t border-white/5 pt-4">
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#ff9156] flex-shrink-0">
-              <img
-                src={profile.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop'}
-                alt={profile.full_name}
-                className="w-full h-full object-cover"
-              />
+              <Avatar name={profile.full_name} avatarUrl={profile.avatar_url} textSize="text-xs" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-[#ff9156] truncate">{profile.full_name}</p>
-              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">{profile.role_profile || 'User'}</p>
+              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">{profile.profession || 'User'}</p>
             </div>
           </div>
         </div>
@@ -92,11 +89,7 @@ export default async function ProfilePage() {
               <div className="relative flex-shrink-0">
                 <div className="w-48 h-48 md:w-56 md:h-56 rounded-full p-1 volcanic-gradient">
                   <div className="w-full h-full rounded-full overflow-hidden border-[6px] border-[#1c1b1b]">
-                    <img
-                      alt={profile.full_name}
-                      src={profile.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=600&fit=crop'}
-                      className="w-full h-full object-cover"
-                    />
+                    <Avatar name={profile.full_name} avatarUrl={profile.avatar_url} textSize="text-5xl" />
                   </div>
                 </div>
                 <div className="absolute bottom-4 right-4 bg-primary-container p-2 rounded-full shadow-xl">
@@ -107,15 +100,15 @@ export default async function ProfilePage() {
               <div className="flex-1 text-center md:text-left">
                 <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
                   <h1 className="text-5xl md:text-6xl font-black text-on-surface font-display tracking-[-0.04em]">{profile.full_name}</h1>
-                  {profile.role_profile && (
+                  {profile.profession && (
                     <span className="bg-surface-variant px-4 py-1 rounded-full text-[10px] uppercase tracking-widest text-primary-container font-bold mb-2">
-                      {profile.role_profile}
+                      {profile.profession}
                     </span>
                   )}
                 </div>
-                {profile.profile_location?.bio && (
+                {profile.bio && (
                   <p className="text-on-surface-variant text-lg max-w-xl mb-8 leading-relaxed font-light">
-                    {profile.profile_location.bio}
+                    {profile.bio}
                   </p>
                 )}
                 {/* Stats Bento - Placeholder */}
@@ -140,7 +133,7 @@ export default async function ProfilePage() {
               </div>
               {/* Quick Actions */}
               <div className="flex flex-col gap-3 w-full md:w-auto flex-shrink-0">
-                <button className="volcanic-gradient px-8 py-3 rounded-xl font-bold text-on-primary text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">Edit Profile</button>
+                <ProfileEditButton profile={profile} />
                 <button className="liquid-glass px-8 py-3 rounded-xl font-bold text-primary-container text-sm uppercase tracking-widest active:scale-95 transition-all">Insights</button>
               </div>
             </div>
