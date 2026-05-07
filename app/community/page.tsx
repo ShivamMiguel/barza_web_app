@@ -64,6 +64,21 @@ export default function CommunityPage() {
 
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex flex-col lg:flex-row">
+      {/* Mobile Top Bar — hidden on desktop */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0e0e0e]/90 backdrop-blur-md border-b border-white/5 px-4 py-3 flex items-center justify-between">
+        <h1 className="text-base font-extrabold text-[#ff9156] font-display tracking-tight">Barza</h1>
+        <p className="text-[0.6875rem] font-label tracking-widest uppercase opacity-40">Community</p>
+        <Link
+          href="/community/profile"
+          className="flex items-center gap-1 group"
+        >
+          <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
+            <Avatar name={userProfile?.full_name || 'User'} avatarUrl={userProfile?.avatar_url} textSize="text-[10px]" />
+          </div>
+          <span className="material-symbols-outlined text-sm text-on-surface-variant/30 group-hover:text-[#ff9156]/60 transition-colors">chevron_right</span>
+        </Link>
+      </header>
+
       {/* Sidebar Navigation - Hidden on mobile */}
       <aside className="hidden lg:flex lg:h-screen lg:w-64 lg:fixed lg:left-0 lg:top-0 bg-[#0e0e0e] lg:flex-col z-50">
         {/* Logo */}
@@ -147,30 +162,18 @@ export default function CommunityPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="w-full lg:ml-64 lg:mr-80 min-h-screen bg-surface-container-lowest p-4 sm:p-6 lg:p-8 relative">
+      <main className="w-full lg:ml-64 lg:mr-80 min-h-screen bg-surface-container-lowest p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 relative">
         {/* Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 sm:gap-0 mb-6 sm:mb-8 lg:mb-10">
+        <header className="flex justify-between items-end mb-6 sm:mb-8 lg:mb-10">
           <div>
             <h2 className="text-2xl sm:text-3xl lg:text-[3.5rem] font-headline font-extrabold tracking-tighter leading-none mb-2">
               Discover
             </h2>
             <div className="h-1 w-12 volcanic-gradient rounded-full"></div>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="p-2 sm:p-3 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined text-lg sm:text-base">tune</span>
-            </button>
-            {/* Profile link — visible only on mobile */}
-            <Link
-              href="/community/profile"
-              className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-2xl bg-surface-container hover:bg-surface-container-high transition-all group"
-            >
-              <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
-                <Avatar name={userProfile?.full_name || 'User'} avatarUrl={userProfile?.avatar_url} textSize="text-[10px]" />
-              </div>
-              <span className="material-symbols-outlined text-sm text-on-surface-variant/50 group-hover:text-[#ff9156]/60 transition-colors">chevron_right</span>
-            </Link>
-          </div>
+          <button className="p-2 sm:p-3 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
+            <span className="material-symbols-outlined text-lg sm:text-base">tune</span>
+          </button>
         </header>
 
         {/* Stories Bar */}
