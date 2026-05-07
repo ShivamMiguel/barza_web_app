@@ -25,6 +25,7 @@ export interface PostWithUser extends Post {
     avatar_url?: string
     profession?: string
   }
+  liked_by_me?: boolean
 }
 
 /**
@@ -62,8 +63,30 @@ export async function getPosts(
       return { posts: [], total: 0 }
     }
 
+    const result = (posts || []) as PostWithUser[]
+
+    // Attach liked_by_me for the current authenticated user
+    if (result.length > 0) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (user) {
+        const { data: likes } = await supabase
+          .from('post_likes')
+          .select('post_id')
+          .eq('user_id', user.id)
+          .in('post_id', result.map((p) => p.id))
+
+        const likedSet = new Set((likes ?? []).map((l) => l.post_id))
+        result.forEach((p) => {
+          p.liked_by_me = likedSet.has(p.id)
+        })
+      }
+    }
+
     return {
-      posts: (posts || []) as PostWithUser[],
+      posts: result,
       total: count || 0,
     }
   } catch (error) {

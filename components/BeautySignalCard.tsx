@@ -29,21 +29,48 @@ const FALLBACK_BG: Record<string, string> = {
   video:   'from-[#1a0808] via-[#200d0d] to-[#2a1010]',
 }
 
+function getYouTubeEmbedUrl(url: string): string | null {
+  if (url.includes('/embed/')) return url
+  const watchMatch = url.match(/[?&]v=([^&]+)/)
+  if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`
+  const shortMatch = url.match(/youtu\.be\/([^?&]+)/)
+  if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`
+  return null
+}
+
+function getYouTubeWatchUrl(url: string): string {
+  const embedMatch = url.match(/\/embed\/([^?&/]+)/)
+  if (embedMatch) return `https://www.youtube.com/watch?v=${embedMatch[1]}`
+  return url
+}
+
 export function BeautySignalCard({ signal }: { signal: ExternalSignal }) {
   const isVideo = signal.type === 'youtube'
   const strength = signalStrength(signal.title)
   const fallbackBg = FALLBACK_BG[signal.category] ?? 'from-[#0e0e0e] via-[#141414] to-[#1a1a1a]'
+  const embedUrl = isVideo ? getYouTubeEmbedUrl(signal.url) : null
+  const watchUrl = isVideo ? getYouTubeWatchUrl(signal.url) : signal.url
 
   return (
-    <article className="relative w-full group cursor-pointer transition-transform duration-500 hover:scale-[1.005]">
+    <article className={`relative w-full group transition-transform duration-500 ${embedUrl ? '' : 'cursor-pointer hover:scale-[1.005]'}`}>
       {/* Atmospheric hover glow */}
       <div className="absolute -inset-4 bg-primary-container/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-full pointer-events-none" />
 
       <div className="relative overflow-hidden rounded-xl bg-surface-container glow-bloom refractive-highlight border border-[rgba(86,67,58,0.08)]">
 
         {/* ── Media 16:9 ── */}
-        <div className="relative aspect-[16/9] w-full overflow-hidden">
-          {signal.image ? (
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-black">
+          {embedUrl ? (
+            <iframe
+              src={embedUrl}
+              title={signal.title}
+              className="w-full h-full border-0"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
+          ) : signal.image ? (
             <img
               src={signal.image}
               alt={signal.title}
@@ -84,7 +111,7 @@ export function BeautySignalCard({ signal }: { signal: ExternalSignal }) {
           )}
 
           {/* Top overlay: category + source */}
-          <div className="absolute top-4 left-4 right-4 flex justify-between items-start gap-2">
+          <div className={`absolute top-4 left-4 right-4 flex justify-between items-start gap-2 ${embedUrl ? 'pointer-events-none' : ''}`}>
             <span className="volcanic-gradient text-on-primary font-label text-[0.625rem] font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-lg shadow-primary-container/20 flex-shrink-0">
               {categoryLabel(signal.category, signal.type)}
             </span>
@@ -100,8 +127,8 @@ export function BeautySignalCard({ signal }: { signal: ExternalSignal }) {
             </div>
           </div>
 
-          {/* Bottom overlay: signal strength + read time */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-surface-container-lowest/90 to-transparent">
+          {/* Bottom overlay: signal strength + read time — hidden when iframe is rendered */}
+          <div className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-surface-container-lowest/90 to-transparent ${embedUrl ? 'hidden' : ''}`}>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-primary-container text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
@@ -140,12 +167,12 @@ export function BeautySignalCard({ signal }: { signal: ExternalSignal }) {
               <span className="font-label text-[0.625rem] text-on-surface-variant uppercase tracking-widest">Live Signal</span>
             </div>
             <a
-              href={signal.url}
+              href={watchUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-primary-container font-label text-[0.6875rem] font-bold tracking-[0.15em] uppercase hover:gap-2.5 transition-all duration-300"
             >
-              {isVideo ? 'Watch Video' : 'View Original'}
+              {isVideo ? 'Open in YouTube' : 'View Original'}
               <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </a>
           </div>
