@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getSignals } from '@/lib/beauty-signals/scraper'
+import { fetchExternalSignals } from '@/lib/beauty-signals/external'
 
 export async function GET() {
-  const signals = await getSignals()
+  const signals = await fetchExternalSignals()
   return NextResponse.json(signals)
 }
