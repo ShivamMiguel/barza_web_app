@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { PostsFeed } from '@/components/PostsFeed';
+import { PostCardEditorial } from '@/components/PostCardEditorial';
+import { getPosts } from '@/lib/supabase/posts';
 import { getLoggedUserProfile } from '@/lib/supabase/profile';
 
 export const metadata = {
@@ -24,6 +26,9 @@ export default async function ProfilePage() {
   }
 
   const firstName = profile.full_name.split(' ')[0];
+  
+  // Fetch user's posts
+  const { posts } = await getPosts(100, 0, profile.id);
 
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex">
@@ -155,9 +160,24 @@ export default async function ProfilePage() {
         {/* Dynamic Content Area */}
         <section className="max-w-6xl mx-auto">
           {/* User Posts Feed */}
-          <div className="space-y-8">
-            <PostsFeed userId={profile.id} currentUserId={profile.id} />
-          </div>
+          {posts && posts.length > 0 ? (
+            <div className="space-y-12">
+              {posts.map(post => (
+                <PostCardEditorial
+                  key={post.id}
+                  post={post}
+                  currentUserId={profile.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <span className="material-symbols-outlined text-6xl text-on-surface-variant/20 mb-4 block">
+                post_add
+              </span>
+              <p className="text-on-surface-variant text-lg">Nenhum post publicado ainda</p>
+            </div>
+          )}
         </section>
       </main>
     </div>
