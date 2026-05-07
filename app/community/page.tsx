@@ -4,11 +4,28 @@ import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { getSignals } from "@/lib/beauty-signals/scraper";
 import { BeautySignalCard } from "@/components/BeautySignalCard";
+import { ProfessionalSpaceCard } from "@/components/ProfessionalSpaceCard";
+import { PostCardEditorial } from "@/components/PostCardEditorial";
 
 import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/community/Sidebar";
-import { PostsFeed } from '@/components/PostsFeed';
 import type { UserProfile } from "@/lib/supabase/profile";
+import type { ServiceWithSpace } from "@/lib/supabase/professional-spaces";
+import type { PostWithUser } from "@/lib/supabase/posts";
+
+type FeedItem =
+  | { kind: 'service'; data: ServiceWithSpace }
+  | { kind: 'post'; data: PostWithUser }
+
+function buildFeed(services: ServiceWithSpace[], posts: PostWithUser[]): FeedItem[] {
+  const result: FeedItem[] = []
+  const max = Math.max(services.length, posts.length)
+  for (let i = 0; i < max; i++) {
+    if (i < services.length) result.push({ kind: 'service', data: services[i] })
+    if (i < posts.length) result.push({ kind: 'post', data: posts[i] })
+  }
+  return result
+}
 
 interface Signal {
   id: string;
@@ -39,20 +56,29 @@ export default function CommunityPage() {
   const [signals, setSignals] = useState<Signal[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [feedItems, setFeedItems] = useState<FeedItem[]>([])
 
   useEffect(() => {
     async function loadData() {
       try {
-        // Load signals
-        const signalsData = await getSignals()
+        const [signalsData, profileRes, spacesRes, postsRes] = await Promise.all([
+          getSignals(),
+          fetch('/api/profile'),
+          fetch('/api/professional-spaces?limit=20'),
+          fetch('/api/posts?limit=20'),
+        ])
+
         setSignals(signalsData)
 
-        // Load user profile
-        const profileRes = await fetch('/api/profile')
         if (profileRes.ok) {
-          const profileData = await profileRes.json()
-          setUserProfile(profileData)
+          setUserProfile(await profileRes.json())
         }
+
+        const services: ServiceWithSpace[] = spacesRes.ok ? await spacesRes.json() : []
+        const postsData = postsRes.ok ? await postsRes.json() : { data: [] }
+        const posts: PostWithUser[] = postsData.data ?? []
+
+        setFeedItems(buildFeed(services, posts))
       } catch (error) {
         console.error("Error loading data:", error)
       } finally {
@@ -212,135 +238,26 @@ export default function CommunityPage() {
 
         {/* Feed Section */}
         <div className="space-y-12 max-w-3xl mx-auto">
-          {/* Professional Post */}
-          <article className="bg-surface-container rounded-3xl overflow-hidden shadow-[0_40px_60px_-15px_rgba(255,255,255,0.04)] border-t border-primary/20">
-            <div className="p-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvWbJrwkh9rm1AWaAizoot_oRmZYIa-a5hk9hQvSQKBKAm_-xtbrzVtPeIldN6AauiYqtxq98NKcvmGD6CJIQKRKxJL9CAdSvInm6YvLwHlKmMN0nPVzmFvVTj4VPMQZ1BtO2US2sdVW4cpfaAL4HHHQFWlpt_OP43ZHsNWOMlYUSfVbkagkc9YXrdE5D1jMrjTUCUcIXHnk2kDSBWaamwobb7f6Jf45EsV1M_L9CSYFliLbGPV5JpniwyQ6jnkD-YHd9SKfoliuQ"
-                  alt="Carlos Fade Studio"
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <div className="flex items-center gap-1">
-                    <h3 className="font-bold text-sm">Carlos Fade Studio</h3>
-                    <span
-                      className="material-symbols-outlined text-[16px] text-primary-container"
-                      style={{ fontVariationSettings: "'FILL' 1" }}
-                    >
-                      verified
-                    </span>
-                  </div>
-                  <p className="text-xs text-on-surface-variant opacity-60">Luanda, Angola • 2h ago</p>
-                </div>
-              </div>
-              <button className="material-symbols-outlined opacity-50 hover:opacity-100">more_horiz</button>
+          {isLoading && feedItems.length === 0 && (
+            <div className="flex justify-center items-center py-16">
+              <span className="material-symbols-outlined text-primary-container text-5xl animate-spin">refresh</span>
             </div>
-            <div className="relative aspect-square w-full bg-surface-container-highest overflow-hidden">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa5P37XvWjwJAJA0V0T62PA1pea9eXalF7n38KxH8ZIA5hkkdtrTLYXVKKbrc3oytmrHyH-yY2j43sTUa4jcmlzluraW8SUtxm665tpm90OR9Fp0bmDIKZlV7l5AIn7f0W9Wu0NiVnkJuphTgxK4KwovVxgq9m2GrVHEU1yxFWheaEhsBiGDaKk9J9uPuncViKVogffveiWiJOExKhqVNnz7l08IIyrP4akh3NMkpFvhaMsmEarc6km-fe53zzcWqlm2wxzbk24DA"
-                alt="Professional haircut"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-                <div className="flex gap-4 w-full">
-                  <button className="flex-1 volcanic-gradient text-on-primary py-3 rounded-xl font-bold active:scale-95 transition-all">
-                    Agendar Agora
-                  </button>
-                  <button className="flex-1 bg-surface-variant/80 backdrop-blur-md text-on-surface py-3 rounded-xl font-bold border-t border-white/10 active:scale-95 transition-all">
-                    Ver Perfil
-                  </button>
-                </div>
-              </div>
-              <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md p-2 rounded-full">
-                <span className="material-symbols-outlined text-white">videocam</span>
-              </div>
-            </div>
-            <div className="p-6 flex justify-between items-center">
-              <div className="flex items-center gap-6">
-                <button className="flex items-center gap-2 hover:text-primary-container transition-colors">
-                  <span className="material-symbols-outlined">favorite</span>
-                  <span className="text-xs font-bold uppercase tracking-wider">1.2k</span>
-                </button>
-                <button className="flex items-center gap-2 hover:text-primary-container transition-colors">
-                  <span className="material-symbols-outlined">mode_comment</span>
-                  <span className="text-xs font-bold uppercase tracking-wider">84</span>
-                </button>
-                <button className="flex items-center gap-2 hover:text-primary-container transition-colors">
-                  <span className="material-symbols-outlined">share</span>
-                </button>
-              </div>
-              <button className="material-symbols-outlined hover:text-primary-container transition-colors">bookmark</button>
-            </div>
-          </article>
+          )}
 
-          {/* User Post */}
-          <article className="bg-surface-container-low rounded-3xl p-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]">
-            <div className="flex items-center gap-3 mb-6">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrzgf9C9xCklkfrHiJJzRPpW2DfurCxtBh2QpSzxHXLAs0j7bn5QSGcsjwEwXgqfrqU-6GSL79cAN_Rh78pLV91KoBb4PNdNKZtw1dDZwXK0wXIJg7NTzLTe7514sZ5hu5aXv6hfmLX0OJQojMHjPt8g8KIVcZj3q7rLPH8a_naoSOZjLYPDV5vGs075Axy1Y_Bf0tUXTYN6rQ-GsO9npNywPyKqbZKZoFEBQe4dHl2fgRsDz1ub-eWjk9g4wj2xdCy0vTDm-T1sY"
-                alt="Elena Kizua"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div>
-                <h3 className="font-bold text-sm">Elena Kizua</h3>
-                <p className="text-xs text-on-surface-variant opacity-60">Client • 4h ago</p>
-              </div>
+          {!isLoading && feedItems.length === 0 && (
+            <div className="bg-surface-container rounded-3xl p-10 text-center text-on-surface-variant/40">
+              <span className="material-symbols-outlined text-5xl block mb-3">article</span>
+              <p className="text-sm font-label uppercase tracking-widest">Nenhum conteúdo disponível</p>
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVf9uiVkQwBaz1VCekWU_W5OLk5TKquGgN729VJ7Mh3sl9YlloVmdR-KB7BCLYN7oO45mvK0iXfdv8JDYjwl_-jYMNntINqLLeVTwnWFm_lcaZ9YMH4LrmB5OQv7-bp3t1GE3MxhrNfW1XRmJDZkljZ3hvA9ZndcSD1rb4k-4dVYgxcy6eGrRGcZ-SussPzV84Tnfq5M2J2AxDGFArKCeoDbY8ureMo2DEL8vqJWF_1Eh3w4U_lnPZbDWrUWW97-Z7ge_nOKRL7oA"
-                alt="Elena new hairstyle"
-                className="w-full aspect-[4/5] object-cover rounded-2xl"
-              />
-              <div className="flex flex-col justify-between">
-                <p className="text-sm italic font-light leading-relaxed">
-                  &ldquo;Quando cuidas da imagem, a alma agradece. O melhor toque de Luanda! ✨&rdquo;
-                </p>
-                <div className="bg-surface-container-lowest p-4 rounded-2xl border-t border-primary/10">
-                  <p className="text-[10px] font-label uppercase tracking-widest opacity-40 mb-2">Verified Experience</p>
-                  <p className="text-xs font-bold">Atendido por Carlos Fade Studio</p>
-                  <button className="mt-4 text-primary-container font-bold text-xs flex items-center gap-1 uppercase tracking-wider">
-                    Reservar Também
-                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
+          )}
 
-          {/* Professional Post */}
-          <article className="bg-surface-container rounded-3xl p-2 flex border-t border-primary/5">
-            <div className="w-1/3 aspect-square rounded-2xl overflow-hidden relative">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO67T6DeLRMvQWSXz2p7SD1J8JMFAgTfUM8WCPctIAHUAz0kKnV8aomUdOXPrL9rvQzUQlm55kcQmyts4PAyaX4OTQOJ_bj-GLzpodeOk_8aI1FeyjpzkL2rg4iz1XFooC4zPqVVceTy1JpngDFa5xJy0SvRfLnv33QJoetatcBHUG77kM4usuI6UdOE8-JENVgCEupOkpFcWiMbhfK911jTvwINh5mXBgcd0PXUtiSo5Ve6NHLNn1p2j3NyzQ_A-ry5Pm2ssTQGY"
-                alt="Beard Oil"
-                className="w-full h-full object-cover"
-              />
-              <span className="absolute top-3 left-3 bg-primary-container text-on-primary text-[10px] font-label uppercase font-black px-2 py-1 rounded-sm">
-                Best Seller
-              </span>
-            </div>
-            <div className="flex-1 p-6 flex flex-col justify-between">
-              <div>
-                <p className="text-[10px] font-label uppercase tracking-widest opacity-40 mb-1">Essential Oils</p>
-                <h3 className="text-lg font-bold">Silk Texture Beard Oil</h3>
-                <p className="text-xs text-on-surface-variant mt-2 line-clamp-2">
-                  Premium hydration for the modern gentleman. Infused with Angolan Marula oil.
-                </p>
-              </div>
-              <div className="flex items-center justify-between mt-4">
-                <span className="text-xl font-headline font-black text-primary-container">12.500 Kz</span>
-                <button className="bg-surface-variant px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-primary-container transition-colors hover:text-on-primary">
-                  Comprar
-                </button>
-              </div>
-            </div>
-          </article>
-
-          {/* Posts Feed */}
-          <PostsFeed currentUserId={userProfile?.id} />
-
+          {feedItems.map((item) =>
+            item.kind === 'service' ? (
+              <ProfessionalSpaceCard key={`service-${item.data.id}`} service={item.data} />
+            ) : (
+              <PostCardEditorial key={`post-${item.data.id}`} post={item.data} currentUserId={userProfile?.id} />
+            )
+          )}
         </div>
       </main>
 
