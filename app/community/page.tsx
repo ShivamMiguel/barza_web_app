@@ -1,16 +1,66 @@
+'use client'
+
 import Link from "next/link";
 import Image from "next/image";
 import { getSignals } from "@/lib/beauty-signals/scraper";
 import { BeautySignalCard } from "@/components/BeautySignalCard";
+import { CreatePostBox } from "@/components/CreatePostBox";
+import { useEffect, useState } from "react";
+import { Sidebar } from "@/components/community/Sidebar";
+import { PostsFeed } from '@/components/PostsFeed';
+import type { UserProfile } from "@/lib/supabase/profile";
 
-export const metadata = {
-  title: "Community | BARZA",
-};
+interface Signal {
+  id: string;
+  slug: string;
+  headline: string;
+  subtext: string;
+  category: string;
+  image: string;
+  body: {
+    signal: string;
+    whatIsChanging: string;
+    angola: string;
+    opportunity: string;
+  };
+  cta: {
+    label: string;
+    href: string;
+  };
+  source: {
+    name: string;
+    url: string;
+    publishedAt: string;
+  };
+  scrapedAt: string;
+}
 
-export default async function CommunityPage() {
-  const signals = await getSignals();
-  const firstSignal = signals[0] ?? null;
-  const secondSignal = signals[1] ?? null;
+export default function CommunityPage() {
+  const [signals, setSignals] = useState<Signal[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        // Load signals
+        const signalsData = await getSignals()
+        setSignals(signalsData)
+
+        // Load user profile
+        const profileRes = await fetch('/api/profile')
+        if (profileRes.ok) {
+          const profileData = await profileRes.json()
+          setUserProfile(profileData)
+        }
+      } catch (error) {
+        console.error("Error loading data:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
 
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex flex-col lg:flex-row">
@@ -86,8 +136,8 @@ export default async function CommunityPage() {
           >
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
               <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD91KlW51XeRQF4P1dkcoJJ5JfAMByhxbghht1rt3WJs-pCeLhYrb1Z1rzpgo6w1Jk0J_7XcdHIi02tJPP86eDMSCfwYgT6FAd51GsWConpE02xkbIYcvQVCpe7US5URy9IfApkJVbywf-bDINQ4ZIzrl_K1Mb9ac7dyNK2uOrIX7XcrimxLo0U5JOaWd4U7tgVn1VhRS7eB174XPG1r-f5MmntQhBw0hzr3_WZhEbEUhqvNXoHghn3Z8jdL56Y2IaNUeijSPhkBFY"
-                alt="Beatriz Luanda"
+                src={userProfile?.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop'}
+                alt={userProfile?.full_name || 'User'}
                 width={40}
                 height={40}
                 className="w-full h-full object-cover"
@@ -95,9 +145,9 @@ export default async function CommunityPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-on-surface group-hover:text-[#ff9156] transition-colors truncate">
-                Beatriz Luanda
+                {userProfile?.full_name || 'Loading...'}
               </p>
-              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">Ambassador</p>
+              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">{userProfile?.role_profile || 'User'}</p>
             </div>
             <span className="material-symbols-outlined text-on-surface-variant/30 text-sm group-hover:text-[#ff9156]/60 transition-colors">
               chevron_right
@@ -160,6 +210,8 @@ export default async function CommunityPage() {
 
         {/* Feed Section */}
         <div className="space-y-12 max-w-3xl mx-auto">
+          {/* Create Post Box */}
+          <CreatePostBox profile={userProfile || undefined} />
           {/* Professional Post */}
           <article className="bg-surface-container rounded-3xl overflow-hidden shadow-[0_40px_60px_-15px_rgba(255,255,255,0.04)] border-t border-primary/20">
             <div className="p-6 flex items-center justify-between">
@@ -257,9 +309,7 @@ export default async function CommunityPage() {
             </div>
           </article>
 
-          {firstSignal && <BeautySignalCard signal={firstSignal} />}
-
-          {/* Product Post */}
+          {/* Professional Post */}
           <article className="bg-surface-container rounded-3xl p-2 flex border-t border-primary/5">
             <div className="w-1/3 aspect-square rounded-2xl overflow-hidden relative">
               <img
@@ -288,7 +338,9 @@ export default async function CommunityPage() {
             </div>
           </article>
 
-          {secondSignal && <BeautySignalCard signal={secondSignal} />}
+          {/* Posts Feed */}
+          <PostsFeed currentUserId={userProfile?.id} />
+
         </div>
       </main>
 
