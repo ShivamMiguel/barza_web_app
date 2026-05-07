@@ -60,10 +60,6 @@ export default async function ProfilePage() {
 
         {/* Sidebar Bottom */}
         <div className="mt-auto px-4 flex flex-col gap-4">
-          <button className="w-full volcanic-gradient text-on-primary py-4 rounded-full font-bold flex items-center justify-center gap-2 shadow-[0_20px_40px_-10px_rgba(255,145,86,0.3)] active:scale-95 transition-transform">
-            <span className="material-symbols-outlined">add</span>
-            <span>Create Post</span>
-          </button>
           {/* Active User Profile Card */}
           <div className="flex items-center gap-3 px-2 py-3 rounded-2xl bg-[#ff9156]/5 border-t border-white/5 pt-4">
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#ff9156] flex-shrink-0">
