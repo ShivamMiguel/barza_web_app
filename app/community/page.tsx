@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { getSignals } from "@/lib/beauty-signals/scraper";
 import { BeautySignalCard } from "@/components/BeautySignalCard";
-import { CreatePostBox } from "@/components/CreatePostBox";
+
 import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/community/Sidebar";
 import { PostsFeed } from '@/components/PostsFeed';
@@ -125,10 +125,6 @@ export default function CommunityPage() {
             <span className="material-symbols-outlined text-sm">add_business</span>
             <span>Create Page</span>
           </Link>
-          <button className="w-full volcanic-gradient text-on-primary py-4 rounded-full font-bold flex items-center justify-center gap-2 shadow-[0_20px_40px_-10px_rgba(255,145,86,0.3)] active:scale-95 transition-transform">
-            <span className="material-symbols-outlined">add</span>
-            <span>Create Post</span>
-          </button>
           {/* User Profile Card */}
           <Link
             href="/community/profile"
@@ -160,10 +156,20 @@ export default function CommunityPage() {
             </h2>
             <div className="h-1 w-12 volcanic-gradient rounded-full"></div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button className="p-2 sm:p-3 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
               <span className="material-symbols-outlined text-lg sm:text-base">tune</span>
             </button>
+            {/* Profile link — visible only on mobile */}
+            <Link
+              href="/community/profile"
+              className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-2xl bg-surface-container hover:bg-surface-container-high transition-all group"
+            >
+              <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
+                <Avatar name={userProfile?.full_name || 'User'} avatarUrl={userProfile?.avatar_url} textSize="text-[10px]" />
+              </div>
+              <span className="material-symbols-outlined text-sm text-on-surface-variant/50 group-hover:text-[#ff9156]/60 transition-colors">chevron_right</span>
+            </Link>
           </div>
         </header>
 
@@ -204,8 +210,6 @@ export default function CommunityPage() {
 
         {/* Feed Section */}
         <div className="space-y-12 max-w-3xl mx-auto">
-          {/* Create Post Box */}
-          <CreatePostBox profile={userProfile || undefined} />
           {/* Professional Post */}
           <article className="bg-surface-container rounded-3xl overflow-hidden shadow-[0_40px_60px_-15px_rgba(255,255,255,0.04)] border-t border-primary/20">
             <div className="p-6 flex items-center justify-between">

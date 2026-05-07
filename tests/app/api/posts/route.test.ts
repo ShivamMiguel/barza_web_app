@@ -369,16 +369,13 @@ describe('GET /api/posts', () => {
     })
 
     it('respects offset parameter', async () => {
-      const mockSelect = vi.fn().mockReturnValue({
-        order: () => ({
-          range: () =>
-            Promise.resolve({
-              data: [],
-              count: 100,
-              error: null,
-            }),
-        }),
+      const mockRange = vi.fn().mockResolvedValue({
+        data: [],
+        count: 100,
+        error: null,
       })
+      const mockOrder = vi.fn().mockReturnValue({ range: mockRange })
+      const mockSelect = vi.fn().mockReturnValue({ order: mockOrder })
 
       mockSupabaseClient.from.mockReturnValue({
         select: mockSelect,
@@ -390,28 +387,20 @@ describe('GET /api/posts', () => {
 
       await GET(request)
 
-      const rangeCall = mockSelect.mock.results[0].value.order.mock.results[0]
-        .value.range
-      expect(rangeCall).toHaveBeenCalledWith(40, 59)
+      expect(mockRange).toHaveBeenCalledWith(40, 59)
     })
   })
 
   describe('filtering', () => {
     it('filters by user_id when provided', async () => {
-      const mockEq = vi.fn().mockReturnValue({
-        order: () => ({
-          range: () =>
-            Promise.resolve({
-              data: [mockPost],
-              count: 1,
-              error: null,
-            }),
-        }),
+      const mockEq = vi.fn().mockResolvedValue({
+        data: [mockPost],
+        count: 1,
+        error: null,
       })
-
-      const mockSelect = vi.fn().mockReturnValue({
-        eq: mockEq,
-      })
+      const mockRange = vi.fn().mockReturnValue({ eq: mockEq })
+      const mockOrder = vi.fn().mockReturnValue({ range: mockRange })
+      const mockSelect = vi.fn().mockReturnValue({ order: mockOrder })
 
       mockSupabaseClient.from.mockReturnValue({
         select: mockSelect,

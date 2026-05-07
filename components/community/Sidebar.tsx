@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Avatar } from '@/components/Avatar';
-import { CreatePostModal } from '../CreatePostModal';
 import type { UserProfile } from '@/lib/supabase/profile';
 
 interface SidebarProps {
@@ -11,7 +10,6 @@ interface SidebarProps {
 }
 
 export function Sidebar({ profile }: SidebarProps) {
-  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(profile || null)
 
   useEffect(() => {
@@ -62,13 +60,6 @@ export function Sidebar({ profile }: SidebarProps) {
         </a>
       </nav>
       <div className="mt-auto px-4 flex flex-col gap-4">
-        <button 
-          onClick={() => setIsCreatePostOpen(true)}
-          className="w-full volcanic-gradient text-on-primary py-4 rounded-full font-bold flex items-center justify-center gap-2 shadow-[0_20px_40px_-10px_rgba(255,145,86,0.3)] active:scale-95 transition-transform"
-        >
-          <span className="material-symbols-outlined">add</span>
-          <span>Create Post</span>
-        </button>
         {/* User Profile Card */}
         <Link
           href="/community/profile"
@@ -85,12 +76,6 @@ export function Sidebar({ profile }: SidebarProps) {
         </Link>
       </div>
       </aside>
-
-      {/* Create Post Modal */}
-      <CreatePostModal 
-        isOpen={isCreatePostOpen}
-        onClose={() => setIsCreatePostOpen(false)}
-      />
     </>
   );
 }

@@ -15,14 +15,14 @@ export async function PATCH(
     const { content, image_url } = await request.json()
 
     // Validate input
-    if (content && (typeof content !== 'string' || content.trim().length === 0)) {
+    if (typeof content === 'string' && content.trim().length === 0) {
       return NextResponse.json(
         { error: 'Post content cannot be empty' },
         { status: 400 }
       )
     }
 
-    if (content && content.length > 1000) {
+    if (typeof content === 'string' && content.length > 1000) {
       return NextResponse.json(
         { error: 'Post content must be 1000 characters or less' },
         { status: 400 }
