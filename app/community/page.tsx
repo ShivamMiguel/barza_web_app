@@ -64,19 +64,17 @@ export default function CommunityPage() {
 
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex flex-col lg:flex-row">
-      {/* Mobile Top Bar — hidden on desktop */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0e0e0e]/90 backdrop-blur-md border-b border-white/5 px-4 py-3 flex items-center justify-between">
-        <h1 className="text-base font-extrabold text-[#ff9156] font-display tracking-tight">Barza</h1>
-        <p className="text-[0.6875rem] font-label tracking-widest uppercase opacity-40">Community</p>
-        <Link
-          href="/community/profile"
-          className="flex items-center gap-1 group"
-        >
-          <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
-            <Avatar name={userProfile?.full_name || 'User'} avatarUrl={userProfile?.avatar_url} textSize="text-[10px]" />
-          </div>
-          <span className="material-symbols-outlined text-sm text-on-surface-variant/30 group-hover:text-[#ff9156]/60 transition-colors">chevron_right</span>
-        </Link>
+      {/* Mobile Top App Bar — hidden on desktop */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0e0e0e]/80 backdrop-blur-xl border-b border-[#ff9156]/20 shadow-[0_40px_60px_-15px_rgba(255,255,255,0.04)] flex justify-between items-center px-6 h-16">
+        <h1 className="text-2xl font-bold tracking-tighter text-[#ff9156] font-display">Barza</h1>
+        <div className="flex items-center gap-4">
+          <button className="active:scale-95 duration-200 text-on-surface/60 hover:text-[#ff9156] transition-colors">
+            <span className="material-symbols-outlined">search</span>
+          </button>
+          <button className="active:scale-95 duration-200 text-on-surface/60 hover:text-[#ff9156] transition-colors">
+            <span className="material-symbols-outlined">tune</span>
+          </button>
+        </div>
       </header>
 
       {/* Sidebar Navigation - Hidden on mobile */}
@@ -162,7 +160,7 @@ export default function CommunityPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="w-full lg:ml-64 lg:mr-80 min-h-screen bg-surface-container-lowest p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 relative">
+      <main className="w-full lg:ml-64 lg:mr-80 min-h-screen bg-surface-container-lowest p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 pb-24 lg:pb-8 relative">
         {/* Header */}
         <header className="flex justify-between items-end mb-6 sm:mb-8 lg:mb-10">
           <div>
@@ -171,8 +169,9 @@ export default function CommunityPage() {
             </h2>
             <div className="h-1 w-12 volcanic-gradient rounded-full"></div>
           </div>
-          <button className="p-2 sm:p-3 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
-            <span className="material-symbols-outlined text-lg sm:text-base">tune</span>
+          {/* Filter button — desktop only (mobile has it in the top bar) */}
+          <button className="hidden lg:flex p-3 bg-surface-container rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
+            <span className="material-symbols-outlined text-base">tune</span>
           </button>
         </header>
 
@@ -434,6 +433,26 @@ export default function CommunityPage() {
           </div>
         </section>
       </aside>
+
+      {/* Mobile Bottom Nav */}
+      <footer className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-20 bg-[#0e0e0e]/90 backdrop-blur-2xl border-t border-[#ff9156]/10 shadow-[0_-10px_40px_rgba(255,145,86,0.05)]">
+        <div className="flex flex-col items-center justify-center text-[#ff9156] bg-[#ff9156]/10 rounded-xl px-4 py-1">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dynamic_feed</span>
+          <span className="font-label text-[10px] uppercase tracking-[0.1em] font-semibold">Feed</span>
+        </div>
+        <a href="#" className="flex flex-col items-center justify-center text-on-surface/40 hover:text-on-surface/70 active:scale-90 duration-200 transition-colors">
+          <span className="material-symbols-outlined">event</span>
+          <span className="font-label text-[10px] uppercase tracking-[0.1em] font-semibold">Agenda</span>
+        </a>
+        <a href="#" className="flex flex-col items-center justify-center text-on-surface/40 hover:text-on-surface/70 active:scale-90 duration-200 transition-colors">
+          <span className="material-symbols-outlined">local_mall</span>
+          <span className="font-label text-[10px] uppercase tracking-[0.1em] font-semibold">Shop</span>
+        </a>
+        <Link href="/community/profile" className="flex flex-col items-center justify-center text-on-surface/40 hover:text-on-surface/70 active:scale-90 duration-200 transition-colors">
+          <span className="material-symbols-outlined">person</span>
+          <span className="font-label text-[10px] uppercase tracking-[0.1em] font-semibold">Perfil</span>
+        </Link>
+      </footer>
     </div>
   );
 }

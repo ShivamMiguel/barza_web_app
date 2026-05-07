@@ -6,9 +6,10 @@ import type { UserProfile } from '@/lib/supabase/profile'
 
 interface Props {
   profile: UserProfile
+  className?: string
 }
 
-export function ProfileEditButton({ profile }: Props) {
+export function ProfileEditButton({ profile, className }: Props) {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -59,7 +60,7 @@ export function ProfileEditButton({ profile }: Props) {
     <>
       <button
         onClick={handleOpen}
-        className="volcanic-gradient px-8 py-3 rounded-xl font-bold text-on-primary text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform"
+        className={`volcanic-gradient px-8 py-3 rounded-xl font-bold text-on-primary text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform${className ? ` ${className}` : ''}`}
       >
         Editar Perfil
       </button>
