@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
-import { getSignals } from "@/lib/beauty-signals/scraper";
 import { BeautySignalCard } from "@/components/BeautySignalCard";
 import { ProfessionalSpaceCard } from "@/components/ProfessionalSpaceCard";
 import { PostCardEditorial } from "@/components/PostCardEditorial";
@@ -12,48 +11,34 @@ import { Sidebar } from "@/components/community/Sidebar";
 import type { UserProfile } from "@/lib/supabase/profile";
 import type { ServiceWithSpace } from "@/lib/supabase/professional-spaces";
 import type { PostWithUser } from "@/lib/supabase/posts";
+import type { ExternalSignal } from "@/lib/beauty-signals/external";
 
 type FeedItem =
   | { kind: 'service'; data: ServiceWithSpace }
   | { kind: 'post'; data: PostWithUser }
+  | { kind: 'signal'; data: ExternalSignal }
 
-function buildFeed(services: ServiceWithSpace[], posts: PostWithUser[]): FeedItem[] {
+function buildFeed(
+  services: ServiceWithSpace[],
+  posts: PostWithUser[],
+  signals: ExternalSignal[]
+): FeedItem[] {
+  const buckets: FeedItem[][] = [
+    services.map(d => ({ kind: 'service' as const, data: d })),
+    posts.map(d => ({ kind: 'post' as const, data: d })),
+    signals.map(d => ({ kind: 'signal' as const, data: d })),
+  ]
   const result: FeedItem[] = []
-  const max = Math.max(services.length, posts.length)
+  const max = Math.max(...buckets.map(b => b.length))
   for (let i = 0; i < max; i++) {
-    if (i < services.length) result.push({ kind: 'service', data: services[i] })
-    if (i < posts.length) result.push({ kind: 'post', data: posts[i] })
+    for (const bucket of buckets) {
+      if (i < bucket.length) result.push(bucket[i])
+    }
   }
   return result
 }
 
-interface Signal {
-  id: string;
-  slug: string;
-  headline: string;
-  subtext: string;
-  category: string;
-  image: string;
-  body: {
-    signal: string;
-    whatIsChanging: string;
-    angola: string;
-    opportunity: string;
-  };
-  cta: {
-    label: string;
-    href: string;
-  };
-  source: {
-    name: string;
-    url: string;
-    publishedAt: string;
-  };
-  scrapedAt: string;
-}
-
 export default function CommunityPage() {
-  const [signals, setSignals] = useState<Signal[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [feedItems, setFeedItems] = useState<FeedItem[]>([])
@@ -61,14 +46,12 @@ export default function CommunityPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [signalsData, profileRes, spacesRes, postsRes] = await Promise.all([
-          getSignals(),
+        const [profileRes, spacesRes, postsRes, signalsRes] = await Promise.all([
           fetch('/api/profile'),
           fetch('/api/professional-spaces?limit=20'),
           fetch('/api/posts?limit=20'),
+          fetch('/api/beauty-signals'),
         ])
-
-        setSignals(signalsData)
 
         if (profileRes.ok) {
           setUserProfile(await profileRes.json())
@@ -77,8 +60,9 @@ export default function CommunityPage() {
         const services: ServiceWithSpace[] = spacesRes.ok ? await spacesRes.json() : []
         const postsData = postsRes.ok ? await postsRes.json() : { data: [] }
         const posts: PostWithUser[] = postsData.data ?? []
+        const signals: ExternalSignal[] = signalsRes.ok ? await signalsRes.json() : []
 
-        setFeedItems(buildFeed(services, posts))
+        setFeedItems(buildFeed(services, posts, signals))
       } catch (error) {
         console.error("Error loading data:", error)
       } finally {
@@ -251,13 +235,15 @@ export default function CommunityPage() {
             </div>
           )}
 
-          {feedItems.map((item) =>
-            item.kind === 'service' ? (
-              <ProfessionalSpaceCard key={`service-${item.data.id}`} service={item.data} />
-            ) : (
-              <PostCardEditorial key={`post-${item.data.id}`} post={item.data} currentUserId={userProfile?.id} />
-            )
-          )}
+          {feedItems.map((item, idx) => {
+            if (item.kind === 'service') {
+              return <ProfessionalSpaceCard key={`service-${item.data.id}`} service={item.data} />
+            }
+            if (item.kind === 'post') {
+              return <PostCardEditorial key={`post-${item.data.id}`} post={item.data} currentUserId={userProfile?.id} />
+            }
+            return <BeautySignalCard key={`signal-${idx}-${item.data.url}`} signal={item.data} />
+          })}
         </div>
       </main>
 
