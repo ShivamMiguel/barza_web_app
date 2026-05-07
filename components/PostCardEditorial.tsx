@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import { Avatar } from '@/components/Avatar'
 import type { PostWithUser } from '@/lib/supabase/posts'
 
 interface PostCardEditorialProps {
@@ -51,20 +51,14 @@ export function PostCardEditorial({
       <header className="flex items-center justify-between p-6">
         <div className="flex items-center gap-4">
           <div className="relative w-12 h-12 rounded-full overflow-hidden border border-[rgba(255,145,86,0.2)] flex-shrink-0">
-            <Image
-              src={post.user?.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&fit=crop'}
-              alt={post.user?.full_name || 'User'}
-              width={48}
-              height={48}
-              className="w-full h-full object-cover"
-            />
+            <Avatar name={post.user?.full_name || 'User'} avatarUrl={post.user?.avatar_url} />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <span className="font-headline font-bold text-on-surface tracking-tight">
                 {post.user?.full_name || 'Anonymous'}
               </span>
-              {post.user?.role_profile && (
+              {post.user?.profession && (
                 <span className="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-label text-[0.625rem] font-bold uppercase tracking-widest">
                   {post.user.role_profile}
                 </span>

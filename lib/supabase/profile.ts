@@ -1,5 +1,4 @@
 import { createClient as createServerClient } from './server'
-import { createClient as createBrowserClient } from './client'
 
 export interface UserProfile {
   id: string
@@ -7,66 +6,47 @@ export interface UserProfile {
   phone?: string
   user_type?: string
   avatar_url?: string
+  bio?: string
+  profession?: string
   profile_location?: Record<string, any>
-  role_profile?: string
   created_at?: string
 }
 
-/**
- * Get the logged-in user's profile from Supabase
- * Must be called from Server Components or Server Actions
- */
+function mapProfile(profile: Record<string, any>): UserProfile {
+  return {
+    id: profile.id,
+    full_name: profile.full_name || 'User',
+    phone: profile.phone,
+    user_type: profile.user_type,
+    avatar_url: profile.avatar_url,
+    profession: profile.role_profile,
+    bio: profile.profile_location?.bio as string | undefined,
+    profile_location: profile.profile_location,
+    created_at: profile.created_at,
+  }
+}
+
 export async function getLoggedUserProfile(): Promise<UserProfile | null> {
   try {
     const supabase = await createServerClient()
 
-    // Get authenticated user
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser()
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    if (userError || !user) return null
 
-    if (userError || !user) {
-      console.error('No authenticated user:', userError?.message)
-      return null
-    }
-
-    // Fetch user profile from profiles table
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single()
 
-    if (profileError) {
-      console.error('Error fetching profile:', profileError.message)
-      return null
-    }
+    if (profileError || !profile) return null
 
-    if (!profile) {
-      console.warn('Profile not found for user:', user.id)
-      return null
-    }
-
-    return {
-      id: profile.id,
-      full_name: profile.full_name || 'User',
-      phone: profile.phone,
-      user_type: profile.user_type,
-      avatar_url: profile.avatar_url,
-      profile_location: profile.profile_location,
-      role_profile: profile.role_profile,
-      created_at: profile.created_at,
-    }
-  } catch (error) {
-    console.error('Unexpected error fetching user profile:', error)
+    return mapProfile(profile)
+  } catch {
     return null
   }
 }
 
-/**
- * Get a specific user's profile by ID (for viewing other profiles)
- */
 export async function getUserProfileById(userId: string): Promise<UserProfile | null> {
   try {
     const supabase = await createServerClient()
@@ -77,70 +57,69 @@ export async function getUserProfileById(userId: string): Promise<UserProfile | 
       .eq('id', userId)
       .single()
 
-    if (error) {
-      console.error('Error fetching profile:', error.message)
-      return null
-    }
+    if (error || !profile) return null
 
-    if (!profile) {
-      return null
-    }
-
-    return {
-      id: profile.id,
-      full_name: profile.full_name || 'User',
-      phone: profile.phone,
-      user_type: profile.user_type,
-      avatar_url: profile.avatar_url,
-      profile_location: profile.profile_location,
-      role_profile: profile.role_profile,
-      created_at: profile.created_at,
-    }
-  } catch (error) {
-    console.error('Unexpected error fetching user profile:', error)
+    return mapProfile(profile)
+  } catch {
     return null
   }
 }
 
-/**
- * Get user profile by username (from profile_location or email)
- */
 export async function getUserProfileByUsername(username: string): Promise<UserProfile | null> {
   try {
     const supabase = await createServerClient()
 
-    // Try to find by full_name or username in profile_location
     const { data: profiles, error } = await supabase
       .from('profiles')
       .select('*')
-      .or(
-        `full_name.ilike.%${username}%,profile_location->>'username'.ilike.%${username}%`
-      )
+      .or(`full_name.ilike.%${username}%,profile_location->>'username'.ilike.%${username}%`)
       .limit(1)
 
-    if (error) {
-      console.error('Error fetching profile:', error.message)
-      return null
-    }
+    if (error || !profiles || profiles.length === 0) return null
 
-    if (!profiles || profiles.length === 0) {
-      return null
-    }
-
-    const profile = profiles[0]
-
-    return {
-      id: profile.id,
-      full_name: profile.full_name || 'User',
-      phone: profile.phone,
-      user_type: profile.user_type,
-      avatar_url: profile.avatar_url,
-      profile_location: profile.profile_location,
-      role_profile: profile.role_profile,
-      created_at: profile.created_at,
-    }
-  } catch (error) {
-    console.error('Unexpected error fetching user profile:', error)
+    return mapProfile(profiles[0])
+  } catch {
     return null
+  }
+}
+
+export async function updateProfile(data: {
+  full_name?: string
+  profession?: string
+  bio?: string
+  avatar_url?: string
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createServerClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) return { success: false, error: 'Não autorizado' }
+
+    // Fetch current profile_location so we only merge bio, not overwrite other fields
+    const { data: current } = await supabase
+      .from('profiles')
+      .select('profile_location')
+      .eq('id', user.id)
+      .single()
+
+    const currentLocation: Record<string, any> = (current?.profile_location as Record<string, any>) || {}
+
+    const updates: Record<string, any> = {}
+    if (data.full_name !== undefined) updates.full_name = data.full_name
+    if (data.profession !== undefined) updates.role_profile = data.profession
+    if (data.avatar_url !== undefined) updates.avatar_url = data.avatar_url
+    if (data.bio !== undefined) {
+      updates.profile_location = { ...currentLocation, bio: data.bio }
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id)
+
+    if (error) return { success: false, error: error.message }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: 'Erro inesperado' }
   }
 }

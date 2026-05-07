@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import Image from "next/image";
+import { Avatar } from "@/components/Avatar";
 import { getSignals } from "@/lib/beauty-signals/scraper";
 import { BeautySignalCard } from "@/components/BeautySignalCard";
 import { CreatePostBox } from "@/components/CreatePostBox";
@@ -135,19 +135,13 @@ export default function CommunityPage() {
             className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-[#201f1f] transition-all group border-t border-white/5 pt-3"
           >
             <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#ff9156]/40 flex-shrink-0">
-              <Image
-                src={userProfile?.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop'}
-                alt={userProfile?.full_name || 'User'}
-                width={40}
-                height={40}
-                className="w-full h-full object-cover"
-              />
+              <Avatar name={userProfile?.full_name || 'User'} avatarUrl={userProfile?.avatar_url} textSize="text-xs" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-on-surface group-hover:text-[#ff9156] transition-colors truncate">
                 {userProfile?.full_name || 'Loading...'}
               </p>
-              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">{userProfile?.role_profile || 'User'}</p>
+              <p className="text-[10px] text-on-surface-variant/50 font-label uppercase tracking-widest">{userProfile?.profession || 'User'}</p>
             </div>
             <span className="material-symbols-outlined text-on-surface-variant/30 text-sm group-hover:text-[#ff9156]/60 transition-colors">
               chevron_right
