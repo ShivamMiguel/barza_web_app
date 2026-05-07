@@ -1,7 +1,6 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import type { PostWithUser } from '@/lib/supabase/posts'
 
 interface PostCardEditorialProps {
@@ -17,145 +16,137 @@ export function PostCardEditorial({
   onDelete,
   onLike,
 }: PostCardEditorialProps) {
-  const createdDate = new Date(post.created_at)
-  const timeAgo = getTimeAgo(createdDate)
+  const timeAgo = getTimeAgo(new Date(post.created_at))
   const isOwner = currentUserId === post.user_id
+
+  const lines = post.content.split('\n').filter(Boolean)
+  const title = lines[0] ?? ''
+  const body = lines.slice(1).join('\n')
+
+  const titleParts = title.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <span key={i} className="text-primary-container">
+          {part.slice(2, -2)}
+        </span>
+      )
+    }
+    return <span key={i}>{part}</span>
+  })
 
   const handleDelete = async () => {
     if (!confirm('Tem certeza que quer deletar este post?')) return
-
     try {
-      const res = await fetch(`/api/posts/${post.id}`, {
-        method: 'DELETE',
-      })
-
-      if (res.ok) {
-        onDelete?.(post.id)
-      } else {
-        alert('Erro ao deletar o post')
-      }
-    } catch (error) {
-      console.error('Error deleting post:', error)
+      const res = await fetch(`/api/posts/${post.id}`, { method: 'DELETE' })
+      if (res.ok) onDelete?.(post.id)
+      else alert('Erro ao deletar o post')
+    } catch {
       alert('Erro ao deletar o post')
     }
   }
 
   return (
-    <article className="relative group">
-      <div className="liquid-glass glow-shadow p-8 md:p-12 rounded-3xl overflow-hidden flex flex-col gap-10">
-        {/* User Meta Header */}
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="w-14 h-14 rounded-full overflow-hidden border border-primary/20">
-                <Image
-                  src={post.user?.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=56&h=56&fit=crop'}
-                  alt={post.user?.full_name || 'User'}
-                  width={56}
-                  height={56}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+    <article className="w-full liquid-obsidian-glass refractive-highlight glow-bloom rounded-xl overflow-hidden border border-[rgba(86,67,58,0.1)]">
+      {/* User Header */}
+      <header className="flex items-center justify-between p-6">
+        <div className="flex items-center gap-4">
+          <div className="relative w-12 h-12 rounded-full overflow-hidden border border-[rgba(255,145,86,0.2)] flex-shrink-0">
+            <Image
+              src={post.user?.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&fit=crop'}
+              alt={post.user?.full_name || 'User'}
+              width={48}
+              height={48}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span className="font-headline font-bold text-on-surface tracking-tight">
+                {post.user?.full_name || 'Anonymous'}
+              </span>
               {post.user?.role_profile && (
-                <div className="absolute -right-1 -bottom-1 bg-primary-container p-1 rounded-full border-2 border-surface-container-lowest flex items-center justify-center">
-                  <span
-                    className="material-symbols-outlined text-[10px] text-on-primary font-bold"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    verified
-                  </span>
-                </div>
+                <span className="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-label text-[0.625rem] font-bold uppercase tracking-widest">
+                  {post.user.role_profile}
+                </span>
               )}
             </div>
-            <div>
-              <h3 className="font-headline font-bold text-lg text-on-surface leading-tight">
-                {post.user?.full_name || 'Anonymous'}
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                {post.user?.role_profile && (
-                  <span className="px-2 py-0.5 rounded-full bg-secondary-container text-[10px] font-label font-bold tracking-[0.1em] uppercase text-on-secondary-container">
-                    {post.user.role_profile}
-                  </span>
-                )}
-                <span className="text-[10px] text-stone-500 font-label tracking-widest uppercase">
-                  • {timeAgo}
-                </span>
-              </div>
-            </div>
+            <span className="font-label text-[0.6875rem] text-on-surface-variant/60 tracking-wider uppercase">
+              {timeAgo}
+            </span>
           </div>
-          {isOwner && (
-            <div className="flex gap-2">
-              <button
-                onClick={handleDelete}
-                className="text-stone-500 hover:text-on-surface transition-colors p-2 hover:bg-surface-container/50 rounded-lg"
-                title="Deletar post"
-              >
-                <span className="material-symbols-outlined">delete</span>
-              </button>
-            </div>
-          )}
         </div>
+        <button
+          onClick={isOwner ? handleDelete : undefined}
+          className="text-on-surface-variant hover:text-primary-container transition-colors duration-300"
+          title={isOwner ? 'Deletar post' : undefined}
+        >
+          <span className="material-symbols-outlined">
+            {isOwner ? 'delete' : 'more_horiz'}
+          </span>
+        </button>
+      </header>
 
-        {/* Editorial Content */}
-        <div className="max-w-3xl">
-          {/* Extract first line as title if long, or use full content */}
-          <p className="text-3xl md:text-4xl lg:text-5xl font-headline font-bold text-on-surface editorial-text leading-tight">
-            {post.content.split('\n')[0]}
+      {/* Post Content */}
+      <div className="px-6 pb-8 space-y-4">
+        <h1 className="font-display text-2xl md:text-3xl font-extrabold text-on-surface leading-tight tracking-[-0.03em]">
+          {titleParts}
+        </h1>
+        {body && (
+          <p className="font-body text-base text-on-surface-variant leading-relaxed opacity-90">
+            {body}
           </p>
+        )}
+      </div>
 
-          {/* Show rest of content as description if multi-line */}
-          {post.content.includes('\n') && (
-            <p className="mt-6 text-stone-400 font-body text-lg md:text-xl leading-relaxed">
-              {post.content.split('\n').slice(1).join('\n')}
-            </p>
-          )}
-        </div>
-
-        {/* Post Interactions */}
-        <div className="flex items-center justify-between pt-4 border-t border-outline-variant/10">
-          <div className="flex items-center gap-8">
-            <button
-              onClick={() => onLike?.(post.id)}
-              className="flex items-center gap-2 text-stone-400 hover:text-primary transition-colors group"
+      {/* Interaction Footer */}
+      <footer className="px-6 py-5 bg-surface-container-high/40 border-t border-[rgba(86,67,58,0.1)] flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => onLike?.(post.id)}
+            className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all duration-300 group"
+          >
+            <span
+              className="material-symbols-outlined group-hover:scale-110 transition-transform"
+              style={{ fontVariationSettings: "'FILL' 1" }}
             >
-              <span className="material-symbols-outlined group-active:scale-125 transition-transform">
-                favorite
-              </span>
-              <span className="text-sm font-label font-semibold tracking-wider">
-                {post.likes_count > 0 ? post.likes_count : ''}
-              </span>
-            </button>
-            <button className="flex items-center gap-2 text-stone-400 hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined">chat_bubble_outline</span>
-              <span className="text-sm font-label font-semibold tracking-wider">
-                {post.comments_count > 0 ? post.comments_count : ''}
-              </span>
-            </button>
-            <button className="flex items-center gap-2 text-stone-400 hover:text-primary transition-colors group">
-              <span className="material-symbols-outlined">share</span>
-            </button>
-          </div>
-          <button className="flex items-center gap-2 text-stone-400 hover:text-on-surface transition-colors">
-            <span className="material-symbols-outlined">bookmark_border</span>
+              favorite
+            </span>
+            <span className="font-label text-xs font-semibold tracking-tighter">
+              {post.likes_count > 0 ? post.likes_count : '0'}
+            </span>
+          </button>
+          <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all duration-300 group">
+            <span className="material-symbols-outlined group-hover:scale-110 transition-transform">
+              chat_bubble
+            </span>
+            <span className="font-label text-xs font-semibold tracking-tighter">
+              {post.comments_count > 0 ? post.comments_count : '0'}
+            </span>
+          </button>
+          <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all duration-300 group">
+            <span className="material-symbols-outlined group-hover:scale-110 transition-transform">
+              share
+            </span>
           </button>
         </div>
-      </div>
+        <button className="text-on-surface-variant hover:text-primary-container transition-colors duration-300">
+          <span
+            className="material-symbols-outlined"
+            style={{ fontVariationSettings: "'FILL' 0" }}
+          >
+            bookmark
+          </span>
+        </button>
+      </footer>
     </article>
   )
 }
 
 function getTimeAgo(date: Date): string {
-  const now = new Date()
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
   if (seconds < 60) return 'agora'
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d`
-
-  return date.toLocaleDateString('pt-AO', {
-    year: '2-digit',
-    month: 'short',
-    day: 'numeric',
-  })
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`
+  return date.toLocaleDateString('pt-AO', { year: '2-digit', month: 'short', day: 'numeric' })
 }

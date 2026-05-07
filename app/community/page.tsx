@@ -248,11 +248,7 @@ export default function CommunityPage() {
                     Agendar Agora
                   </button>
                   <button className="flex-1 bg-surface-variant/80 backdrop-blur-md text-on-surface py-3 rounded-xl font-bold border-t border-white/10 active:scale-95 transition-all">
-          {/* Create Post Box */}
-          <CreatePostBox profile={userProfile || undefined} />
-
-          {/* Posts Feed */}
-          <PostsFeed currentUserId={userProfile?.id} />
+                    Ver Perfil
                   </button>
                 </div>
               </div>
@@ -341,6 +337,9 @@ export default function CommunityPage() {
               </div>
             </div>
           </article>
+
+          {/* Posts Feed */}
+          <PostsFeed currentUserId={userProfile?.id} />
 
         </div>
       </main>

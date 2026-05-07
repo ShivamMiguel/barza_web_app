@@ -137,6 +137,19 @@
     box-shadow: 0 0 40px 0 rgba(255, 255, 255, 0.04);
   }
 
+  .liquid-obsidian-glass {
+    background: linear-gradient(135deg, rgba(42, 42, 42, 0.7) 0%, rgba(32, 31, 31, 0.8) 100%);
+    backdrop-filter: blur(20px);
+  }
+
+  .refractive-highlight {
+    border-top: 1px solid rgba(255, 145, 86, 0.2);
+  }
+
+  .glow-bloom {
+    box-shadow: 0 40px 60px rgba(255, 255, 255, 0.04);
+  }
+
   .editorial-text {
     line-height: 1.1;
     letter-spacing: -0.03em;

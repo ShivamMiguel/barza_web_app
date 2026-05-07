@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('posts')
-      .select('*', { count: 'exact' })
+      .select('*, user:profiles(id, full_name, avatar_url, role_profile)', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
