@@ -107,9 +107,30 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    let result: any[] = posts || []
+
+    // Attach liked_by_me for the authenticated user, if any
+    const authResult = await supabase.auth.getUser()
+    const userId = authResult?.data?.user?.id ?? null
+
+    if (userId && result.length > 0) {
+      try {
+        const { data: likes } = await supabase
+          .from('post_likes')
+          .select('post_id')
+          .eq('user_id', userId)
+          .in('post_id', result.map((p) => p.id))
+
+        const likedSet = new Set((likes ?? []).map((l: { post_id: string }) => l.post_id))
+        result = result.map((p) => ({ ...p, liked_by_me: likedSet.has(p.id) }))
+      } catch {
+        // No-op if post_likes is unavailable (e.g. table missing); fall back to default state
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      data: posts || [],
+      data: result,
       pagination: {
         limit,
         offset,

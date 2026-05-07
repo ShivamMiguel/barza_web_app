@@ -1,13 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import { Avatar } from '@/components/Avatar'
+import { CommentsSection } from '@/components/CommentsSection'
 import type { PostWithUser } from '@/lib/supabase/posts'
 
 interface PostCardEditorialProps {
   post: PostWithUser
   currentUserId?: string
   onDelete?: (postId: string) => void
-  onLike?: (postId: string) => void
+  onLike?: (postId: string, liked: boolean, likesCount: number) => void
 }
 
 export function PostCardEditorial({
@@ -18,6 +20,38 @@ export function PostCardEditorial({
 }: PostCardEditorialProps) {
   const timeAgo = getTimeAgo(new Date(post.created_at))
   const isOwner = currentUserId === post.user_id
+
+  const [liked, setLiked] = useState<boolean>(post.liked_by_me ?? false)
+  const [likesCount, setLikesCount] = useState<number>(post.likes_count)
+  const [isToggling, setIsToggling] = useState(false)
+  const [commentsOpen, setCommentsOpen] = useState(false)
+  const [commentsCount, setCommentsCount] = useState<number>(post.comments_count)
+
+  const handleLike = async () => {
+    if (isToggling) return
+
+    const wasLiked = liked
+    const previousCount = likesCount
+    const optimisticCount = Math.max(0, previousCount + (wasLiked ? -1 : 1))
+
+    setLiked(!wasLiked)
+    setLikesCount(optimisticCount)
+    setIsToggling(true)
+
+    try {
+      const res = await fetch(`/api/posts/${post.id}/like`, { method: 'POST' })
+      if (!res.ok) throw new Error(`Status ${res.status}`)
+      const data = await res.json()
+      setLiked(!!data.liked)
+      setLikesCount(typeof data.likes_count === 'number' ? data.likes_count : optimisticCount)
+      onLike?.(post.id, !!data.liked, data.likes_count ?? optimisticCount)
+    } catch {
+      setLiked(wasLiked)
+      setLikesCount(previousCount)
+    } finally {
+      setIsToggling(false)
+    }
+  }
 
   const lines = post.content.split('\n').filter(Boolean)
   const title = lines[0] ?? ''
@@ -96,25 +130,40 @@ export function PostCardEditorial({
       <footer className="px-6 py-5 bg-surface-container-high/40 border-t border-[rgba(86,67,58,0.1)] flex items-center justify-between">
         <div className="flex items-center gap-6">
           <button
-            onClick={() => onLike?.(post.id)}
-            className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all duration-300 group"
+            onClick={handleLike}
+            disabled={isToggling}
+            aria-pressed={liked}
+            aria-label={liked ? 'Remover like' : 'Curtir post'}
+            className={`flex items-center gap-2 transition-all duration-300 group disabled:cursor-wait ${
+              liked ? 'text-[#ff4757]' : 'text-on-surface-variant hover:text-primary-container'
+            }`}
           >
             <span
               className="material-symbols-outlined group-hover:scale-110 transition-transform"
-              style={{ fontVariationSettings: "'FILL' 1" }}
+              style={{ fontVariationSettings: liked ? "'FILL' 1" : "'FILL' 0" }}
             >
               favorite
             </span>
             <span className="font-label text-xs font-semibold tracking-tighter">
-              {post.likes_count > 0 ? post.likes_count : '0'}
+              {likesCount}
             </span>
           </button>
-          <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all duration-300 group">
-            <span className="material-symbols-outlined group-hover:scale-110 transition-transform">
+          <button
+            onClick={() => setCommentsOpen(o => !o)}
+            aria-pressed={commentsOpen}
+            aria-label={commentsOpen ? 'Fechar comentários' : 'Abrir comentários'}
+            className={`flex items-center gap-2 transition-all duration-300 group ${
+              commentsOpen ? 'text-primary-container' : 'text-on-surface-variant hover:text-primary-container'
+            }`}
+          >
+            <span
+              className="material-symbols-outlined group-hover:scale-110 transition-transform"
+              style={{ fontVariationSettings: commentsOpen ? "'FILL' 1" : "'FILL' 0" }}
+            >
               chat_bubble
             </span>
             <span className="font-label text-xs font-semibold tracking-tighter">
-              {post.comments_count > 0 ? post.comments_count : '0'}
+              {commentsCount}
             </span>
           </button>
           <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all duration-300 group">
@@ -132,6 +181,14 @@ export function PostCardEditorial({
           </span>
         </button>
       </footer>
+
+      {commentsOpen && (
+        <CommentsSection
+          postId={post.id}
+          currentUserId={currentUserId}
+          onCountChange={setCommentsCount}
+        />
+      )}
     </article>
   )
 }

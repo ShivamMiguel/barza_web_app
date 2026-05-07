@@ -5,6 +5,7 @@ import { Avatar } from "@/components/Avatar";
 import { BeautySignalCard } from "@/components/BeautySignalCard";
 import { ProfessionalSpaceCard } from "@/components/ProfessionalSpaceCard";
 import { PostCardEditorial } from "@/components/PostCardEditorial";
+import { CreatePostBox } from "@/components/CreatePostBox";
 
 import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/community/Sidebar";
@@ -221,7 +222,15 @@ export default function CommunityPage() {
         </section>
 
         {/* Feed Section */}
-        <div className="space-y-12 max-w-3xl mx-auto">
+        <div className="space-y-8 max-w-3xl mx-auto">
+          {/* Inline Composer */}
+          <CreatePostBox
+            profile={userProfile}
+            onPostCreated={(post) =>
+              setFeedItems(prev => [{ kind: 'post', data: post }, ...prev])
+            }
+          />
+
           {isLoading && feedItems.length === 0 && (
             <div className="flex justify-center items-center py-16">
               <span className="material-symbols-outlined text-primary-container text-5xl animate-spin">refresh</span>
