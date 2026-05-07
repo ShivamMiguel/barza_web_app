@@ -60,7 +60,7 @@ export function PostCardEditorial({
               </span>
               {post.user?.profession && (
                 <span className="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-label text-[0.625rem] font-bold uppercase tracking-widest">
-                  {post.user.role_profile}
+                  {post.user.profession}
                 </span>
               )}
             </div>
