@@ -200,7 +200,18 @@ export function BeautySignalCard({ signal }: { signal: ExternalSignal }) {
         title={signal.title}
         description={signal.summary}
         imageUrl={signal.image ?? undefined}
-        shareUrl={watchUrl}
+        shareUrl={
+          typeof window !== 'undefined'
+            ? `${window.location.origin}/share/signal?${new URLSearchParams({
+                title: signal.title,
+                description: signal.summary.slice(0, 200),
+                image: signal.image ?? '',
+                source: signal.source,
+                url: watchUrl,
+                category: categoryLabel(signal.category, signal.type),
+              }).toString()}`
+            : watchUrl
+        }
         category={categoryLabel(signal.category, signal.type)}
       />
     </article>
