@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { CommentsSection } from '@/components/CommentsSection'
+import { ShareModal } from '@/components/ShareModal'
 import type { PostWithUser } from '@/lib/supabase/posts'
 
 interface PostCardEditorialProps {
@@ -26,6 +27,7 @@ export function PostCardEditorial({
   const [isToggling, setIsToggling] = useState(false)
   const [commentsOpen, setCommentsOpen] = useState(false)
   const [commentsCount, setCommentsCount] = useState<number>(post.comments_count)
+  const [shareOpen, setShareOpen] = useState(false)
 
   const handleLike = async () => {
     if (isToggling) return
@@ -166,7 +168,11 @@ export function PostCardEditorial({
               {commentsCount}
             </span>
           </button>
-          <button className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all duration-300 group">
+          <button
+            onClick={() => setShareOpen(true)}
+            className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-all duration-300 group"
+            aria-label="Partilhar post"
+          >
             <span className="material-symbols-outlined group-hover:scale-110 transition-transform">
               share
             </span>
@@ -189,6 +195,17 @@ export function PostCardEditorial({
           onCountChange={setCommentsCount}
         />
       )}
+
+      <ShareModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        title={title.replace(/\*\*/g, '')}
+        description={body || undefined}
+        shareUrl={typeof window !== 'undefined' ? `${window.location.origin}/share/post/${post.id}` : ''}
+        authorName={post.user?.full_name ?? undefined}
+        authorAvatarUrl={post.user?.avatar_url ?? undefined}
+        category={post.user?.profession ?? undefined}
+      />
     </article>
   )
 }
