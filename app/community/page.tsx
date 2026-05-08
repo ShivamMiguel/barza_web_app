@@ -13,6 +13,7 @@ import type { UserProfile } from "@/lib/supabase/profile";
 import type { ServiceWithSpace } from "@/lib/supabase/professional-spaces";
 import type { PostWithUser } from "@/lib/supabase/posts";
 import type { ExternalSignal } from "@/lib/beauty-signals/external";
+import type { TrendingProfessional } from "@/app/api/trending-professionals/route";
 
 type FeedItem =
   | { kind: 'service'; data: ServiceWithSpace }
@@ -39,19 +40,26 @@ function buildFeed(
   return result
 }
 
+const POSTS_PER_PAGE = 10
+
 export default function CommunityPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [feedItems, setFeedItems] = useState<FeedItem[]>([])
+  const [postOffset, setPostOffset] = useState(POSTS_PER_PAGE)
+  const [hasMorePosts, setHasMorePosts] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [trendingPros, setTrendingPros] = useState<TrendingProfessional[]>([])
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [profileRes, spacesRes, postsRes, signalsRes] = await Promise.all([
+        const [profileRes, spacesRes, postsRes, signalsRes, trendingRes] = await Promise.all([
           fetch('/api/profile'),
           fetch('/api/professional-spaces?limit=20'),
-          fetch('/api/posts?limit=20'),
+          fetch(`/api/posts?limit=${POSTS_PER_PAGE}`),
           fetch('/api/beauty-signals'),
+          fetch('/api/trending-professionals?limit=3'),
         ])
 
         if (profileRes.ok) {
@@ -64,6 +72,11 @@ export default function CommunityPage() {
         const signals: ExternalSignal[] = signalsRes.ok ? await signalsRes.json() : []
 
         setFeedItems(buildFeed(services, posts, signals))
+        setHasMorePosts(posts.length === POSTS_PER_PAGE)
+
+        if (trendingRes.ok) {
+          setTrendingPros(await trendingRes.json())
+        }
       } catch (error) {
         console.error("Error loading data:", error)
       } finally {
@@ -72,6 +85,28 @@ export default function CommunityPage() {
     }
     loadData()
   }, [])
+
+  async function loadMorePosts() {
+    try {
+      setIsLoadingMore(true)
+      const res = await fetch(`/api/posts?limit=${POSTS_PER_PAGE}&offset=${postOffset}`)
+      if (!res.ok) return
+
+      const data = await res.json()
+      const newPosts: PostWithUser[] = data.data ?? []
+
+      setFeedItems(prev => [
+        ...prev,
+        ...newPosts.map(p => ({ kind: 'post' as const, data: p })),
+      ])
+      setPostOffset(prev => prev + POSTS_PER_PAGE)
+      setHasMorePosts(newPosts.length === POSTS_PER_PAGE)
+    } catch (error) {
+      console.error("Error loading more posts:", error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
 
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex flex-col lg:flex-row">
@@ -253,6 +288,28 @@ export default function CommunityPage() {
             }
             return <BeautySignalCard key={`signal-${idx}-${item.data.url}`} signal={item.data} />
           })}
+
+          {hasMorePosts && (
+            <div className="flex justify-center pt-2 pb-4">
+              <button
+                onClick={loadMorePosts}
+                disabled={isLoadingMore}
+                className="flex items-center gap-2 px-8 py-3 rounded-full border border-[#ff9156]/30 text-[#ff9156] font-label text-sm uppercase tracking-widest hover:bg-[#ff9156]/10 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <span className="material-symbols-outlined text-base animate-spin">refresh</span>
+                    Carregando...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-base">expand_more</span>
+                    Ver mais
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </main>
 
@@ -270,51 +327,50 @@ export default function CommunityPage() {
               type="text"
             />
           </div>
-          <div className="flex gap-2 p-1 bg-surface-container-low rounded-xl">
-            <button className="flex-1 py-2 text-[10px] font-label uppercase font-bold tracking-widest bg-surface-variant rounded-lg">
-              Profissionais
-            </button>
-            <button className="flex-1 py-2 text-[10px] font-label uppercase font-bold tracking-widest opacity-40 hover:opacity-100 transition-opacity">
-              Conteúdo
-            </button>
-            <button className="flex-1 py-2 text-[10px] font-label uppercase font-bold tracking-widest opacity-40 hover:opacity-100 transition-opacity">
-              Produtos
-            </button>
-          </div>
         </div>
 
         {/* Trending Professionals */}
         <section className="mb-10">
           <h3 className="text-[10px] font-label uppercase tracking-[0.2em] opacity-40 mb-6">Trending Professionals</h3>
           <div className="space-y-6">
-            {[
-              {
-                name: "Marco Estilo",
-                role: "Men's Grooming Specialist",
-                trend: "+4.2%",
-                img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC9HfCoTnb8KFEjf3Kf9AY1utalCitwvKuP4GSIAG0rMtzQ6ob1d_chlMDuPM23jwLfaO4iT3hP-UV5pVaHlTdWjd17vwk_AW71T6siQOYvYY3cB93zkrSTARC58qvmPM-l2HqKXP4qrQ-s8vAmsRhjpKLv8K7TQMxrFp7eR7s7ggD0ngIXSIspHB4S2qPq0F2wptO3LRoU-bQMXnI36M_3BgZ4R7aRUUHMnu7gtGHs8cRqRELfJLEQx7SSgU_cDMPD3k-36l5EJ3A",
-                handle: "marco_estilo",
-              },
-              {
-                name: "Ana Nails VIP",
-                role: "High-End Nail Artistry",
-                trend: "+3.8%",
-                img: "https://lh3.googleusercontent.com/aida-public/AB6AXuB52nVhRZzNl4e-qSuk_B7ApmrDEbxPfmW1yvGwh3iWS8ODd9LOE1FnUgLO4ltSw85Df70UY5Won2oG4Z3ducQlCxoVjbaZtFgGsJtFoNY59CgZ4wZFzYTuxVTy5VnqqkqUIDamkOW92jrUolCR5wb0_CphL-9mSAL19WGtJ_chnAM-JYfpYN0EWnYCN3pF1vhanMkMkKsQ03yHJ7jhC-VcMH51_4zAt-ScwC1PSEms7-OZECbxIhiV-Yhc-lv9WRWe_-ojnChaXrY",
-                handle: "ana_nails_vip",
-              },
-            ].map((pro, idx) => (
-              <Link
-                key={idx}
-                href={`/profile/${pro.handle}`}
-                className="flex items-center gap-4 group cursor-pointer hover:opacity-80 transition-opacity"
+            {trendingPros.length === 0 && !isLoading && (
+              <p className="text-[10px] text-on-surface-variant/40 font-label uppercase tracking-widest">
+                Nenhuma avaliação ainda
+              </p>
+            )}
+            {trendingPros.map((pro) => (
+              <div
+                key={pro.space_id}
+                className="flex items-center gap-4 group"
               >
-                <img src={pro.img} alt={pro.name} className="w-12 h-12 rounded-2xl object-cover" />
-                <div className="flex-1">
-                  <p className="text-xs font-bold group-hover:text-primary-container transition-colors">{pro.name}</p>
-                  <p className="text-[10px] text-on-surface-variant opacity-60">{pro.role}</p>
+                {pro.logo ? (
+                  <img
+                    src={pro.logo}
+                    alt={pro.space_name}
+                    className="w-12 h-12 rounded-2xl object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-2xl volcanic-gradient flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-sm">
+                      {pro.space_name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold truncate">{pro.space_name}</p>
+                  <p className="text-[10px] text-on-surface-variant opacity-60 truncate">
+                    {pro.top_category ?? 'Profissional'}
+                  </p>
                 </div>
-                <span className="text-[10px] font-bold text-primary-container">{pro.trend}</span>
-              </Link>
+                <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                  <span className="text-[10px] font-bold text-primary-container">
+                    {pro.avg_stars.toFixed(1)}★
+                  </span>
+                  <span className="text-[9px] text-on-surface-variant/40">
+                    {pro.rating_count} aval.
+                  </span>
+                </div>
+              </div>
             ))}
           </div>
         </section>
