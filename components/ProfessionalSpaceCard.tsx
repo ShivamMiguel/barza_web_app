@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+import { ShareModal } from '@/components/ShareModal'
 import type { ServiceWithSpace } from '@/lib/supabase/professional-spaces'
 
 const FALLBACK_IMAGE = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCa5P37XvWjwJAJA0V0T62PA1pea9eXalF7n38KxH8ZIA5hkkdtrTLYXVKKbrc3oytmrHyH-yY2j43sTUa4jcmlzluraW8SUtxm665tpm90OR9Fp0bmDIKZlV7l5AIn7f0W9Wu0NiVnkJuphTgxK4KwovVxgq9m2GrVHEU1yxFWheaEhsBiGDaKk9J9uPuncViKVogffveiWiJOExKhqVNnz7l08IIyrP4akh3NMkpFvhaMsmEarc6km-fe53zzcWqlm2wxzbk24DA'
@@ -21,6 +23,7 @@ function getLocation(location: Record<string, any> | null | undefined): string {
 export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }) {
   const space = service.professional_space
   const location = getLocation(space.location_space)
+  const [shareOpen, setShareOpen] = useState(false)
 
   return (
     <article className="bg-surface-container rounded-3xl overflow-hidden shadow-[0_40px_60px_-15px_rgba(255,255,255,0.04)] border-t border-primary/20">
@@ -81,12 +84,26 @@ export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }
           <button className="flex items-center gap-2 hover:text-primary-container transition-colors text-on-surface/60">
             <span className="material-symbols-outlined">mode_comment</span>
           </button>
-          <button className="flex items-center gap-2 hover:text-primary-container transition-colors text-on-surface/60">
+          <button
+            onClick={() => setShareOpen(true)}
+            className="flex items-center gap-2 hover:text-primary-container transition-colors text-on-surface/60"
+            aria-label="Partilhar serviço"
+          >
             <span className="material-symbols-outlined">share</span>
           </button>
         </div>
         <button className="material-symbols-outlined hover:text-primary-container transition-colors text-on-surface/60">bookmark</button>
       </div>
+
+      <ShareModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        title={`${service.service_name} — ${space.space_name}`}
+        description={service.description ?? `${service.duration_minutes}min · ${service.price.toLocaleString('pt-AO')} Kz · ${location}`}
+        imageUrl={space.logo ?? undefined}
+        shareUrl={typeof window !== 'undefined' ? `${window.location.origin}/community` : ''}
+        category={service.category}
+      />
     </article>
   )
 }

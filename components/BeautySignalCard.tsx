@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+import { ShareModal } from '@/components/ShareModal'
 import type { ExternalSignal } from '@/lib/beauty-signals/external'
 
 function signalStrength(title: string): number {
@@ -50,6 +52,7 @@ export function BeautySignalCard({ signal }: { signal: ExternalSignal }) {
   const fallbackBg = FALLBACK_BG[signal.category] ?? 'from-[#0e0e0e] via-[#141414] to-[#1a1a1a]'
   const embedUrl = isVideo ? getYouTubeEmbedUrl(signal.url) : null
   const watchUrl = isVideo ? getYouTubeWatchUrl(signal.url) : signal.url
+  const [shareOpen, setShareOpen] = useState(false)
 
   return (
     <article className={`relative w-full group transition-transform duration-500 ${embedUrl ? '' : 'cursor-pointer hover:scale-[1.005]'}`}>
@@ -162,9 +165,18 @@ export function BeautySignalCard({ signal }: { signal: ExternalSignal }) {
 
           {/* Footer */}
           <div className="pt-5 border-t border-[rgba(86,67,58,0.1)] flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
-              <span className="font-label text-[0.625rem] text-on-surface-variant uppercase tracking-widest">Live Signal</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
+                <span className="font-label text-[0.625rem] text-on-surface-variant uppercase tracking-widest">Live Signal</span>
+              </div>
+              <button
+                onClick={() => setShareOpen(true)}
+                aria-label="Partilhar"
+                className="text-on-surface-variant hover:text-primary-container transition-colors duration-300"
+              >
+                <span className="material-symbols-outlined text-lg">share</span>
+              </button>
             </div>
             <a
               href={watchUrl}
@@ -181,6 +193,16 @@ export function BeautySignalCard({ signal }: { signal: ExternalSignal }) {
         {/* Corner glow */}
         <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary-container/10 blur-[60px] pointer-events-none" />
       </div>
+
+      <ShareModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        title={signal.title}
+        description={signal.summary}
+        imageUrl={signal.image ?? undefined}
+        shareUrl={watchUrl}
+        category={categoryLabel(signal.category, signal.type)}
+      />
     </article>
   )
 }
