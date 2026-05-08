@@ -126,6 +126,16 @@ export function PostCardEditorial({
             {body}
           </p>
         )}
+        {post.image_url && (
+          <div className="relative rounded-2xl overflow-hidden border border-[rgba(255,145,86,0.15)] bg-black/20">
+            <img
+              src={post.image_url}
+              alt=""
+              className="w-full max-h-[600px] object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
       </div>
 
       {/* Interaction Footer */}
