@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { EmojiPicker } from '@/components/EmojiPicker'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 
 interface CommentUser {
   id: string
@@ -251,9 +252,7 @@ function CommentItem({
             </span>
             {isOwner && (
               <button
-                onClick={() => {
-                  if (confirm('Apagar este comentário?')) onDelete(comment.id)
-                }}
+                onClick={() => onDelete(comment.id)}
                 className="text-on-surface-variant/40 hover:text-error transition-colors flex-shrink-0"
                 aria-label="Apagar"
                 title="Apagar"
@@ -335,6 +334,9 @@ function CommentItem({
 export function CommentsSection({ postId, currentUserId, onCountChange }: SectionProps) {
   const [comments, setComments] = useState<Comment[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [isDeletingComment, setIsDeletingComment] = useState(false)
+  const [deleteCommentError, setDeleteCommentError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -378,19 +380,30 @@ export function CommentsSection({ postId, currentUserId, onCountChange }: Sectio
     onCountChange?.(count)
   }
 
-  async function handleDelete(commentId: string) {
+  function requestDelete(commentId: string) {
+    setDeleteCommentError(null)
+    setPendingDeleteId(commentId)
+  }
+
+  async function confirmDelete() {
+    if (!pendingDeleteId) return
+    setIsDeletingComment(true)
+    setDeleteCommentError(null)
     try {
-      const res = await fetch(`/api/posts/${postId}/comments/${commentId}`, { method: 'DELETE' })
+      const res = await fetch(`/api/posts/${postId}/comments/${pendingDeleteId}`, { method: 'DELETE' })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        alert(data.error ?? 'Erro ao apagar')
+        setDeleteCommentError(data.error ?? 'Erro ao apagar o comentário.')
         return
       }
       const data = await res.json()
-      setComments(prev => prev.filter(c => c.id !== commentId && c.parent_id !== commentId))
+      setComments(prev => prev.filter(c => c.id !== pendingDeleteId && c.parent_id !== pendingDeleteId))
       onCountChange?.(data.comments_count)
+      setPendingDeleteId(null)
     } catch {
-      alert('Erro de conexão')
+      setDeleteCommentError('Erro de conexão. Tenta novamente.')
+    } finally {
+      setIsDeletingComment(false)
     }
   }
 
@@ -415,7 +428,7 @@ export function CommentsSection({ postId, currentUserId, onCountChange }: Sectio
               postId={postId}
               currentUserId={currentUserId}
               onReply={handleNewComment}
-              onDelete={handleDelete}
+              onDelete={requestDelete}
             />
           ))
         )}
@@ -431,6 +444,20 @@ export function CommentsSection({ postId, currentUserId, onCountChange }: Sectio
           />
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={pendingDeleteId !== null}
+        onClose={() => !isDeletingComment && setPendingDeleteId(null)}
+        onConfirm={confirmDelete}
+        title="Apagar comentário?"
+        message="Esta acção não pode ser desfeita. As respostas a este comentário também serão removidas."
+        confirmLabel="Apagar"
+        cancelLabel="Cancelar"
+        variant="danger"
+        icon="delete"
+        isLoading={isDeletingComment}
+        error={deleteCommentError}
+      />
     </section>
   )
 }

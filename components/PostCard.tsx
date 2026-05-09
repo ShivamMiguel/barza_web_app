@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { EditPostModal } from '@/components/EditPostModal'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 
 interface Post {
   id: string
@@ -43,6 +44,8 @@ export function PostCard({
   const [isDeleted, setIsDeleted] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [currentPost, setCurrentPost] = useState(post)
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const isOwner = currentUserId === post.user_id
   const createdTime = formatDistanceToNow(new Date(post.created_at), {
@@ -50,10 +53,14 @@ export function PostCard({
     locale: ptBR,
   })
 
-  const handleDelete = async () => {
-    if (!confirm('Tem certeza que quer deletar este post?')) return
+  const requestDelete = () => {
+    setDeleteError(null)
+    setConfirmDeleteOpen(true)
+  }
 
+  const handleDelete = async () => {
     setIsDeleting(true)
+    setDeleteError(null)
     try {
       const res = await fetch(`/api/posts/${post.id}`, {
         method: 'DELETE',
@@ -61,13 +68,15 @@ export function PostCard({
 
       if (res.ok) {
         setIsDeleted(true)
+        setConfirmDeleteOpen(false)
         onDelete?.(post.id)
       } else {
-        alert('Erro ao deletar o post')
+        const data = await res.json().catch(() => ({}))
+        setDeleteError(data.error ?? 'Erro ao eliminar o post.')
       }
     } catch (error) {
       console.error('Error deleting post:', error)
-      alert('Erro ao deletar o post')
+      setDeleteError('Erro de conexão. Tenta novamente.')
     } finally {
       setIsDeleting(false)
     }
@@ -123,11 +132,11 @@ export function PostCard({
                 <span className="material-symbols-outlined">edit</span>
               </button>
               <button
-                onClick={handleDelete}
+                onClick={requestDelete}
                 disabled={isDeleting}
-                className="p-2 hover:bg-error/10 rounded-lg transition-colors 
+                className="p-2 hover:bg-error/10 rounded-lg transition-colors
                          text-on-surface/60 hover:text-error disabled:opacity-50"
-                title="Deletar post"
+                title="Eliminar post"
               >
                 <span className="material-symbols-outlined">delete</span>
               </button>
@@ -183,6 +192,20 @@ export function PostCard({
         post={currentPost}
         onClose={() => setIsEditOpen(false)}
         onPostUpdated={handlePostUpdated}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmDeleteOpen}
+        onClose={() => !isDeleting && setConfirmDeleteOpen(false)}
+        onConfirm={handleDelete}
+        title="Eliminar post?"
+        message="Esta acção não pode ser desfeita. O post e todos os comentários serão removidos permanentemente."
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        variant="danger"
+        icon="delete"
+        isLoading={isDeleting}
+        error={deleteError}
       />
     </>
   )
