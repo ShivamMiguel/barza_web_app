@@ -84,6 +84,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100)
     const offset = Math.max(parseInt(searchParams.get('offset') || '0'), 0)
     const filterUserId = searchParams.get('user_id')
+    const hashtag = searchParams.get('hashtag')?.replace(/^#/, '').toLowerCase().trim()
 
     const supabase = await createClient()
 
@@ -95,6 +96,10 @@ export async function GET(request: NextRequest) {
 
     if (filterUserId) {
       query = query.eq('user_id', filterUserId)
+    }
+
+    if (hashtag && /^[\p{L}\p{N}_]+$/u.test(hashtag)) {
+      query = query.ilike('content', `%#${hashtag}%`)
     }
 
     const { data: posts, count, error } = await query
