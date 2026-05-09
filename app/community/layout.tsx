@@ -277,29 +277,44 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
         </aside>
 
         {/* Mobile Bottom Nav */}
-        <footer className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-20 bg-[#0e0e0e]/90 backdrop-blur-2xl border-t border-[#ff9156]/10 shadow-[0_-10px_40px_rgba(255,145,86,0.05)]">
-          <Link
-            href="/community"
-            className={`flex flex-col items-center justify-center ${pathname === '/community' ? 'text-[#ff9156] bg-[#ff9156]/10 rounded-xl px-4 py-1' : 'text-on-surface/40 hover:text-on-surface/70 active:scale-90 duration-200 transition-colors'}`}
-          >
-            <span className="material-symbols-outlined" style={pathname === '/community' ? { fontVariationSettings: "'FILL' 1" } : {}}>dynamic_feed</span>
-            <span className="font-label text-[10px] uppercase tracking-[0.1em] font-semibold">Feed</span>
-          </Link>
-          <a href="#" className="flex flex-col items-center justify-center text-on-surface/40 hover:text-on-surface/70 active:scale-90 duration-200 transition-colors">
-            <span className="material-symbols-outlined">event</span>
-            <span className="font-label text-[10px] uppercase tracking-[0.1em] font-semibold">Agenda</span>
-          </a>
-          <a href="#" className="flex flex-col items-center justify-center text-on-surface/40 hover:text-on-surface/70 active:scale-90 duration-200 transition-colors">
-            <span className="material-symbols-outlined">local_mall</span>
-            <span className="font-label text-[10px] uppercase tracking-[0.1em] font-semibold">Shop</span>
-          </a>
-          <Link
-            href="/community/profile"
-            className={`flex flex-col items-center justify-center ${pathname === '/community/profile' ? 'text-[#ff9156] bg-[#ff9156]/10 rounded-xl px-4 py-1' : 'text-on-surface/40 hover:text-on-surface/70 active:scale-90 duration-200 transition-colors'}`}
-          >
-            <span className="material-symbols-outlined">person</span>
-            <span className="font-label text-[10px] uppercase tracking-[0.1em] font-semibold">Perfil</span>
-          </Link>
+        <footer className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 sm:px-4 h-20 bg-[#0e0e0e]/90 backdrop-blur-2xl border-t border-[#ff9156]/10 shadow-[0_-10px_40px_rgba(255,145,86,0.05)]">
+          {[
+            { href: '/community', icon: 'dynamic_feed', label: 'Feed', exact: true, asLink: true },
+            { href: '/community/market-insights', icon: 'insights', label: 'Insights', exact: true, asLink: true },
+            { href: '#', icon: 'event', label: 'Agenda', exact: true, asLink: false },
+            { href: '#', icon: 'local_mall', label: 'Shop', exact: true, asLink: false },
+            { href: '/community/profile', icon: 'person', label: 'Perfil', exact: true, asLink: true },
+          ].map(item => {
+            const active = item.asLink && (item.exact ? pathname === item.href : pathname.startsWith(item.href))
+            const baseCls = 'flex flex-col items-center justify-center min-w-0 flex-1 max-w-[80px]'
+            const stateCls = active
+              ? 'text-[#ff9156] bg-[#ff9156]/10 rounded-xl px-2 py-1'
+              : 'text-on-surface/40 hover:text-on-surface/70 active:scale-90 duration-200 transition-colors'
+            const Icon = (
+              <span
+                className="material-symbols-outlined text-[22px]"
+                style={active ? { fontVariationSettings: "'FILL' 1" } : {}}
+              >
+                {item.icon}
+              </span>
+            )
+            const Label = (
+              <span className="font-label text-[9px] sm:text-[10px] uppercase tracking-[0.1em] font-semibold mt-0.5 truncate max-w-full">
+                {item.label}
+              </span>
+            )
+            return item.asLink ? (
+              <Link key={item.label} href={item.href} className={`${baseCls} ${stateCls}`}>
+                {Icon}
+                {Label}
+              </Link>
+            ) : (
+              <a key={item.label} href={item.href} className={`${baseCls} ${stateCls}`}>
+                {Icon}
+                {Label}
+              </a>
+            )
+          })}
         </footer>
 
       </div>
