@@ -110,24 +110,24 @@ export default function MarketInsightsPage() {
   const hasMarketData = zones.length > 0 || pros.length > 0 || salons.length > 0 || hours.length > 0
 
   return (
-    <div className="relative p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 pb-24 lg:pb-8 text-white">
+    <div className="relative p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 pb-24 lg:pb-8 text-white overflow-x-hidden">
       {/* Decorative glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] pointer-events-none -z-0"
+      <div className="absolute top-0 right-0 w-[60vw] max-w-[500px] aspect-square pointer-events-none -z-0"
         style={{ background: 'radial-gradient(circle at top right, rgba(255,145,86,0.06) 0%, transparent 60%)' }} />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] pointer-events-none -z-0"
+      <div className="absolute bottom-0 left-0 w-[55vw] max-w-[400px] aspect-square pointer-events-none -z-0"
         style={{ background: 'radial-gradient(circle at bottom left, rgba(255,71,87,0.04) 0%, transparent 60%)' }} />
 
       <div className="relative max-w-5xl mx-auto">
 
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-10">
-          <div>
-            <h2 className="text-2xl sm:text-3xl lg:text-[3.5rem] font-headline font-extrabold tracking-tighter leading-none mb-2">
+        <div className="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-6 sm:mb-10">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-2xl sm:text-3xl lg:text-[3.5rem] font-headline font-extrabold tracking-tighter leading-none mb-2 break-words">
               Market Insights
             </h2>
             <div className="h-1 w-12 volcanic-gradient rounded-full"></div>
           </div>
-          <div className="px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest"
+          <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-widest flex-shrink-0"
             style={{ background: 'rgba(255,145,86,0.12)', color: '#ff9156', border: '1px solid rgba(255,145,86,0.25)' }}>
             Live Data
           </div>
