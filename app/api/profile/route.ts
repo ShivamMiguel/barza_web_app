@@ -18,10 +18,42 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json()
-    const { full_name, profession, bio, avatar_url } = body
+    const { full_name, profession, bio, avatar_url, phone, interests, location } = body
 
     if (full_name !== undefined && (typeof full_name !== 'string' || full_name.trim().length === 0)) {
       return NextResponse.json({ error: 'Nome inválido' }, { status: 400 })
+    }
+
+    if (phone !== undefined && typeof phone !== 'string') {
+      return NextResponse.json({ error: 'Telefone inválido' }, { status: 400 })
+    }
+
+    let cleanInterests: string[] | undefined
+    if (interests !== undefined) {
+      if (!Array.isArray(interests) || !interests.every((i) => typeof i === 'string')) {
+        return NextResponse.json({ error: 'Interesses inválidos' }, { status: 400 })
+      }
+      cleanInterests = interests.map((i) => i.trim()).filter(Boolean)
+    }
+
+    let cleanLocation:
+      | { country?: string; country_code?: string; city?: string; neighborhood?: string; dial_code?: string }
+      | undefined
+    if (location !== undefined) {
+      if (typeof location !== 'object' || location === null || Array.isArray(location)) {
+        return NextResponse.json({ error: 'Localização inválida' }, { status: 400 })
+      }
+      const allowed = ['country', 'country_code', 'city', 'neighborhood', 'dial_code'] as const
+      cleanLocation = {}
+      for (const key of allowed) {
+        const v = (location as Record<string, unknown>)[key]
+        if (v === undefined) continue
+        if (typeof v !== 'string') {
+          return NextResponse.json({ error: `Localização: campo "${key}" inválido` }, { status: 400 })
+        }
+        const trimmed = v.trim()
+        if (trimmed) cleanLocation[key] = trimmed
+      }
     }
 
     const result = await updateProfile({
@@ -29,6 +61,9 @@ export async function PATCH(request: NextRequest) {
       profession: profession?.trim(),
       bio: bio?.trim(),
       avatar_url: avatar_url?.trim(),
+      phone: phone?.trim(),
+      interests: cleanInterests,
+      location: cleanLocation,
     })
 
     if (!result.success) {
