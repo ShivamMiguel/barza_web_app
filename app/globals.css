@@ -119,6 +119,50 @@
     box-shadow: 0 40px 60px -15px rgba(255, 255, 255, 0.04);
   }
 
+  .glass-morphism {
+    background: rgba(53, 53, 52, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .internal-glow {
+    box-shadow: 0 0 60px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .internal-bloom {
+    box-shadow: 0 0 60px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  @keyframes welcome-breathe {
+    0%, 100% { transform: scale(1); opacity: 0.96 }
+    50%      { transform: scale(1.028); opacity: 1 }
+  }
+  @keyframes welcome-drift-a {
+    0%, 100% { transform: translate(0, 0) }
+    50%      { transform: translate(40px, -32px) }
+  }
+  @keyframes welcome-drift-b {
+    0%, 100% { transform: translate(0, 0) }
+    50%      { transform: translate(-36px, 28px) }
+  }
+  @keyframes welcome-drift-c {
+    0%, 100% { transform: translate(0, 0) }
+    50%      { transform: translate(24px, 24px) }
+  }
+  @keyframes welcome-fade-up {
+    from { opacity: 0; transform: translateY(10px) }
+    to   { opacity: 1; transform: translateY(0) }
+  }
+  @keyframes welcome-fade-out {
+    from { opacity: 1 }
+    to   { opacity: 0 }
+  }
+  @keyframes welcome-particle {
+    0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0 }
+    20%  { opacity: 0.6 }
+    100% { transform: translate3d(var(--dx, 0), var(--dy, -120px), 0) scale(1.4); opacity: 0 }
+  }
+
   .volcanic-gradient {
     background: linear-gradient(135deg, #ff9156 0%, #fc7c31 100%);
   }

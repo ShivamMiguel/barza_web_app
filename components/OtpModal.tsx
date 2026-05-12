@@ -63,7 +63,7 @@ export function OtpModal({ isOpen, email, onClose }: OtpModalProps) {
         return;
       }
 
-      router.push("/community");
+      router.push("/onboarding");
       router.refresh();
       onClose();
     },

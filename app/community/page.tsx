@@ -4,7 +4,8 @@ import { BeautySignalCard } from "@/components/BeautySignalCard"
 import { ProfessionalSpaceCard } from "@/components/ProfessionalSpaceCard"
 import { PostCardEditorial } from "@/components/PostCardEditorial"
 import { CreatePostBox } from "@/components/CreatePostBox"
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { useCommunity } from "@/lib/community-context"
 import type { ServiceWithSpace } from "@/lib/supabase/professional-spaces"
 import type { PostWithUser } from "@/lib/supabase/posts"
@@ -38,7 +39,28 @@ function buildFeed(
 const POSTS_PER_PAGE = 10
 
 export default function CommunityPage() {
+  return (
+    <Suspense fallback={<CommunityLoading />}>
+      <CommunityFeed />
+    </Suspense>
+  )
+}
+
+function CommunityLoading() {
+  return (
+    <div className="flex justify-center items-center min-h-[60vh]">
+      <span className="material-symbols-outlined text-primary-container text-5xl animate-spin">
+        refresh
+      </span>
+    </div>
+  )
+}
+
+function CommunityFeed() {
   const { userProfile } = useCommunity()
+  const searchParams = useSearchParams()
+  const action = searchParams.get('action')
+  const isCreatePostIntent = action === 'post'
   const [isLoading, setIsLoading] = useState(true)
   const [feedItems, setFeedItems] = useState<FeedItem[]>([])
   const [postOffset, setPostOffset] = useState(POSTS_PER_PAGE)
@@ -146,6 +168,8 @@ export default function CommunityPage() {
       <div className="space-y-8 max-w-3xl mx-auto">
         <CreatePostBox
           profile={userProfile}
+          autoFocus={isCreatePostIntent}
+          placeholder={isCreatePostIntent ? 'O que te inspira hoje?' : undefined}
           onPostCreated={(post) =>
             setFeedItems(prev => [{ kind: 'post', data: post }, ...prev])
           }

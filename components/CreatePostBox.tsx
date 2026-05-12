@@ -10,12 +10,14 @@ import type { PostWithUser } from '@/lib/supabase/posts'
 interface Props {
   profile?: UserProfile | null
   onPostCreated?: (post: PostWithUser) => void
+  placeholder?: string
+  autoFocus?: boolean
 }
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024
 const STORAGE_BUCKET = 'logo'
 
-export function CreatePostBox({ profile, onPostCreated }: Props) {
+export function CreatePostBox({ profile, onPostCreated, placeholder, autoFocus }: Props) {
   const [content, setContent] = useState('')
   const [isPosting, setIsPosting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -30,6 +32,15 @@ export function CreatePostBox({ profile, onPostCreated }: Props) {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
     }
   }, [content])
+
+  useEffect(() => {
+    if (!autoFocus) return
+    const id = window.setTimeout(() => {
+      textareaRef.current?.focus()
+      textareaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 50)
+    return () => window.clearTimeout(id)
+  }, [autoFocus])
 
   useEffect(() => {
     if (!imageFile) {
@@ -159,7 +170,7 @@ export function CreatePostBox({ profile, onPostCreated }: Props) {
             ref={textareaRef}
             value={content}
             onChange={e => setContent(e.target.value)}
-            placeholder={`O que está a pensar, ${firstName}?`}
+            placeholder={placeholder ?? `O que está a pensar, ${firstName}?`}
             maxLength={1000}
             disabled={isPosting}
             rows={1}

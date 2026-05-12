@@ -1,5 +1,14 @@
 import { createClient as createServerClient } from './server'
 
+export interface ProfileLocation {
+  country?: string
+  country_code?: string
+  city?: string
+  neighborhood?: string
+  dial_code?: string
+  bio?: string
+}
+
 export interface UserProfile {
   id: string
   full_name: string
@@ -8,7 +17,8 @@ export interface UserProfile {
   avatar_url?: string
   bio?: string
   profession?: string
-  profile_location?: Record<string, any>
+  profile_location?: ProfileLocation & Record<string, any>
+  interests?: string[]
   created_at?: string
 }
 
@@ -22,6 +32,7 @@ function mapProfile(profile: Record<string, any>): UserProfile {
     profession: profile.role_profile,
     bio: profile.profile_location?.bio as string | undefined,
     profile_location: profile.profile_location,
+    interests: Array.isArray(profile.interests) ? profile.interests : undefined,
     created_at: profile.created_at,
   }
 }
@@ -88,6 +99,9 @@ export async function updateProfile(data: {
   profession?: string
   bio?: string
   avatar_url?: string
+  phone?: string
+  interests?: string[]
+  location?: Partial<ProfileLocation>
 }): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = await createServerClient()
@@ -95,22 +109,32 @@ export async function updateProfile(data: {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) return { success: false, error: 'Não autorizado' }
 
-    // Fetch current profile_location so we only merge bio, not overwrite other fields
+    // Read current profile_location so we merge instead of overwriting.
     const { data: current } = await supabase
       .from('profiles')
       .select('profile_location')
       .eq('id', user.id)
       .single()
 
-    const currentLocation: Record<string, any> = (current?.profile_location as Record<string, any>) || {}
+    const currentLocation: Record<string, any> =
+      (current?.profile_location as Record<string, any>) || {}
 
     const updates: Record<string, any> = {}
     if (data.full_name !== undefined) updates.full_name = data.full_name
     if (data.profession !== undefined) updates.role_profile = data.profession
     if (data.avatar_url !== undefined) updates.avatar_url = data.avatar_url
+    if (data.phone !== undefined) updates.phone = data.phone
+    if (data.interests !== undefined) updates.interests = data.interests
+
+    // profile_location is a JSONB bag — merge keys as they arrive.
+    let nextLocation: Record<string, any> | undefined
     if (data.bio !== undefined) {
-      updates.profile_location = { ...currentLocation, bio: data.bio }
+      nextLocation = { ...(nextLocation ?? currentLocation), bio: data.bio }
     }
+    if (data.location !== undefined) {
+      nextLocation = { ...(nextLocation ?? currentLocation), ...data.location }
+    }
+    if (nextLocation !== undefined) updates.profile_location = nextLocation
 
     const { error } = await supabase
       .from('profiles')
@@ -119,7 +143,7 @@ export async function updateProfile(data: {
 
     if (error) return { success: false, error: error.message }
     return { success: true }
-  } catch (err) {
+  } catch {
     return { success: false, error: 'Erro inesperado' }
   }
 }
