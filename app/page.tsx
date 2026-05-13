@@ -8,7 +8,9 @@ import { SolutionSection } from "@/components/SolutionSection";
 import { ClientExperienceSection } from "@/components/ClientExperienceSection";
 import { ProExperienceSection } from "@/components/ProExperienceSection";
 import { CommunitySection } from "@/components/CommunitySection";
+import { FeedRitualSection } from "@/components/FeedRitualSection";
 import { ProductsSection } from "@/components/ProductsSection";
+import { IntelligenceListensSection } from "@/components/IntelligenceListensSection";
 import { ManifestoSection } from "@/components/ManifestoSection";
 import { SocialProofSection } from "@/components/SocialProofSection";
 import { FutureVisionSection } from "@/components/FutureVisionSection";
@@ -40,7 +42,9 @@ export default function Home() {
       <ClientExperienceSection />
       <ProExperienceSection />
       <CommunitySection />
+      <FeedRitualSection onSignupClick={() => setIsSignupOpen(true)} />
       <ProductsSection />
+      <IntelligenceListensSection onSignupClick={() => setIsSignupOpen(true)} />
       <ManifestoSection />
       <SocialProofSection />
       <FutureVisionSection />
