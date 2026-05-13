@@ -37,6 +37,27 @@ function mapProfile(profile: Record<string, any>): UserProfile {
   }
 }
 
+/**
+ * Heuristic: a profile needs onboarding when no onboarding step has ever
+ * produced data. As soon as the user fills in their phone, picks any
+ * interest, or selects a city, we treat them as onboarded and stop
+ * pushing them through the flow.
+ *
+ * - First-time OAuth signups (Google, etc.) hit this and return `true`.
+ * - Users who actively skipped every step also return `true` — they'll
+ *   see onboarding again next login, which is intentional (the only way
+ *   to "complete" it is to actually enter at least one field).
+ * - `null` profile (race against the auth.users → profiles trigger)
+ *   also returns `true`, so we err on the side of guiding the user.
+ */
+export function needsOnboarding(profile: UserProfile | null | undefined): boolean {
+  if (!profile) return true
+  const hasPhone = !!profile.phone?.trim()
+  const hasInterests = (profile.interests?.length ?? 0) > 0
+  const hasCity = !!profile.profile_location?.city?.trim()
+  return !hasPhone && !hasInterests && !hasCity
+}
+
 export async function getLoggedUserProfile(): Promise<UserProfile | null> {
   try {
     const supabase = await createServerClient()
