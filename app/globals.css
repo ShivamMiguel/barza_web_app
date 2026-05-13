@@ -163,6 +163,45 @@
     100% { transform: translate3d(var(--dx, 0), var(--dy, -120px), 0) scale(1.4); opacity: 0 }
   }
 
+  /* ── Feed ritual — landing page editorial cards ───────────────────── */
+  @keyframes feed-float-a {
+    0%, 100% { transform: rotate(-4deg)  translateY(0) }
+    50%      { transform: rotate(-2.5deg) translateY(-10px) }
+  }
+  @keyframes feed-float-b {
+    0%, 100% { transform: translateX(-50%) rotate(0.5deg)  translateY(0) }
+    50%      { transform: translateX(-50%) rotate(-0.5deg) translateY(-14px) }
+  }
+  @keyframes feed-float-c {
+    0%, 100% { transform: rotate(4deg)   translateY(0) }
+    50%      { transform: rotate(5deg)   translateY(-7px) }
+  }
+  @keyframes feed-marquee {
+    from { transform: translateY(0) }
+    to   { transform: translateY(-50%) }
+  }
+  @keyframes feed-heart-pulse {
+    0%, 70%, 100% { transform: scale(1) }
+    80%           { transform: scale(1.4) }
+  }
+  @keyframes feed-like-burst {
+    0%   { opacity: 0; transform: translateY(0)   scale(0.8) }
+    30%  { opacity: 1; transform: translateY(-8px) scale(1) }
+    100% { opacity: 0; transform: translateY(-28px) scale(1.1) }
+  }
+  @keyframes feed-live-dot {
+    0%, 100% { opacity: 0.5; box-shadow: 0 0 0 0   rgba(76,217,100,0.6) }
+    50%      { opacity: 1;   box-shadow: 0 0 0 6px rgba(76,217,100,0) }
+  }
+  @keyframes feed-signal-ping {
+    0%, 100% { opacity: 0.4 }
+    50%      { opacity: 1 }
+  }
+  @keyframes feed-shimmer {
+    0%   { background-position: -200% 0 }
+    100% { background-position: 200% 0 }
+  }
+
   .volcanic-gradient {
     background: linear-gradient(135deg, #ff9156 0%, #fc7c31 100%);
   }
