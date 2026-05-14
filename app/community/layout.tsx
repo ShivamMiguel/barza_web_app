@@ -187,10 +187,19 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
               {marketInsights ? (() => {
                 const mi = marketInsights.market_insights ?? {}
                 const interp = marketInsights.interpretation ?? {}
+                const uc = marketInsights.user_context
                 const hours: { hour: string; demand: number }[] = mi.peak_demand_hours ?? []
                 const top = [...hours].sort((a, b) => b.demand - a.demand).slice(0, 5)
                 const max = Math.max(...top.map(h => h.demand), 1)
                 const perf = mi.post_performance
+
+                // Revenue across all zones
+                const zones = Object.values(mi.services_by_zone ?? {}) as { total_services: number; total_revenue: number; average_price: number }[]
+                const totalRevenue = zones.reduce((s, z) => s + z.total_revenue, 0)
+                const totalServices = zones.reduce((s, z) => s + z.total_services, 0)
+
+                // First space name (if any)
+                const spaceName = uc?.has_spaces && uc.spaces?.[0]?.space_name
 
                 return (
                   <>
@@ -236,7 +245,8 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
                       </div>
                     ) : null}
 
-                    <div className="border-t border-white/5 pt-4 space-y-1.5">
+                    <div className="border-t border-white/5 pt-4 space-y-2">
+                      {/* Legacy interpretation fields */}
                       {interp.market_status && (
                         <p className="text-xs font-bold leading-snug text-on-surface">
                           {interp.market_status.length > 80 ? interp.market_status.slice(0, 80) + '…' : interp.market_status}
@@ -245,6 +255,26 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
                       {interp.growth_signal && (
                         <p className="text-[10px] text-on-surface-variant/50 leading-relaxed">
                           {interp.growth_signal.length > 90 ? interp.growth_signal.slice(0, 90) + '…' : interp.growth_signal}
+                        </p>
+                      )}
+                      {/* New format: show revenue + space */}
+                      {!interp.market_status && totalRevenue > 0 && (
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-[9px] uppercase tracking-widest opacity-40">Receita Total</span>
+                          <span className="text-xs font-black" style={{ color: '#ff9156' }}>
+                            {totalRevenue.toLocaleString('pt-AO')} Kz
+                          </span>
+                        </div>
+                      )}
+                      {!interp.market_status && totalServices > 0 && (
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-[9px] uppercase tracking-widest opacity-40">Serviços</span>
+                          <span className="text-xs font-bold text-on-surface">{totalServices}</span>
+                        </div>
+                      )}
+                      {spaceName && (
+                        <p className="text-[9px] uppercase tracking-widest truncate" style={{ color: 'rgba(255,145,86,0.5)' }}>
+                          {spaceName}
                         </p>
                       )}
                     </div>
