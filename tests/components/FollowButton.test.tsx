@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { FollowButton } from '@/components/FollowButton'
 
 const mockFetch = vi.fn()
@@ -8,6 +9,15 @@ beforeEach(() => {
   vi.clearAllMocks()
   global.fetch = mockFetch
 })
+
+function renderWithQuery(ui: React.ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return render(
+    <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
+  )
+}
 
 function summary(opts: {
   followers?: number
@@ -29,7 +39,7 @@ describe('FollowButton — bootstrap', () => {
       ok: true,
       json: async () => summary({ is_following: true, followers: 12 }),
     })
-    render(<FollowButton userId="user-1" />)
+    renderWithQuery(<FollowButton userId="user-1" />)
     expect(await screen.findByRole('button', { name: /A seguir/i })).toBeInTheDocument()
     expect(mockFetch).toHaveBeenCalledWith('/api/users/user-1/follow')
   })
@@ -39,14 +49,14 @@ describe('FollowButton — bootstrap', () => {
       ok: true,
       json: async () => summary({ is_following: null }),
     })
-    const { container } = render(<FollowButton userId="user-1" />)
+    const { container } = renderWithQuery(<FollowButton userId="user-1" />)
     await waitFor(() => {
       expect(container.querySelector('button')).toBeNull()
     })
   })
 
   it('renders "Seguir" immediately when initialIsFollowing=false (skips bootstrap)', () => {
-    render(<FollowButton userId="user-1" initialIsFollowing={false} />)
+    renderWithQuery(<FollowButton userId="user-1" initialIsFollowing={false} />)
     expect(screen.getByRole('button', { name: /Seguir/i })).toBeInTheDocument()
     expect(mockFetch).not.toHaveBeenCalled()
   })
@@ -91,7 +101,7 @@ describe('FollowButton — follow', () => {
       ok: false,
       json: async () => ({ error: 'Falha do servidor' }),
     })
-    render(<FollowButton userId="user-1" initialIsFollowing={false} />)
+    renderWithQuery(<FollowButton userId="user-1" initialIsFollowing={false} />)
     fireEvent.click(screen.getByRole('button', { name: /Seguir/i }))
 
     // After the rejection, we're back to "Seguir" + show error
@@ -107,7 +117,7 @@ describe('FollowButton — unfollow', () => {
       json: async () =>
         summary({ is_following: false, followers: 4, following: 1 }),
     })
-    render(<FollowButton userId="user-1" initialIsFollowing={true} />)
+    renderWithQuery(<FollowButton userId="user-1" initialIsFollowing={true} />)
 
     const btn = screen.getByRole('button', { name: /A seguir/i })
     fireEvent.click(btn)
@@ -121,7 +131,7 @@ describe('FollowButton — unfollow', () => {
   })
 
   it('shows "Deixar de seguir" on hover when currently following', () => {
-    render(<FollowButton userId="user-1" initialIsFollowing={true} />)
+    renderWithQuery(<FollowButton userId="user-1" initialIsFollowing={true} />)
     const btn = screen.getByRole('button', { name: /A seguir/i })
     fireEvent.mouseEnter(btn)
     expect(screen.getByRole('button', { name: /Deixar de seguir/i })).toBeInTheDocument()

@@ -1,28 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { PostCardEditorial } from '@/components/PostCardEditorial'
 import { useCommunity } from '@/lib/community-context'
-import type { PostWithUser } from '@/lib/supabase/posts'
+import { usePosts } from '@/hooks/api'
 
 export default function HashtagPage() {
   const params = useParams<{ tag: string }>()
   const tag = decodeURIComponent(params?.tag ?? '').toLowerCase()
   const { userProfile } = useCommunity()
-  const [posts, setPosts] = useState<PostWithUser[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    if (!tag) return
-    setIsLoading(true)
-    fetch(`/api/posts?hashtag=${encodeURIComponent(tag)}&limit=50`)
-      .then(r => r.ok ? r.json() : { data: [] })
-      .then(d => setPosts(d.data ?? []))
-      .catch(() => setPosts([]))
-      .finally(() => setIsLoading(false))
-  }, [tag])
+  const { data, isLoading } = usePosts({ hashtag: tag, limit: 50 })
+  const posts = data?.data ?? []
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 pb-24 lg:pb-8">

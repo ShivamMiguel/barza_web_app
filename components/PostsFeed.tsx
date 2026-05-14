@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { PostCardEditorial } from '@/components/PostCardEditorial'
+import { usePosts } from '@/hooks/api'
 import type { PostWithUser } from '@/lib/supabase/posts'
 
 interface PostsFeedProps {
@@ -11,22 +12,23 @@ interface PostsFeedProps {
 }
 
 export function PostsFeed({ currentUserId, userId, limit = 20 }: PostsFeedProps) {
-  const [posts, setPosts] = useState<PostWithUser[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { data: firstPageData, isLoading, isError } = usePosts({ limit, offset: 0, userId })
+  const firstPage = firstPageData?.data ?? []
+
+  const [extraPosts, setExtraPosts] = useState<PostWithUser[]>([])
+  const [hasMore, setHasMore] = useState(() => firstPage.length === limit)
+  const [offset, setOffset] = useState(limit)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [hasMore, setHasMore] = useState(true)
-  const [offset, setOffset] = useState(0)
 
-  useEffect(() => {
-    loadPosts()
-  }, [])
+  const posts = [...firstPage, ...extraPosts]
 
-  const loadPosts = async (newOffset = 0) => {
+  const loadMore = async () => {
     try {
-      setIsLoading(true)
+      setIsLoadingMore(true)
       const params = new URLSearchParams()
       params.set('limit', String(limit))
-      params.set('offset', String(newOffset))
+      params.set('offset', String(offset))
       if (userId) params.set('user_id', userId)
 
       const res = await fetch(`/api/posts?${params.toString()}`)
@@ -35,25 +37,20 @@ export function PostsFeed({ currentUserId, userId, limit = 20 }: PostsFeedProps)
       const data = await res.json()
       const newPosts: PostWithUser[] = data.data || []
 
-      if (newOffset === 0) {
-        setPosts(newPosts)
-      } else {
-        setPosts((prev) => [...prev, ...newPosts])
-      }
-
+      setExtraPosts(prev => [...prev, ...newPosts])
       setHasMore(newPosts.length === limit)
-      setOffset(newOffset + limit)
+      setOffset(prev => prev + limit)
       setError(null)
     } catch (err) {
       console.error('Error loading posts:', err)
       setError('Erro ao carregar posts')
     } finally {
-      setIsLoading(false)
+      setIsLoadingMore(false)
     }
   }
 
   const handlePostDeleted = (postId: string) => {
-    setPosts((prev) => prev.filter((p) => p.id !== postId))
+    setExtraPosts(prev => prev.filter(p => p.id !== postId))
   }
 
   if (isLoading && posts.length === 0) {
@@ -66,7 +63,7 @@ export function PostsFeed({ currentUserId, userId, limit = 20 }: PostsFeedProps)
     )
   }
 
-  if (error && posts.length === 0) {
+  if ((isError || error) && posts.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-error text-base font-medium">{error}</p>
@@ -99,13 +96,13 @@ export function PostsFeed({ currentUserId, userId, limit = 20 }: PostsFeedProps)
       {hasMore && (
         <div className="flex justify-center pt-4">
           <button
-            onClick={() => loadPosts(offset)}
-            disabled={isLoading}
+            onClick={loadMore}
+            disabled={isLoadingMore}
             className="px-6 py-3 rounded-full bg-surface-container text-on-surface font-semibold
                        hover:bg-surface-container-high transition-colors
                        disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Carregando...' : 'Carregar mais'}
+            {isLoadingMore ? 'Carregando...' : 'Carregar mais'}
           </button>
         </div>
       )}

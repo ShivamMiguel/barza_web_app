@@ -1,32 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Avatar } from '@/components/Avatar'
 import { CommunityContext } from '@/lib/community-context'
-import type { UserProfile } from '@/lib/supabase/profile'
-import type { TrendingProfessional } from '@/app/api/trending-professionals/route'
+import { useProfile, useTrendingPros, useMarketInsights } from '@/hooks/api'
 
 export default function CommunityLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [trendingPros, setTrendingPros] = useState<TrendingProfessional[]>([])
-  const [marketInsights, setMarketInsights] = useState<any>(null)
-  const [isLoadingChrome, setIsLoadingChrome] = useState(true)
 
-  useEffect(() => {
-    Promise.all([
-      fetch('/api/profile').then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch('/api/trending-professionals?limit=3').then(r => r.ok ? r.json() : []).catch(() => []),
-      fetch('/api/market-insights').then(r => r.ok ? r.json() : null).catch(() => null),
-    ]).then(([profile, trending, insights]) => {
-      setUserProfile(profile)
-      setTrendingPros(trending ?? [])
-      setMarketInsights(insights)
-      setIsLoadingChrome(false)
-    })
-  }, [])
+  const { data: userProfile, isLoading: loadingProfile } = useProfile()
+  const { data: trendingPros = [], isLoading: loadingTrending } = useTrendingPros(3)
+  const { data: marketInsightsRaw, isLoading: loadingInsights } = useMarketInsights()
+  const marketInsights = marketInsightsRaw as any ?? null
+  const isLoadingChrome = loadingProfile || loadingTrending || loadingInsights
 
   const navItems = [
     { href: '/community', icon: 'dynamic_feed', label: 'Feed', exact: true },
@@ -41,7 +28,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <CommunityContext.Provider value={{ userProfile, marketInsights, isLoadingChrome }}>
+    <CommunityContext.Provider value={{ userProfile: userProfile ?? null, marketInsights, isLoadingChrome }}>
       <div className="bg-surface-container-lowest text-on-surface font-body selection:bg-primary-container selection:text-on-primary min-h-screen flex flex-col lg:flex-row">
 
         {/* Mobile Top App Bar */}

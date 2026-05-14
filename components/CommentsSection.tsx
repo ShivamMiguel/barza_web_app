@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Avatar } from '@/components/Avatar'
 import { EmojiPicker } from '@/components/EmojiPicker'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { useComments, qk } from '@/hooks/api'
 
 interface CommentUser {
   id: string
@@ -332,35 +334,12 @@ function CommentItem({
 // ─────────────────────────────────────────────────────────
 
 export function CommentsSection({ postId, currentUserId, onCountChange }: SectionProps) {
-  const [comments, setComments] = useState<Comment[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const queryClient = useQueryClient()
+  const { data: commentsData, isLoading } = useComments(postId)
+  const comments = commentsData?.data ?? []
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [isDeletingComment, setIsDeletingComment] = useState(false)
   const [deleteCommentError, setDeleteCommentError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    async function load() {
-      setIsLoading(true)
-      try {
-        const res = await fetch(`/api/posts/${postId}/comments`)
-        if (!res.ok) {
-          if (!cancelled) setComments([])
-          return
-        }
-        const json = await res.json().catch(() => ({ data: [] }))
-        if (!cancelled) setComments(Array.isArray(json.data) ? json.data : [])
-      } catch {
-        if (!cancelled) setComments([])
-      } finally {
-        if (!cancelled) setIsLoading(false)
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [postId])
 
   const { topLevel, repliesByParent } = useMemo(() => {
     const top: Comment[] = []
@@ -376,7 +355,9 @@ export function CommentsSection({ postId, currentUserId, onCountChange }: Sectio
   }, [comments])
 
   function handleNewComment(comment: Comment, count: number) {
-    setComments(prev => [...prev, comment])
+    queryClient.setQueryData(qk.comments(postId), (old: { data: Comment[] } | undefined) => ({
+      data: [...(old?.data ?? []), comment],
+    }))
     onCountChange?.(count)
   }
 
@@ -397,7 +378,11 @@ export function CommentsSection({ postId, currentUserId, onCountChange }: Sectio
         return
       }
       const data = await res.json()
-      setComments(prev => prev.filter(c => c.id !== pendingDeleteId && c.parent_id !== pendingDeleteId))
+      queryClient.setQueryData(qk.comments(postId), (old: { data: Comment[] } | undefined) => ({
+        data: (old?.data ?? []).filter(
+          c => c.id !== pendingDeleteId && c.parent_id !== pendingDeleteId
+        ),
+      }))
       onCountChange?.(data.comments_count)
       setPendingDeleteId(null)
     } catch {

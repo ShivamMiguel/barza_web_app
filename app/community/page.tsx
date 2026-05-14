@@ -4,9 +4,10 @@ import { BeautySignalCard } from "@/components/BeautySignalCard"
 import { ProfessionalSpaceCard } from "@/components/ProfessionalSpaceCard"
 import { PostCardEditorial } from "@/components/PostCardEditorial"
 import { CreatePostBox } from "@/components/CreatePostBox"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useCommunity } from "@/lib/community-context"
+import { useProfessionalSpaces, usePosts, useBeautySignals } from "@/hooks/api"
 import type { ServiceWithSpace } from "@/lib/supabase/professional-spaces"
 import type { PostWithUser } from "@/lib/supabase/posts"
 import type { ExternalSignal } from "@/lib/beauty-signals/external"
@@ -61,36 +62,32 @@ function CommunityFeed() {
   const searchParams = useSearchParams()
   const action = searchParams.get('action')
   const isCreatePostIntent = action === 'post'
-  const [isLoading, setIsLoading] = useState(true)
-  const [feedItems, setFeedItems] = useState<FeedItem[]>([])
+
+  const { data: spaces = [], isLoading: loadingSpaces } = useProfessionalSpaces(20)
+  const { data: postsData, isLoading: loadingPosts } = usePosts({ limit: POSTS_PER_PAGE })
+  const { data: signals = [], isLoading: loadingSignals } = useBeautySignals()
+  const isLoading = loadingSpaces || loadingPosts || loadingSignals
+
+  const initialPosts = postsData?.data ?? []
+
+  // Posts created in this session (shown at top immediately)
+  const [newPostItems, setNewPostItems] = useState<FeedItem[]>([])
+  // Extra posts from "load more"
+  const [extraPosts, setExtraPosts] = useState<PostWithUser[]>([])
   const [postOffset, setPostOffset] = useState(POSTS_PER_PAGE)
-  const [hasMorePosts, setHasMorePosts] = useState(false)
+  const [hasMorePosts, setHasMorePosts] = useState(() => initialPosts.length === POSTS_PER_PAGE)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
+  // Update hasMorePosts when initial data arrives
   useEffect(() => {
-    async function loadData() {
-      try {
-        const [spacesRes, postsRes, signalsRes] = await Promise.all([
-          fetch('/api/professional-spaces?limit=20'),
-          fetch(`/api/posts?limit=${POSTS_PER_PAGE}`),
-          fetch('/api/beauty-signals'),
-        ])
+    if (!loadingPosts) setHasMorePosts(initialPosts.length === POSTS_PER_PAGE)
+  }, [loadingPosts, initialPosts.length])
 
-        const services: ServiceWithSpace[] = spacesRes.ok ? await spacesRes.json() : []
-        const postsData = postsRes.ok ? await postsRes.json() : { data: [] }
-        const posts: PostWithUser[] = postsData.data ?? []
-        const signals: ExternalSignal[] = signalsRes.ok ? await signalsRes.json() : []
-
-        setFeedItems(buildFeed(services, posts, signals))
-        setHasMorePosts(posts.length === POSTS_PER_PAGE)
-      } catch (error) {
-        console.error("Error loading data:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadData()
-  }, [])
+  const feedItems = useMemo<FeedItem[]>(() => {
+    const base = buildFeed(spaces, initialPosts, signals)
+    const extra = extraPosts.map(p => ({ kind: 'post' as const, data: p }))
+    return [...newPostItems, ...base, ...extra]
+  }, [spaces, initialPosts, signals, newPostItems, extraPosts])
 
   async function loadMorePosts() {
     try {
@@ -101,10 +98,7 @@ function CommunityFeed() {
       const data = await res.json()
       const newPosts: PostWithUser[] = data.data ?? []
 
-      setFeedItems(prev => [
-        ...prev,
-        ...newPosts.map(p => ({ kind: 'post' as const, data: p })),
-      ])
+      setExtraPosts(prev => [...prev, ...newPosts])
       setPostOffset(prev => prev + POSTS_PER_PAGE)
       setHasMorePosts(newPosts.length === POSTS_PER_PAGE)
     } catch (error) {
@@ -171,7 +165,7 @@ function CommunityFeed() {
           autoFocus={isCreatePostIntent}
           placeholder={isCreatePostIntent ? 'O que te inspira hoje?' : undefined}
           onPostCreated={(post) =>
-            setFeedItems(prev => [{ kind: 'post', data: post }, ...prev])
+            setNewPostItems(prev => [{ kind: 'post', data: post }, ...prev])
           }
         />
 
