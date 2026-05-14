@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { ShareModal } from '@/components/ShareModal'
 import type { ServiceWithSpace } from '@/lib/supabase/professional-spaces'
 
@@ -30,8 +31,8 @@ export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }
 
       {/* Header */}
       <div className="p-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-surface-container-high">
+        <Link href={`/community/space/${space.id}`} className="flex items-center gap-3 group">
+          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-surface-container-high ring-2 ring-transparent group-hover:ring-primary-container/40 transition-all">
             {space.logo ? (
               <img src={space.logo} alt={space.space_name} className="w-full h-full object-cover" />
             ) : (
@@ -42,12 +43,12 @@ export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }
           </div>
           <div>
             <div className="flex items-center gap-1">
-              <h3 className="font-bold text-sm text-on-surface">{space.space_name}</h3>
+              <h3 className="font-bold text-sm text-on-surface group-hover:text-primary-container transition-colors">{space.space_name}</h3>
               <span className="material-symbols-outlined text-[16px] text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
             </div>
             <p className="text-xs text-on-surface-variant opacity-60">{location} • {timeAgo(space.created_at)}</p>
           </div>
-        </div>
+        </Link>
         <button className="material-symbols-outlined opacity-50 hover:opacity-100 transition-opacity text-on-surface">more_horiz</button>
       </div>
 
@@ -68,9 +69,12 @@ export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }
             <button className="flex-1 volcanic-gradient text-on-primary py-3 rounded-xl font-bold active:scale-95 transition-all text-sm">
               Agendar Agora
             </button>
-            <button className="flex-1 bg-surface-variant/80 backdrop-blur-md text-on-surface py-3 rounded-xl font-bold border-t border-white/10 active:scale-95 transition-all text-sm">
+            <Link
+              href={`/community/space/${space.id}`}
+              className="flex-1 bg-surface-variant/80 backdrop-blur-md text-on-surface py-3 rounded-xl font-bold border-t border-white/10 active:scale-95 transition-all text-sm text-center"
+            >
               Ver Perfil
-            </button>
+            </Link>
           </div>
         </div>
       </div>

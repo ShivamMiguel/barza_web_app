@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Avatar } from '@/components/Avatar'
 import { CommunityContext } from '@/lib/community-context'
-import { useProfile, useTrendingPros, useMarketInsights } from '@/hooks/api'
+import { useProfile, useTrendingPros, useMarketInsights, useMySpaces } from '@/hooks/api'
 
 export default function CommunityLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -12,6 +12,8 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
   const { data: userProfile, isLoading: loadingProfile } = useProfile()
   const { data: trendingPros = [], isLoading: loadingTrending } = useTrendingPros(3)
   const { data: marketInsightsRaw, isLoading: loadingInsights } = useMarketInsights()
+  const { data: mySpacesData } = useMySpaces()
+  const mySpaces = mySpacesData?.spaces ?? []
   const marketInsights = marketInsightsRaw as any ?? null
   const isLoadingChrome = loadingProfile || loadingTrending || loadingInsights
 
@@ -76,13 +78,27 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
             })}
 
             <p className="px-4 pt-5 pb-1 text-[9px] font-label tracking-[0.2em] uppercase text-on-surface-variant/30">My Pages</p>
-            <Link
-              href="/profile/andre_santos/pro"
-              className="flex items-center gap-4 px-4 py-3 text-on-surface/60 font-label text-sm tracking-wide uppercase hover:text-on-surface hover:bg-[#201f1f] transition-all rounded-xl group"
-            >
-              <span className="material-symbols-outlined transition-transform group-active:scale-95">store</span>
-              <span className="truncate">André Santos Studio</span>
-            </Link>
+            {mySpaces.length > 0 ? mySpaces.map((space) => (
+              <Link
+                key={space.id}
+                href={`/community/space/${space.id}`}
+                className="flex items-center gap-3 px-4 py-3 text-on-surface/60 font-label text-sm tracking-wide uppercase hover:text-on-surface hover:bg-[#201f1f] transition-all rounded-xl group"
+              >
+                {space.logo ? (
+                  <img src={space.logo} alt={space.space_name} className="w-5 h-5 rounded-md object-cover flex-shrink-0" />
+                ) : (
+                  <span className="material-symbols-outlined text-[18px] transition-transform group-active:scale-95">store</span>
+                )}
+                <span className="truncate flex-1">{space.space_name}</span>
+                {space.available && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
+                )}
+              </Link>
+            )) : (
+              <p className="px-4 py-2 text-[10px] text-on-surface-variant/30 font-label">
+                Nenhum espaço criado
+              </p>
+            )}
           </nav>
 
           <div className="flex-shrink-0 px-4 pb-4 pt-4 border-t border-white/5 flex flex-col gap-3">
@@ -144,23 +160,27 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
                 </p>
               )}
               {trendingPros.map((pro) => (
-                <div key={pro.space_id} className="flex items-center gap-4 group">
+                <Link
+                  key={pro.space_id}
+                  href={`/community/space/${pro.space_id}`}
+                  className="flex items-center gap-4 group hover:opacity-80 transition-opacity"
+                >
                   {pro.logo ? (
-                    <img src={pro.logo} alt={pro.space_name} className="w-12 h-12 rounded-2xl object-cover flex-shrink-0" />
+                    <img src={pro.logo} alt={pro.space_name} className="w-12 h-12 rounded-2xl object-cover flex-shrink-0 ring-2 ring-transparent group-hover:ring-primary-container/30 transition-all" />
                   ) : (
-                    <div className="w-12 h-12 rounded-2xl volcanic-gradient flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-2xl volcanic-gradient flex items-center justify-center flex-shrink-0 ring-2 ring-transparent group-hover:ring-primary-container/30 transition-all">
                       <span className="text-white font-bold text-sm">{pro.space_name.charAt(0).toUpperCase()}</span>
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold truncate">{pro.space_name}</p>
+                    <p className="text-xs font-bold truncate group-hover:text-primary-container transition-colors">{pro.space_name}</p>
                     <p className="text-[10px] text-on-surface-variant opacity-60 truncate">{pro.top_category ?? 'Profissional'}</p>
                   </div>
                   <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
                     <span className="text-[10px] font-bold text-primary-container">{pro.avg_stars.toFixed(1)}★</span>
                     <span className="text-[9px] text-on-surface-variant/40">{pro.rating_count} aval.</span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </section>
