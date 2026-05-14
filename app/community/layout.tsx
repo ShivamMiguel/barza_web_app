@@ -1,10 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Avatar } from '@/components/Avatar'
 import { CommunityContext } from '@/lib/community-context'
 import { useProfile, useTrendingPros, useMarketInsights, useMySpaces } from '@/hooks/api'
+import { CreateSpaceModal } from '@/components/CreateSpaceModal'
 
 export default function CommunityLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -15,6 +17,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
   const { data: mySpacesData } = useMySpaces()
   const mySpaces = mySpacesData?.spaces ?? []
   const marketInsights = marketInsightsRaw as any ?? null
+  const [createSpaceOpen, setCreateSpaceOpen] = useState(false)
   const isLoadingChrome = loadingProfile || loadingTrending || loadingInsights
 
   const navItems = [
@@ -102,13 +105,13 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
           </nav>
 
           <div className="flex-shrink-0 px-4 pb-4 pt-4 border-t border-white/5 flex flex-col gap-3">
-            <Link
-              href="/profile/create-page"
+            <button
+              onClick={() => setCreateSpaceOpen(true)}
               className="w-full border border-primary-container/40 text-primary-container py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-container/10 transition-all text-sm"
             >
               <span className="material-symbols-outlined text-sm">add_business</span>
               <span>Create Page</span>
-            </Link>
+            </button>
             <Link
               href="/community/profile"
               className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-[#201f1f] transition-all group border-t border-white/5 pt-3"
@@ -355,6 +358,8 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
         </footer>
 
       </div>
+
+      <CreateSpaceModal isOpen={createSpaceOpen} onClose={() => setCreateSpaceOpen(false)} />
     </CommunityContext.Provider>
   )
 }

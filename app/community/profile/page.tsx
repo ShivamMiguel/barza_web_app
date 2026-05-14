@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Avatar } from '@/components/Avatar'
+import { CreateSpaceButton } from '@/components/CreateSpaceButton'
 import { PostCardEditorial } from '@/components/PostCardEditorial'
 import { ProfileEditButton } from '@/components/ProfileEditButton'
 import { getPosts } from '@/lib/supabase/posts'
@@ -164,13 +165,7 @@ export default async function ProfilePage() {
             <p className="text-[10px] font-label uppercase tracking-[0.2em] text-on-surface-variant/40">
               Espaços Profissionais
             </p>
-            <Link
-              href="/profile/create-page"
-              className="flex items-center gap-1 text-[10px] font-label uppercase tracking-widest text-primary-container hover:underline"
-            >
-              <span className="material-symbols-outlined text-sm">add_business</span>
-              Criar espaço
-            </Link>
+            <CreateSpaceButton variant="link" />
           </div>
 
           {spaces.length > 0 ? (
@@ -183,13 +178,7 @@ export default async function ProfilePage() {
             <div className="text-center py-10 bg-surface-container rounded-3xl border border-[rgba(86,67,58,0.1)]">
               <span className="material-symbols-outlined text-4xl text-on-surface-variant/20 mb-3 block">store</span>
               <p className="text-on-surface-variant text-sm mb-4">Ainda não tens um espaço profissional</p>
-              <Link
-                href="/profile/create-page"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full volcanic-gradient text-on-primary text-xs font-bold uppercase tracking-widest active:scale-95 transition-transform"
-              >
-                <span className="material-symbols-outlined text-sm">add_business</span>
-                Criar espaço profissional
-              </Link>
+              <CreateSpaceButton variant="pill" />
             </div>
           )}
         </div>
