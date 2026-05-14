@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useMarketInsights } from '@/hooks/api'
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
@@ -97,17 +97,7 @@ function EmptyHint({ text }: { text: string }) {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function MarketInsightsPage() {
-  const [data, setData] = useState<MarketData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-
-  useEffect(() => {
-    fetch('/api/market-insights')
-      .then(r => { if (!r.ok) throw new Error(); return r.json() })
-      .then(setData)
-      .catch(() => setError(true))
-      .finally(() => setLoading(false))
-  }, [])
+  const { data, isLoading: loading } = useMarketInsights()
 
   if (loading) {
     return (
@@ -116,7 +106,7 @@ export default function MarketInsightsPage() {
       </div>
     )
   }
-  if (error || !data) {
+  if (!data) {
     return (
       <div className="flex items-center justify-center py-32">
         <p className="text-on-surface-variant">Erro ao carregar dados.</p>
@@ -126,9 +116,10 @@ export default function MarketInsightsPage() {
 
   // ── Data extraction ──────────────────────────────────────────────────────
 
-  const mi = data.market_insights ?? {}
-  const interp = data.interpretation ?? {}
-  const uc = data.user_context
+  const marketData = data as MarketData
+  const mi = marketData.market_insights ?? {}
+  const interp = marketData.interpretation ?? {}
+  const uc = marketData.user_context
 
   const mainSpace = uc?.spaces?.[0]
   const mainSpaceId = mainSpace?.id
@@ -142,7 +133,7 @@ export default function MarketInsightsPage() {
   const salons = Object.entries(mi.products_by_salon ?? {})
   const hours = mi.peak_demand_hours ?? []
   const perf = mi.post_performance
-  const signals = data.global_beauty_signals ?? []
+  const signals = marketData.global_beauty_signals ?? []
 
   // User space KPIs
   const userTicket = mainSpaceId ? mi.ticket_average_per_space?.[mainSpaceId] : null
@@ -160,7 +151,7 @@ export default function MarketInsightsPage() {
   const engagementRate = perf ? parseFloat(perf.engagement_rate) : 0
 
   // AI sections
-  const aiParsed = data.ai_insights ? parseAiInsights(data.ai_insights) : null
+  const aiParsed = marketData.ai_insights ? parseAiInsights(marketData.ai_insights) : null
   const findSection = (keyword: string) =>
     aiParsed?.sections.find(s => s.title.toLowerCase().includes(keyword.toLowerCase()))
 
@@ -183,7 +174,7 @@ export default function MarketInsightsPage() {
   const maxTicketValue = Math.max(...tickets.map(([, t]) => t.average_ticket), 1)
 
   // Legacy ai_market_report
-  const aiReport = data.ai_market_report ?? {}
+  const aiReport = marketData.ai_market_report ?? {}
   const aiLocal = aiReport.local_market ?? []
   const aiIntl = (aiReport.international_intelligence ?? []).filter(item => !/\[(PT|EN|FR)\]/i.test(item.title))
   const aiRecs = aiReport.ai_recommendations ?? []

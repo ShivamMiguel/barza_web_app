@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useFollowStatus } from '@/hooks/api'
 
 interface FollowButtonProps {
   /** profile id of the user being followed */
@@ -45,27 +46,15 @@ export function FollowButton({
   const [error, setError] = useState<string | null>(null)
   const [hovered, setHovered] = useState(false)
 
-  // Bootstrap follow state if we don't have it
+  // Bootstrap follow state if we don't have it — served from cache when available
+  const skipFetch = initialIsFollowing !== undefined
+  const { data: followData, isLoading: fetchingStatus } = useFollowStatus(userId, { enabled: !skipFetch })
+
   useEffect(() => {
-    if (initialIsFollowing !== undefined) return
-    let cancelled = false
-    async function load() {
-      try {
-        const res = await fetch(`/api/users/${userId}/follow`)
-        if (!res.ok) return
-        const data = await res.json()
-        if (cancelled) return
-        setIsFollowing(data.is_following)
-        setStage('idle')
-      } catch {
-        if (!cancelled) setStage('idle')
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [userId, initialIsFollowing])
+    if (skipFetch || fetchingStatus) return
+    setIsFollowing(followData?.is_following ?? null)
+    setStage('idle')
+  }, [followData, fetchingStatus, skipFetch])
 
   // is_following === null means: anonymous OR viewing self → hide
   if (isFollowing === null) {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { schemaWebSite, schemaOrganization } from "@/lib/schema";
+import { Providers } from "@/app/providers";
 import Script from "next/script";
 import "./globals.css";
 
@@ -109,9 +110,12 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${plusJakarta.variable} bg-surface-container-lowest selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden`}
       >
-        {children}
+        <Providers>
+          {children}
+        </Providers>
 
         {/* ── Google Analytics 4 ── */}
+
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-SWSLCSEPWQ" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
