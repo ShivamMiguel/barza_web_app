@@ -72,7 +72,7 @@ describe('FollowButton — follow', () => {
       json: async () =>
         summary({ is_following: true, followers: 5, following: 1 }),
     })
-    render(
+    renderWithQuery(
       <FollowButton
         userId="user-1"
         initialIsFollowing={false}
