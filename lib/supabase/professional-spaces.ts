@@ -1,5 +1,77 @@
 import { createClient } from '@/lib/supabase/server'
 
+// ── professional_space table ───────────────────────────────────────────────────
+
+export interface ProfessionalSpace {
+  id: string
+  created_at: string
+  space_name: string
+  rate: number | null
+  owner: string
+  update_at?: string | null
+  beauty_services?: string | null
+  location_space?: Record<string, unknown> | null
+  phone?: string | null
+  time_in?: string | null
+  time_out?: string | null
+  space?: boolean | null
+  logo?: string | null
+  available?: boolean | null
+}
+
+export interface ProfessionalService {
+  id: string
+  professional_space_id: string
+  service_name: string
+  price: number
+  category: string
+  is_active: boolean
+  duration_minutes: number
+  description?: string | null
+  extra_fee?: number | null
+  preco_promocional?: number | null
+}
+
+export async function getSpaceById(id: string): Promise<ProfessionalSpace | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('professional_space')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error || !data) return null
+  return data as ProfessionalSpace
+}
+
+export async function getSpacesByOwner(ownerId: string): Promise<ProfessionalSpace[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('professional_space')
+    .select('*')
+    .eq('owner', ownerId)
+    .order('created_at', { ascending: false })
+
+  if (error || !data) return []
+  return data as ProfessionalSpace[]
+}
+
+export async function getServicesBySpaceIds(spaceIds: string[]): Promise<ProfessionalService[]> {
+  if (spaceIds.length === 0) return []
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('professional_services')
+    .select('*')
+    .in('professional_space_id', spaceIds)
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+
+  if (error || !data) return []
+  return data as ProfessionalService[]
+}
+
+// ── professional_services + join ───────────────────────────────────────────────
+
 export interface ServiceWithSpace {
   id: string
   professional_space_id: string

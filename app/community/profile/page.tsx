@@ -5,9 +5,66 @@ import { ProfileEditButton } from '@/components/ProfileEditButton'
 import { getPosts } from '@/lib/supabase/posts'
 import { getLoggedUserProfile } from '@/lib/supabase/profile'
 import { getFollowSummary } from '@/lib/supabase/follows'
+import { getSpacesByOwner, type ProfessionalSpace } from '@/lib/supabase/professional-spaces'
 
 export const metadata = {
   title: 'Perfil | BARZA',
+}
+
+function SpaceCard({ space }: { space: ProfessionalSpace }) {
+  const loc = space.location_space as Record<string, string> | null
+  const city = loc?.city ?? loc?.address ?? null
+  const hours =
+    space.time_in && space.time_out
+      ? `${space.time_in.slice(0, 5)} – ${space.time_out.slice(0, 5)}`
+      : null
+
+  return (
+    <Link
+      href={`/community/space/${space.id}`}
+      className="group flex flex-col gap-3 p-5 rounded-2xl bg-surface-container border border-[rgba(86,67,58,0.1)] hover:border-primary-container/30 transition-colors"
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center overflow-hidden flex-shrink-0">
+          {space.logo ? (
+            <img src={space.logo} alt={space.space_name} className="w-full h-full object-cover" />
+          ) : (
+            <span className="material-symbols-outlined text-on-surface-variant/40 text-2xl">store</span>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-sm text-on-surface truncate">{space.space_name}</p>
+          {city && (
+            <p className="text-[11px] text-on-surface-variant/60 flex items-center gap-1 mt-0.5">
+              <span className="material-symbols-outlined text-xs">location_on</span>
+              {city}
+            </p>
+          )}
+        </div>
+        <div className={`flex-shrink-0 w-2 h-2 rounded-full ${space.available ? 'bg-green-500' : 'bg-on-surface-variant/30'}`} title={space.available ? 'Disponível' : 'Indisponível'} />
+      </div>
+
+      {/* Meta row */}
+      <div className="flex flex-wrap gap-3 text-[10px] font-label uppercase tracking-widest text-on-surface-variant/50">
+        {space.rate != null && (
+          <span className="flex items-center gap-1">
+            <span className="material-symbols-outlined text-[11px] text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+            {space.rate.toFixed(1)}
+          </span>
+        )}
+        {hours && (
+          <span className="flex items-center gap-1">
+            <span className="material-symbols-outlined text-[11px]">schedule</span>
+            {hours}
+          </span>
+        )}
+        {space.beauty_services && (
+          <span className="truncate max-w-[120px]">{space.beauty_services.split(',')[0].trim()}</span>
+        )}
+      </div>
+    </Link>
+  )
 }
 
 export default async function ProfilePage() {
@@ -27,9 +84,10 @@ export default async function ProfilePage() {
     )
   }
 
-  const [{ posts }, followSummary] = await Promise.all([
+  const [{ posts }, followSummary, spaces] = await Promise.all([
     getPosts(100, 0, profile.id),
     getFollowSummary(profile.id, profile.id),
+    getSpacesByOwner(profile.id),
   ])
 
   return (
@@ -98,6 +156,42 @@ export default async function ProfilePage() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* ── Espaços Profissionais ────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center justify-between mb-5">
+            <p className="text-[10px] font-label uppercase tracking-[0.2em] text-on-surface-variant/40">
+              Espaços Profissionais
+            </p>
+            <Link
+              href="/profile/create-page"
+              className="flex items-center gap-1 text-[10px] font-label uppercase tracking-widest text-primary-container hover:underline"
+            >
+              <span className="material-symbols-outlined text-sm">add_business</span>
+              Criar espaço
+            </Link>
+          </div>
+
+          {spaces.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {spaces.map((space: ProfessionalSpace) => (
+                <SpaceCard key={space.id} space={space} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 bg-surface-container rounded-3xl border border-[rgba(86,67,58,0.1)]">
+              <span className="material-symbols-outlined text-4xl text-on-surface-variant/20 mb-3 block">store</span>
+              <p className="text-on-surface-variant text-sm mb-4">Ainda não tens um espaço profissional</p>
+              <Link
+                href="/profile/create-page"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full volcanic-gradient text-on-primary text-xs font-bold uppercase tracking-widest active:scale-95 transition-transform"
+              >
+                <span className="material-symbols-outlined text-sm">add_business</span>
+                Criar espaço profissional
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* ── Posts ───────────────────────────────────────────────────── */}

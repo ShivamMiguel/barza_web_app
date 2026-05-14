@@ -3,7 +3,7 @@ import type { UserProfile } from '@/lib/supabase/profile'
 import type { TrendingProfessional } from '@/app/api/trending-professionals/route'
 import type { PostWithUser } from '@/lib/supabase/posts'
 import type { ExternalSignal } from '@/lib/beauty-signals/external'
-import type { ServiceWithSpace } from '@/lib/supabase/professional-spaces'
+import type { ServiceWithSpace, ProfessionalSpace, ProfessionalService } from '@/lib/supabase/professional-spaces'
 import type { Comment } from '@/components/CommentsSection'
 
 // ── Query Keys ─────────────────────────────────────────────────────────────────
@@ -17,6 +17,7 @@ export const qk = {
   followStatus:       (userId: string) => ['follow', userId] as const,
   beautySignals:      () => ['beauty-signals'] as const,
   professionalSpaces: (limit: number) => ['professional-spaces', limit] as const,
+  mySpaces:           () => ['my-spaces'] as const,
 }
 
 // ── Internal fetch helper ──────────────────────────────────────────────────────
@@ -104,6 +105,16 @@ export function useBeautySignals() {
       apiFetch<ExternalSignal[]>('/api/beauty-signals')
         .catch(() => [] as ExternalSignal[]),
     staleTime: 10 * 60 * 1000,
+  })
+}
+
+export function useMySpaces() {
+  return useQuery({
+    queryKey: qk.mySpaces(),
+    queryFn: () =>
+      apiFetch<{ spaces: ProfessionalSpace[]; services: ProfessionalService[] }>('/api/users/me/spaces')
+        .catch(() => ({ spaces: [] as ProfessionalSpace[], services: [] as ProfessionalService[] })),
+    staleTime: 2 * 60 * 1000,
   })
 }
 
