@@ -1,17 +1,28 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const SUPABASE_SERVICE_ROLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ROLE_KEY!
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+    }
+
+    if (user?.id) {
+      headers['x-user-id'] = user.id
+    }
+
     const res = await fetch(`${SUPABASE_URL}/functions/v1/market-insight`, {
-      headers: {
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 300 },
+      headers,
+      cache: 'no-store',
     })
 
     if (!res.ok) {

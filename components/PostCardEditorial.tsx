@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { Avatar } from '@/components/Avatar'
 import { CommentsSection } from '@/components/CommentsSection'
+import { FollowButton } from '@/components/FollowButton'
 import { ShareModal } from '@/components/ShareModal'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { renderRichText } from '@/lib/hashtags'
@@ -159,14 +161,14 @@ export function PostCardEditorial({
         {/* User Header */}
         <header className="flex items-center justify-between p-6">
           <div className="flex items-center gap-4">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden border border-[rgba(255,145,86,0.2)] flex-shrink-0">
+            <Link href={`/community/profile/${post.user_id}`} className="relative w-12 h-12 rounded-full overflow-hidden border border-[rgba(255,145,86,0.2)] flex-shrink-0 hover:opacity-80 transition-opacity">
               <Avatar name={post.user?.full_name || 'User'} avatarUrl={post.user?.avatar_url} />
-            </div>
+            </Link>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="font-headline font-bold text-on-surface tracking-tight">
+                <Link href={`/community/profile/${post.user_id}`} className="font-headline font-bold text-on-surface tracking-tight hover:text-primary-container transition-colors">
                   {post.user?.full_name || 'Anonymous'}
-                </span>
+                </Link>
                 {post.user?.profession && (
                   <span className="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-label text-[0.625rem] font-bold uppercase tracking-widest">
                     {post.user.profession}
@@ -179,48 +181,53 @@ export function PostCardEditorial({
             </div>
           </div>
 
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => isOwner && setMenuOpen(o => !o)}
-              className="text-on-surface-variant hover:text-primary-container transition-colors duration-300 p-1"
-              aria-label={isOwner ? 'Opções do post' : undefined}
-              aria-haspopup={isOwner ? 'menu' : undefined}
-              aria-expanded={isOwner ? menuOpen : undefined}
-            >
-              <span className="material-symbols-outlined">more_horiz</span>
-            </button>
-            {isOwner && menuOpen && (
-              <div
-                role="menu"
-                className="absolute right-0 top-full mt-2 w-44 rounded-2xl py-1.5 z-20 border shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]"
-                style={{
-                  background: 'linear-gradient(135deg, #1a120a 0%, #110a04 100%)',
-                  borderColor: 'rgba(255,145,86,0.2)',
-                }}
-              >
-                <button
-                  role="menuitem"
-                  onClick={startEdit}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface hover:bg-white/5 transition-colors text-left"
-                >
-                  <span className="material-symbols-outlined text-base text-on-surface-variant">edit</span>
-                  Editar
-                </button>
-                <button
-                  role="menuitem"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    setDeleteError(null)
-                    setConfirmDeleteOpen(true)
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 transition-colors text-left"
-                  style={{ color: '#ff4757' }}
-                >
-                  <span className="material-symbols-outlined text-base">delete</span>
-                  Eliminar
-                </button>
-              </div>
+          <div className="flex items-center gap-2">
+            {!isOwner && (
+              <FollowButton userId={post.user_id} compact />
             )}
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => isOwner && setMenuOpen(o => !o)}
+                className="text-on-surface-variant hover:text-primary-container transition-colors duration-300 p-1"
+                aria-label={isOwner ? 'Opções do post' : undefined}
+                aria-haspopup={isOwner ? 'menu' : undefined}
+                aria-expanded={isOwner ? menuOpen : undefined}
+              >
+                <span className="material-symbols-outlined">more_horiz</span>
+              </button>
+              {isOwner && menuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full mt-2 w-44 rounded-2xl py-1.5 z-20 border shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]"
+                  style={{
+                    background: 'linear-gradient(135deg, #1a120a 0%, #110a04 100%)',
+                    borderColor: 'rgba(255,145,86,0.2)',
+                  }}
+                >
+                  <button
+                    role="menuitem"
+                    onClick={startEdit}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface hover:bg-white/5 transition-colors text-left"
+                  >
+                    <span className="material-symbols-outlined text-base text-on-surface-variant">edit</span>
+                    Editar
+                  </button>
+                  <button
+                    role="menuitem"
+                    onClick={() => {
+                      setMenuOpen(false)
+                      setDeleteError(null)
+                      setConfirmDeleteOpen(true)
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 transition-colors text-left"
+                    style={{ color: '#ff4757' }}
+                  >
+                    <span className="material-symbols-outlined text-base">delete</span>
+                    Eliminar
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
