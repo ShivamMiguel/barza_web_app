@@ -3,10 +3,11 @@ import { Avatar } from '@/components/Avatar'
 import { CreateSpaceButton } from '@/components/CreateSpaceButton'
 import { PostCardEditorial } from '@/components/PostCardEditorial'
 import { ProfileEditButton } from '@/components/ProfileEditButton'
+import { ServicesSection } from '@/components/ServicesSection'
 import { getPosts } from '@/lib/supabase/posts'
 import { getLoggedUserProfile } from '@/lib/supabase/profile'
 import { getFollowSummary } from '@/lib/supabase/follows'
-import { getSpacesByOwner, type ProfessionalSpace } from '@/lib/supabase/professional-spaces'
+import { getSpacesByOwner, getServicesBySpaceIds, type ProfessionalSpace } from '@/lib/supabase/professional-spaces'
 
 export const metadata = {
   title: 'Perfil | BARZA',
@@ -90,6 +91,9 @@ export default async function ProfilePage() {
     getFollowSummary(profile.id, profile.id),
     getSpacesByOwner(profile.id),
   ])
+
+  const spaceIds = spaces.map(s => s.id)
+  const services = await getServicesBySpaceIds(spaceIds)
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 pb-24 lg:pb-8">
@@ -182,6 +186,9 @@ export default async function ProfilePage() {
             </div>
           )}
         </div>
+
+        {/* ── Serviços ────────────────────────────────────────────────── */}
+        <ServicesSection spaces={spaces} initialServices={services} />
 
         {/* ── Posts ───────────────────────────────────────────────────── */}
         <div>

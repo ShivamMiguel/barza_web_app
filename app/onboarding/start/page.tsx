@@ -151,13 +151,13 @@ export default function OnboardingStartPage() {
         </div>
         <div className="flex gap-4 sm:gap-8">
           <a
-            href="#"
+            href="/privacy"
             className="text-[0.625rem] font-label tracking-[0.15em] uppercase text-on-surface-variant/40 hover:text-primary transition-colors duration-500"
           >
             Privacy
           </a>
           <a
-            href="#"
+            href="/terms"
             className="text-[0.625rem] font-label tracking-[0.15em] uppercase text-on-surface-variant/40 hover:text-primary transition-colors duration-500"
           >
             Terms

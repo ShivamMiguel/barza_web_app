@@ -1,12 +1,13 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Avatar } from '@/components/Avatar'
+import { EditSpaceButton } from '@/components/EditSpaceButton'
+import { ServicesSection } from '@/components/ServicesSection'
 import { getLoggedUserProfile, getUserProfileById } from '@/lib/supabase/profile'
 import {
   getSpaceById,
   getServicesBySpaceIds,
   type ProfessionalSpace,
-  type ProfessionalService,
 } from '@/lib/supabase/professional-spaces'
 
 export const dynamic = 'force-dynamic'
@@ -48,7 +49,7 @@ export default async function SpacePage({
   const isOwner = loggedUser?.id === space.owner
 
   const [services, owner] = await Promise.all([
-    getServicesBySpaceIds([space.id]),
+    getServicesBySpaceIds([space.id], !isOwner),
     getUserProfileById(space.owner),
   ])
 
@@ -111,15 +112,7 @@ export default async function SpacePage({
                   {space.available ? 'Disponível' : 'Indisponível'}
                 </span>
 
-                {isOwner && (
-                  <Link
-                    href="/community/market-insights"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary-container/30 text-primary-container text-[10px] font-label uppercase tracking-widest hover:bg-primary-container/10 transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-sm">edit</span>
-                    Gerir
-                  </Link>
-                )}
+                {isOwner && <EditSpaceButton space={space} />}
               </div>
             </div>
 
@@ -205,24 +198,11 @@ export default async function SpacePage({
         )}
 
         {/* ── Services ────────────────────────────────────────────────── */}
-        <div>
-          <p className="text-[10px] font-label uppercase tracking-[0.2em] text-on-surface-variant/40 mb-5">
-            Serviços
-          </p>
-
-          {services.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {services.map((service) => (
-                <ServiceCard key={service.id} service={service} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 bg-surface-container rounded-3xl border border-[rgba(86,67,58,0.1)]">
-              <span className="material-symbols-outlined text-4xl text-on-surface-variant/20 mb-3 block">content_cut</span>
-              <p className="text-on-surface-variant text-sm">Nenhum serviço publicado</p>
-            </div>
-          )}
-        </div>
+        <ServicesSection
+          spaces={[space]}
+          initialServices={services}
+          isOwner={isOwner}
+        />
 
         {/* ── Owner ───────────────────────────────────────────────────── */}
         {owner && (
@@ -259,42 +239,3 @@ export default async function SpacePage({
   )
 }
 
-function ServiceCard({ service }: { service: ProfessionalService }) {
-  const hasPromo = service.preco_promocional != null && service.preco_promocional < service.price
-
-  return (
-    <div className="group flex flex-col gap-3 p-5 rounded-2xl bg-surface-container border border-[rgba(86,67,58,0.1)] hover:border-primary-container/20 transition-colors">
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="font-bold text-sm text-on-surface leading-tight">{service.service_name}</h3>
-        {service.category && (
-          <span className="text-[9px] font-label uppercase tracking-widest bg-primary-container/10 text-primary-container px-2 py-0.5 rounded-full flex-shrink-0">
-            {service.category}
-          </span>
-        )}
-      </div>
-
-      {service.description && (
-        <p className="text-xs text-on-surface-variant/60 leading-relaxed line-clamp-2">{service.description}</p>
-      )}
-
-      <div className="flex items-center gap-4 mt-auto pt-1">
-        <div className="flex items-center gap-2">
-          {hasPromo ? (
-            <>
-              <span className="font-bold text-sm text-primary-container">{service.preco_promocional?.toLocaleString('pt-AO')} Kz</span>
-              <span className="text-xs text-on-surface-variant/40 line-through">{service.price.toLocaleString('pt-AO')} Kz</span>
-            </>
-          ) : (
-            <span className="font-bold text-sm text-on-surface">{service.price.toLocaleString('pt-AO')} Kz</span>
-          )}
-        </div>
-        {service.duration_minutes > 0 && (
-          <span className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant/50 flex items-center gap-1 ml-auto">
-            <span className="material-symbols-outlined text-[11px]">schedule</span>
-            {service.duration_minutes} min
-          </span>
-        )}
-      </div>
-    </div>
-  )
-}

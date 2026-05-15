@@ -14,6 +14,7 @@ import { IntelligenceListensSection } from "@/components/IntelligenceListensSect
 import { ManifestoSection } from "@/components/ManifestoSection";
 import { SocialProofSection } from "@/components/SocialProofSection";
 import { FutureVisionSection } from "@/components/FutureVisionSection";
+import { PricingSection } from "@/components/PricingSection";
 import { FinalCTASection } from "@/components/FinalCTASection";
 import { Footer } from "@/components/Footer";
 import { DownloadModal } from "@/components/DownloadModal";
@@ -48,6 +49,7 @@ export default function Home() {
       <ManifestoSection />
       <SocialProofSection />
       <FutureVisionSection />
+      <PricingSection onSignupClick={() => setIsSignupOpen(true)} />
       <FinalCTASection onDownloadClick={() => setIsDownloadOpen(true)} />
       <Footer />
 
