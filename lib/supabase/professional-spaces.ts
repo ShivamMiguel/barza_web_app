@@ -21,6 +21,7 @@ export interface ProfessionalSpace {
 
 export interface ProfessionalService {
   id: string
+  created_at?: string
   professional_space_id: string
   service_name: string
   price: number
@@ -30,6 +31,7 @@ export interface ProfessionalService {
   description?: string | null
   extra_fee?: number | null
   preco_promocional?: number | null
+  image?: string | null
 }
 
 export async function getSpaceById(id: string): Promise<ProfessionalSpace | null> {
@@ -56,16 +58,18 @@ export async function getSpacesByOwner(ownerId: string): Promise<ProfessionalSpa
   return data as ProfessionalSpace[]
 }
 
-export async function getServicesBySpaceIds(spaceIds: string[]): Promise<ProfessionalService[]> {
+export async function getServicesBySpaceIds(spaceIds: string[], activeOnly = false): Promise<ProfessionalService[]> {
   if (spaceIds.length === 0) return []
   const supabase = await createClient()
-  const { data, error } = await supabase
+  let query = supabase
     .from('professional_services')
     .select('*')
     .in('professional_space_id', spaceIds)
-    .eq('is_active', true)
     .order('created_at', { ascending: false })
 
+  if (activeOnly) query = query.eq('is_active', true)
+
+  const { data, error } = await query
   if (error || !data) return []
   return data as ProfessionalService[]
 }
@@ -83,6 +87,7 @@ export interface ServiceWithSpace {
   description?: string
   extra_fee?: number
   preco_promocional?: number
+  image?: string | null
   professional_space: {
     id: string
     space_name: string

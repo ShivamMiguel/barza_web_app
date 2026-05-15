@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { ShareModal } from '@/components/ShareModal'
 import type { ServiceWithSpace } from '@/lib/supabase/professional-spaces'
 
-const FALLBACK_IMAGE = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCa5P37XvWjwJAJA0V0T62PA1pea9eXalF7n38KxH8ZIA5hkkdtrTLYXVKKbrc3oytmrHyH-yY2j43sTUa4jcmlzluraW8SUtxm665tpm90OR9Fp0bmDIKZlV7l5AIn7f0W9Wu0NiVnkJuphTgxK4KwovVxgq9m2GrVHEU1yxFWheaEhsBiGDaKk9J9uPuncViKVogffveiWiJOExKhqVNnz7l08IIyrP4akh3NMkpFvhaMsmEarc6km-fe53zzcWqlm2wxzbk24DA'
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -54,11 +53,18 @@ export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }
 
       {/* Image + CTAs */}
       <div className="relative aspect-square w-full bg-surface-container-highest overflow-hidden">
-        <img
-          src={FALLBACK_IMAGE}
-          alt={service.service_name}
-          className="w-full h-full object-cover"
-        />
+        {service.image ? (
+          <img
+            src={service.image}
+            alt={service.service_name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-on-surface-variant/25">
+            <span className="material-symbols-outlined text-5xl">hide_image</span>
+            <p className="text-[10px] font-label uppercase tracking-widest">Imagem não disponível</p>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
           <div className="mb-4">
             <p className="text-[10px] uppercase tracking-widest text-primary-container font-bold mb-0.5">{service.category}</p>

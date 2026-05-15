@@ -4,8 +4,8 @@ export function Footer() {
       <div className="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
         <div className="text-xl font-black text-[#ff9156] font-headline uppercase">BARZA</div>
         <div className="flex flex-wrap justify-center gap-8 font-body text-[0.6875rem] uppercase tracking-[0.1em]">
-          <a className="text-[#e5e2e1]/60 hover:text-[#ff9156] transition-colors" href="#">Privacy Policy</a>
-          <a className="text-[#e5e2e1]/60 hover:text-[#ff9156] transition-colors" href="#">Terms of Service</a>
+          <a className="text-[#e5e2e1]/60 hover:text-[#ff9156] transition-colors" href="/privacy">Privacy Policy</a>
+          <a className="text-[#e5e2e1]/60 hover:text-[#ff9156] transition-colors" href="/terms">Terms of Service</a>
           <a className="text-[#e5e2e1]/60 hover:text-[#ff9156] transition-colors" href="#">Brand Kit</a>
           <a className="text-[#e5e2e1]/60 hover:text-[#ff9156] transition-colors" href="#">Press Enquiries</a>
           <a className="text-[#e5e2e1]/60 hover:text-[#ff9156] transition-colors" href="#">Contact Support</a>
