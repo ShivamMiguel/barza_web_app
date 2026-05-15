@@ -18,11 +18,11 @@ export function ProExperienceSection() {
             </div>
             <div className="flex gap-6">
               <div className="flex-shrink-0 w-12 h-12 rounded-full bg-surface-container flex items-center justify-center border border-white/5">
-                <span className="material-symbols-outlined text-primary-container">payments</span>
+                <span className="material-symbols-outlined text-primary-container">trending_up</span>
               </div>
               <div>
-                <h4 className="font-bold text-lg mb-1 font-headline">Pagamentos Seguros</h4>
-                <p className="opacity-60">Garante a tua reserva com pagamentos integrados e política de cancelamento.</p>
+                <h4 className="font-bold text-lg mb-1 font-headline">Inteligência de Mercado</h4>
+                <p className="opacity-60">Acede a sinais e tendências da indústria filtrados para Angola. Antecipa o que os teus clientes vão querer antes de pedirem.</p>
               </div>
             </div>
             <div className="flex gap-6">

@@ -182,13 +182,13 @@ function PostCard() {
 // ─── Center card: live feed marquee ─────────────────────────────────────────
 
 const FEED_ITEMS: { who: string; what: string; tag: string; icon: string }[] = [
-  { who: 'Aline',         what: 'acabou de marcar com @StudioAfro',         tag: 'Marcação', icon: 'calendar_month' },
-  { who: 'Tendência',     what: 'micro-fringe regressa a Luanda esta semana', tag: 'Sinal',    icon: 'trending_up' },
-  { who: 'Mestre Kikas',  what: 'partilhou 3 cortes feitos hoje em Viana',  tag: 'Portfólio', icon: 'content_cut' },
-  { who: 'Bruna',         what: 'descobriu um novo skincare local',          tag: 'Descoberta', icon: 'spa' },
-  { who: 'Trança nagô',   what: 'novo episódio do podcast já no ar',         tag: 'Podcast',  icon: 'graphic_eq' },
-  { who: 'Glow Ritual',   what: 'antes de qualquer sábado · 248 ❤',          tag: 'Post',     icon: 'auto_awesome' },
-  { who: 'Insight IA',    what: 'cor cinza-azulada ganha tração 25-34',      tag: 'IA',       icon: 'psychology' },
+  { who: 'Aline',         what: 'descobriu @StudioAfro e entrou em contacto directamente',  tag: 'Descoberta', icon: 'person_search' },
+  { who: 'Tendência',     what: 'micro-fringe regressa a Luanda esta semana',               tag: 'Sinal',      icon: 'trending_up' },
+  { who: 'Mestre Kikas',  what: 'partilhou 3 cortes feitos hoje em Viana',                  tag: 'Portfólio',  icon: 'content_cut' },
+  { who: 'Bruna',         what: 'descobriu um novo espaço de skincare em Talatona',         tag: 'Descoberta', icon: 'spa' },
+  { who: 'Trança nagô',   what: 'novo episódio do podcast já no ar',                        tag: 'Podcast',    icon: 'graphic_eq' },
+  { who: 'Glow Ritual',   what: 'antes de qualquer sábado · 248 ❤',                         tag: 'Post',       icon: 'auto_awesome' },
+  { who: 'Insight IA',    what: 'cor cinza-azulada ganha tração 25-34',                     tag: 'IA',         icon: 'psychology' },
 ]
 
 function LiveFeedCard() {

@@ -30,6 +30,14 @@ function Li({ children }: { children: React.ReactNode }) {
   )
 }
 
+function Notice({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="p-4 rounded-2xl bg-primary-container/5 border border-primary-container/20 text-sm text-on-surface-variant/80 leading-relaxed">
+      {children}
+    </div>
+  )
+}
+
 export default function TermsPage() {
   return (
     <div className="min-h-screen px-6 py-16 pb-24 lg:py-20">
@@ -62,16 +70,40 @@ export default function TermsPage() {
           Bem-vindo à <strong className="text-on-surface">Barza</strong>. Ao acederes ou utilizares a nossa plataforma, concordas com estes Termos de Serviço. Lê-os com atenção antes de criares uma conta ou utilizares qualquer funcionalidade. Se não concordares, não deves utilizar a Barza.
         </p>
 
-        <Section title="1. Descrição da Plataforma">
+        <Section title="1. O que é a Barza">
           <p>
-            A Barza é uma plataforma digital de comunidade dedicada a profissionais e entusiastas da beleza em Angola. Permite a criação de perfis pessoais e espaços profissionais, publicação de serviços, interacção entre membros da comunidade e descoberta de profissionais de beleza.
+            A Barza é uma <strong className="text-on-surface">plataforma de visibilidade profissional e inteligência de mercado</strong> dedicada à indústria da beleza em Angola. A Barza permite:
           </p>
-          <p>
-            A Barza não presta directamente serviços de beleza — actua exclusivamente como plataforma de conexão entre profissionais e clientes.
-          </p>
+          <ul className="space-y-1.5 mt-2">
+            <Li>A criação de perfis pessoais e espaços profissionais para ganhar visibilidade na comunidade.</Li>
+            <Li>A descoberta de profissionais da beleza por localização, especialidade e presença na plataforma.</Li>
+            <Li>O acesso a sinais de tendências e inteligência de mercado da indústria da beleza.</Li>
+            <Li>A publicação e partilha de conteúdo dentro de uma comunidade de profissionais e entusiastas.</Li>
+          </ul>
+          <Notice>
+            <strong className="text-on-surface">A Barza não é um marketplace.</strong> A Barza não vende produtos, não intermedeia transacções financeiras, não processa pagamentos e não cobra comissões sobre serviços. Toda a actividade comercial entre clientes e profissionais acontece exclusivamente fora da plataforma, de forma directa e autónoma entre as partes.
+          </Notice>
         </Section>
 
-        <Section title="2. Elegibilidade e Contas">
+        <Section title="2. Conexão entre Clientes e Profissionais">
+          <p>
+            A Barza disponibiliza ferramentas que permitem a clientes entrar em contacto com profissionais da beleza. É importante compreender o seguinte:
+          </p>
+          <ul className="space-y-1.5 mt-2">
+            <Li>Qualquer contacto ou pedido de agendamento iniciado através da Barza é uma <strong className="text-on-surface">ferramenta de conexão</strong>, não uma reserva confirmada nem um contrato de prestação de serviço.</Li>
+            <Li>A Barza <strong className="text-on-surface">não participa, não gere, não controla e não valida</strong> qualquer serviço prestado entre clientes e profissionais.</Li>
+            <Li>A decisão de agendar, executar ou recusar qualquer serviço é inteiramente da responsabilidade do cliente e do profissional.</Li>
+            <Li>O relacionamento, a execução do serviço e quaisquer acordos comerciais são estabelecidos directamente entre cliente e profissional, sem qualquer intervenção da Barza.</Li>
+          </ul>
+        </Section>
+
+        <Section title="3. Pagamentos e Transacções Financeiras">
+          <Notice>
+            <strong className="text-on-surface">A Barza não processa pagamentos.</strong> A Barza não intermedeia nem facilita transacções financeiras de qualquer natureza. Todos os pagamentos por serviços de beleza são acordados e efectuados exclusivamente entre o cliente e o profissional, através dos meios que estes acordarem, fora da plataforma. A Barza não cobra qualquer comissão sobre serviços, não retém valores e não tem acesso a dados de pagamento dos seus utilizadores.
+          </Notice>
+        </Section>
+
+        <Section title="4. Elegibilidade e Contas">
           <p>Para utilizares a Barza, deves:</p>
           <ul className="space-y-1.5 mt-2">
             <Li>Ter pelo menos <strong className="text-on-surface">16 anos</strong> de idade.</Li>
@@ -84,12 +116,12 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="3. Espaços Profissionais">
+        <Section title="5. Espaços Profissionais">
           <p>Os utilizadores que criem um espaço profissional na Barza comprometem-se a:</p>
           <ul className="space-y-1.5 mt-2">
             <Li>Fornecer informações verdadeiras sobre o seu negócio, incluindo nome, localização, horário e serviços.</Li>
-            <Li>Manter os preços e a disponibilidade actualizados para evitar expectativas incorrectas junto dos clientes.</Li>
-            <Li>Publicar apenas imagens de serviços reais que representem o seu trabalho.</Li>
+            <Li>Manter a sua presença e informações actualizadas para uma descoberta precisa por parte de potenciais clientes.</Li>
+            <Li>Publicar apenas imagens reais que representem o seu trabalho e identidade profissional.</Li>
             <Li>Cumprir toda a legislação angolana aplicável à prestação de serviços de beleza e bem-estar.</Li>
             <Li>Não utilizar o espaço profissional para promover actividades ilegais ou enganosas.</Li>
           </ul>
@@ -98,9 +130,9 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="4. Conteúdo do Utilizador">
+        <Section title="6. Conteúdo do Utilizador">
           <p>
-            Ao publicares conteúdo na Barza (posts, imagens, comentários, informações de serviços), manténs a propriedade intelectual desse conteúdo e concedes à Barza uma licença mundial, não exclusiva, gratuita e transferível para armazenar, exibir, reproduzir e distribuir esse conteúdo no âmbito da operação da plataforma.
+            Ao publicares conteúdo na Barza (posts, imagens, informações de perfil ou de espaço profissional), manténs a propriedade intelectual desse conteúdo e concedes à Barza uma licença mundial, não exclusiva, gratuita e transferível para armazenar, exibir, reproduzir e distribuir esse conteúdo no âmbito da operação da plataforma.
           </p>
           <p>Ao publicares conteúdo, declaras que:</p>
           <ul className="space-y-1.5 mt-2">
@@ -110,7 +142,7 @@ export default function TermsPage() {
           </ul>
         </Section>
 
-        <Section title="5. Conduta Proibida">
+        <Section title="7. Conduta Proibida">
           <p>É expressamente proibido na Barza:</p>
           <ul className="space-y-1.5 mt-2">
             <Li>Publicar conteúdo ofensivo, discriminatório, obsceno ou que incite à violência.</Li>
@@ -124,25 +156,19 @@ export default function TermsPage() {
           </ul>
         </Section>
 
-        <Section title="6. Avaliações e Interacções">
-          <p>
-            A Barza pode disponibilizar funcionalidades de avaliação e comentário de espaços profissionais. As avaliações devem ser honestas, baseadas em experiências reais e respeitar a conduta prevista nestes Termos. Reservamo-nos o direito de remover avaliações falsas, abusivas ou que violem estas regras.
-          </p>
-        </Section>
-
-        <Section title="7. Propriedade Intelectual da Barza">
+        <Section title="8. Propriedade Intelectual da Barza">
           <p>
             A marca, o logótipo, o design, o código e os demais elementos da plataforma Barza são propriedade exclusiva da Barza e estão protegidos pela legislação angolana de propriedade intelectual. É proibida a reprodução, cópia ou utilização sem autorização expressa e por escrito.
           </p>
         </Section>
 
-        <Section title="8. Limitação de Responsabilidade">
+        <Section title="9. Limitação de Responsabilidade">
           <p>
-            A Barza actua como intermediária e não se responsabiliza por:
+            A Barza actua exclusivamente como plataforma de visibilidade e descoberta e não se responsabiliza por:
           </p>
           <ul className="space-y-1.5 mt-2">
             <Li>A qualidade, segurança ou legalidade dos serviços prestados pelos profissionais listados na plataforma.</Li>
-            <Li>Discrepâncias entre os serviços descritos na plataforma e os efectivamente prestados.</Li>
+            <Li>Acordos, pagamentos ou conflitos estabelecidos directamente entre clientes e profissionais fora da plataforma.</Li>
             <Li>Danos directos ou indirectos decorrentes do uso ou impossibilidade de uso da plataforma.</Li>
             <Li>Conteúdo publicado por terceiros utilizadores.</Li>
             <Li>Interrupções de serviço causadas por manutenção, falhas técnicas ou factores fora do nosso controlo.</Li>
@@ -152,7 +178,7 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="9. Suspensão e Encerramento">
+        <Section title="10. Suspensão e Encerramento">
           <p>
             Podemos suspender ou encerrar o teu acesso à Barza, com ou sem aviso prévio, se:
           </p>
@@ -166,19 +192,19 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="10. Alterações aos Termos">
+        <Section title="11. Alterações aos Termos">
           <p>
             Podemos actualizar estes Termos de Serviço periodicamente. Notificamos os utilizadores sobre alterações materiais por e-mail ou através de aviso na plataforma. O uso continuado da Barza após a entrada em vigor das alterações constitui aceitação dos novos Termos.
           </p>
         </Section>
 
-        <Section title="11. Lei Aplicável e Jurisdição">
+        <Section title="12. Lei Aplicável e Jurisdição">
           <p>
             Estes Termos são regidos pela legislação da <strong className="text-on-surface">República de Angola</strong>. Qualquer litígio decorrente da utilização da plataforma será submetido à jurisdição dos tribunais competentes de Luanda, Angola.
           </p>
         </Section>
 
-        <Section title="12. Contacto">
+        <Section title="13. Contacto">
           <p>
             Para questões sobre estes Termos de Serviço:
           </p>

@@ -24,8 +24,7 @@ export function HeroSection({ onDownloadClick, onSignupClick }: HeroSectionProps
             <span className="text-primary-container">É PRESENÇA.</span>
           </h1>
           <p className="text-base sm:text-lg lg:text-2xl text-on-surface/80 max-w-xl mb-6 sm:mb-8 lg:mb-12 font-body leading-relaxed">
-            Barza junta comunidade, serviços e produtos numa só plataforma. Descobre tendências, marca profissionais e compra com
-            confiança.
+            A plataforma de visibilidade e inteligência de mercado para profissionais da beleza em Angola. Descobre talentos, inspira-te e observa onde o mercado se move.
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 lg:gap-6 items-start sm:items-center">
             <button
