@@ -59,7 +59,7 @@ export default function PrivacyPage() {
 
         {/* Intro */}
         <p className="text-sm text-on-surface-variant/80 leading-relaxed">
-          A <strong className="text-on-surface">Barza</strong> (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo;) é uma plataforma digital de comunidade para profissionais e entusiastas da beleza, operada em Angola. Esta Política de Privacidade explica que dados recolhemos, como os utilizamos e que direitos tens sobre eles. Ao usares a Barza, aceitas as práticas descritas neste documento.
+          A <strong className="text-on-surface">Barza</strong> (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo;) é uma plataforma de visibilidade profissional e inteligência de mercado para a indústria da beleza, operada em Angola. A Barza não processa pagamentos nem intermedeia transacções financeiras — toda a actividade comercial entre utilizadores acontece fora da plataforma. Esta Política de Privacidade explica que dados recolhemos, como os utilizamos e que direitos tens sobre eles. Ao usares a Barza, aceitas as práticas descritas neste documento.
         </p>
 
         <Section title="1. Dados que Recolhemos">
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
           <ul className="space-y-1.5 mt-2">
             <Li><strong className="text-on-surface">Conta:</strong> nome completo, endereço de e-mail, fotografia de perfil, profissão e biografia.</Li>
             <Li><strong className="text-on-surface">Espaço profissional:</strong> nome do espaço, logótipo, localização (cidade, morada, coordenadas GPS), telefone, horário de funcionamento e categorias de serviços.</Li>
-            <Li><strong className="text-on-surface">Conteúdo publicado:</strong> posts, imagens de serviços e comentários que publicares na plataforma.</Li>
+            <Li><strong className="text-on-surface">Conteúdo publicado:</strong> posts, imagens do teu trabalho, perfil profissional e interacções que publicares na plataforma.</Li>
             <Li><strong className="text-on-surface">Dados de uso:</strong> páginas visitadas, pesquisas realizadas, interações com conteúdo (gostos, partilhas) e dados de sessão.</Li>
             <Li><strong className="text-on-surface">Dados de dispositivo:</strong> endereço IP, tipo de browser, sistema operativo e identificadores de dispositivo.</Li>
             <Li><strong className="text-on-surface">Localização:</strong> somente quando autorizas explicitamente, para funcionalidades de detecção de localização.</Li>

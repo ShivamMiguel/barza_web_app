@@ -1,61 +1,79 @@
-export function ProductsSection() {
-  const products = [
-    {
-      category: 'Capilar',
-      name: 'Óleo de Rícino Premium',
-      price: '12.500 Kz',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBW6RWDf6OYRIoSvTNG4IWcuDLMpA6mf8vGma75h5_q7_puSWn5ujI7r9cqqskDUHU32MECi6CtX3MVX-QGHSrUMD9gduoYXERprLnFt6I7CzcYAGbEhnVIOWjrg1-OLFDs-YKqQeD3-KH7fF1ToblFL0-lTe3gz1te0eDGknxrWjTZoI52tENYFFfsek0KslZVknGukMf3PXJZUj0OWOifNNuKedjuhlifGrouApqbMtiMFIBBXjKRG9g1RCgas1JXelVk0JFpuoc',
-      alt: 'Elegant black matte bottle of hair oil with copper accents against a minimalist dark background'
-    },
-    {
-      category: 'Estética',
-      name: 'Creme Hidratante Noite',
-      price: '8.900 Kz',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPVRUyNVehbZnVzb3xEYOo1xngFR_0MZ6mWoHSXF51fVIlVzdZrKm7r0AcIoH6zlewFS9vHu-2AuTBiSD5e26YSqJ1ojKRC7qXHR757nZqjKt-jbUp1z30nYV-J3LfviuI80cIrXjehhBJaZOranKLxElWenPruaXlVV9thSJvU3uG_AuYfe6J1Pc5qBKIsyRww8k80Y87zs3WdDP9CuR3o2OqMHzqJGv1q7Q16d686vFa6sQZ65VC_rVEQ6NJ_UVmOEEUomcAT8Q',
-      alt: 'A jar of premium facial cream with a smooth texture visible, reflecting soft warm light on an obsidian surface'
-    },
-    {
-      category: 'Barbearia',
-      name: 'Pomada Clay Matte',
-      price: '6.500 Kz',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAida_sm8h4EKQ-tJ9PTYfAoYs3yDwucY4a594jfAbIyaYYRDJIKseTKWehuFonjZ8FybRAr7IC_Y4kNPasb8ea7fBiypwFNlIlWzcEK6_MXANNC81k2HvhgJNM_yRltLkPOQM-kU6D3JjDel9AlzUf4pSyaFGUoRM9Mt49JS4krnNrJhRuhYWzAsLzyBeUPe_6mt3cSqhv5neveug1VrawAwX8wgmvAUxJuVOREILogj9dGLprwwz5sQz_SUsLVXhPsJtNEK7Pnvw',
-      alt: 'Selection of high-end barbering tools and styling pomades arranged professionally in a luxury kit'
-    },
-    {
-      category: 'Fragrâncias',
-      name: 'Barza Noir Eau de Parfum',
-      price: '24.000 Kz',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMIMTxokqgCwX8sOmg6307g1Pr8ZPsXBLCShRNpKtjWHyFiOJr359gF2Atf3hW5SRWDr5TAoPew8FvNuW8WxE8lcZ2i63WJOi4mZb4M97Glo1n_0Q-3Aa2DcH800qL96gzL0WXfLs7c-b2AyjjNo6HdyCaiQFqBXAgsnVOJs6NQFQ7nj7KR5Hpve66gwYC7-lvizU79m5NUYPnfjlEcOLCA8va4TkRIbd6PBI7F4m1dfLjpIDOhcLUKk9q2YPVEoiM_5ZjIGPJ32Y',
-      alt: 'Two premium perfume bottles on a reflective dark surface with dramatic orange light leaks'
-    },
-  ];
+const TRENDS = [
+  {
+    category: 'Cabelo',
+    name: 'Trança Nagô',
+    signal: '+38% esta semana',
+    origin: 'Lagos → Luanda',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBW6RWDf6OYRIoSvTNG4IWcuDLMpA6mf8vGma75h5_q7_puSWn5ujI7r9cqqskDUHU32MECi6CtX3MVX-QGHSrUWjTZoI52tENYFFfsek0KslZVknGukMf3PXJZUj0OWOifNNuKedjuhlifGrouApqbMtiMFIBBXjKRG9g1RCgas1JXelVk0JFpuoc',
+    alt: 'Close-up of intricate nagô braids with soft warm lighting on dark background',
+  },
+  {
+    category: 'Estética',
+    name: 'Skin Prep Ritual',
+    signal: '+22% este mês',
+    origin: 'Milão → Talatona',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPVRUyNVehbZnVzb3xEYOo1xngFR_0MZ6mWoHSXF51fVIlVzdZrKm7r0AcIoH6zlewFS9vHu-2AuTBiSD5e26YSqJ1ojKRC7qXHR757nZqjKt-jbUp1z30nYV-J3LfviuI80cIrXjehhBJaZOranKLxElWenPruaXlVV9thSJvU3uG_AuYfe6J1Pc5qBKIsyRww8k80Y87zs3WdDP9CuR3o2OqMHzqJGv1q7Q16d686vFa6sQZ65VC_rVEQ6NJ_UVmOEEUomcAT8Q',
+    alt: 'Professional skin treatment in a modern beauty studio with warm ambient lighting',
+  },
+  {
+    category: 'Barbearia',
+    name: 'Fade Clássico',
+    signal: 'Top em Viana',
+    origin: 'Nova Iorque → Luanda',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAida_sm8h4EKQ-tJ9PTYfAoYs3yDwucY4a594jfAbIyaYYRDJIKseTKWehuFonjZ8FybRAr7IC_Y4kNPasb8ea7fBiypwFNlIlWzcEK6_MXANNC81k2HvhgJNM_yRltLkPOQM-kU6D3JjDel9AlzUf4pSyaFGUoRM9Mt49JS4krnNrJhRuhYWzAsLzyBeUPe_6mt3cSqhv5neveug1VrawAwX8wgmvAUxJuVOREILogj9dGLprwwz5sQz_SUsLVXhPsJtNEK7Pnvw',
+    alt: 'Precise fade haircut being performed by a professional barber, dramatic studio lighting',
+  },
+  {
+    category: 'Coloração',
+    name: 'Cinza Azulado',
+    signal: 'Gap detectado',
+    origin: 'Tóquio → Luanda',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMIMTxokqgCwX8sOmg6307g1Pr8ZPsXBLCShRNpKtjWHyFiOJr359gF2Atf3hW5SRWDt6CIvRHVnx_V10SGl2tnsrGdZYamTSl1sXp-nu0',
+    alt: 'Stylized grey-blue hair color on a model with dramatic cinematic lighting',
+  },
+]
 
+export function ProductsSection() {
   return (
     <section className="py-32 px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-end mb-16">
           <div>
-            <h2 className="text-4xl font-black font-headline tracking-tighter mb-4">O CUIDADO CONTINUA DEPOIS DO SERVIÇO.</h2>
-            <p className="text-on-surface/60">Produtos premium selecionados pelos nossos especialistas.</p>
+            <p className="text-[0.6875rem] font-label tracking-[0.25em] uppercase text-primary-container font-bold mb-3">
+              Tendências em Destaque
+            </p>
+            <h2 className="text-4xl font-black font-headline tracking-tighter mb-4">O MERCADO FALA. ESTÁS A OUVIR?</h2>
+            <p className="text-on-surface/60 max-w-md">Sinais reais do que está a ganhar tração na indústria da beleza, filtrados para o contexto angolano.</p>
           </div>
-          <button className="text-primary-container font-bold flex items-center gap-2 group">Ver todos os produtos <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">keyboard_arrow_right</span></button>
+          <button className="text-primary-container font-bold flex items-center gap-2 group">
+            Ver todos os sinais
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">keyboard_arrow_right</span>
+          </button>
         </div>
         <div className="grid md:grid-cols-4 gap-6">
-          {products.map((product, index) => (
+          {TRENDS.map((trend, index) => (
             <div key={index} className="group">
-              <div className="aspect-square bg-surface-container rounded-xl overflow-hidden mb-6 relative">
-                <img className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={product.alt} data-alt={product.alt} src={product.image} />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                  <button className="bg-white text-black px-6 py-2 font-bold rounded-full">Comprar</button>
+              <div className="aspect-square bg-surface-container rounded-xl overflow-hidden mb-4 relative">
+                <img
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  alt={trend.alt}
+                  data-alt={trend.alt}
+                  src={trend.image}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container/20 border border-primary-container/40 w-fit mb-2">
+                    <span className="material-symbols-outlined text-primary-container text-[10px]">trending_up</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-primary-container">{trend.signal}</span>
+                  </span>
+                  <p className="text-[9px] font-label uppercase tracking-widest text-white/50">{trend.origin}</p>
                 </div>
               </div>
-              <p className="text-xs font-label uppercase tracking-widest text-primary-container mb-1">{product.category}</p>
-              <h4 className="font-bold mb-1 font-headline">{product.name}</h4>
-              <p className="text-sm opacity-60">{product.price}</p>
+              <p className="text-xs font-label uppercase tracking-widest text-primary-container mb-1">{trend.category}</p>
+              <h4 className="font-bold font-headline">{trend.name}</h4>
             </div>
           ))}
         </div>
       </div>
     </section>
-  );
+  )
 }

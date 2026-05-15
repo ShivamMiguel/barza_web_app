@@ -422,7 +422,7 @@ function InsightLocalCard() {
       </div>
 
       <h4 className="font-headline text-sm sm:text-base font-bold leading-snug text-on-surface mb-5 min-h-[3.5rem]">
-        Pico de marcações: sexta 14h-19h. Domingo subiu <span className="text-primary-container">+12%</span>.
+        Pico de actividade: sexta 14h-19h. Domingo subiu <span className="text-primary-container">+12%</span>.
       </h4>
 
       {/* Heatmap */}
@@ -463,7 +463,7 @@ function InsightLocalCard() {
 
       <div className="flex items-center justify-between pt-3 border-t border-outline-variant/10">
         <span className="text-[9px] text-on-surface-variant/50 font-medium">
-          Dados anónimos · 2,4k marcações
+          Dados anónimos · 2,4k interações
         </span>
         <span className="material-symbols-outlined text-on-surface-variant/30 group-hover:text-primary-container group-hover:translate-x-0.5 transition-all text-base">
           arrow_outward

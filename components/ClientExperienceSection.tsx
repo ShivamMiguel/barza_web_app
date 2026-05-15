@@ -31,8 +31,8 @@ export function ClientExperienceSection() {
           </div>
           <div className="p-8 bg-surface-container border-t-2 border-primary-container/20 hover:border-primary-container transition-all">
             <p className="text-4xl font-black opacity-10 mb-6">05</p>
-            <h4 className="font-bold mb-2 font-headline">Manter</h4>
-            <p className="text-sm opacity-60">Compra os produtos usados pelo pro e mantém o resultado em casa.</p>
+            <h4 className="font-bold mb-2 font-headline">Seguir</h4>
+            <p className="text-sm opacity-60">Segue o profissional, guarda referências e acompanha o que está a ganhar tração no mercado.</p>
           </div>
         </div>
       </div>

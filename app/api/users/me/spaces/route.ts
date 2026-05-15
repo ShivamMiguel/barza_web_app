@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       const ext = logoFile.name.split('.').pop() ?? 'jpg'
       const path = `spaces/${user.id}/${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage
-        .from('logos')
+        .from('logo')
         .upload(path, logoFile, { upsert: true })
       if (!uploadError) {
         const { data: pub } = supabase.storage.from('logos').getPublicUrl(path)
