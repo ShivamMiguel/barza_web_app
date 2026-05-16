@@ -3,27 +3,32 @@
 import { BeautySignalCard } from "@/components/BeautySignalCard"
 import { ProfessionalSpaceCard } from "@/components/ProfessionalSpaceCard"
 import { PostCardEditorial } from "@/components/PostCardEditorial"
+import { ProductCard } from "@/components/ProductCard"
 import { CreatePostBox } from "@/components/CreatePostBox"
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useCommunity } from "@/lib/community-context"
-import { useProfessionalSpaces, usePosts, useBeautySignals } from "@/hooks/api"
+import { useProfessionalSpaces, usePosts, useBeautySignals, useProducts } from "@/hooks/api"
 import type { ServiceWithSpace } from "@/lib/supabase/professional-spaces"
+import type { ProductWithSpace } from "@/lib/supabase/products"
 import type { PostWithUser } from "@/lib/supabase/posts"
 import type { ExternalSignal } from "@/lib/beauty-signals/external"
 
 type FeedItem =
   | { kind: 'service'; data: ServiceWithSpace }
+  | { kind: 'product'; data: ProductWithSpace }
   | { kind: 'post'; data: PostWithUser }
   | { kind: 'signal'; data: ExternalSignal }
 
 function buildFeed(
   services: ServiceWithSpace[],
+  products: ProductWithSpace[],
   posts: PostWithUser[],
   signals: ExternalSignal[]
 ): FeedItem[] {
   const buckets: FeedItem[][] = [
     services.map(d => ({ kind: 'service' as const, data: d })),
+    products.map(d => ({ kind: 'product' as const, data: d })),
     posts.map(d => ({ kind: 'post' as const, data: d })),
     signals.map(d => ({ kind: 'signal' as const, data: d })),
   ]
@@ -64,9 +69,10 @@ function CommunityFeed() {
   const isCreatePostIntent = action === 'post'
 
   const { data: spaces = [], isLoading: loadingSpaces } = useProfessionalSpaces(20)
+  const { data: products = [], isLoading: loadingProducts } = useProducts(20)
   const { data: postsData, isLoading: loadingPosts } = usePosts({ limit: POSTS_PER_PAGE })
   const { data: signals = [], isLoading: loadingSignals } = useBeautySignals()
-  const isLoading = loadingSpaces || loadingPosts || loadingSignals
+  const isLoading = loadingSpaces || loadingProducts || loadingPosts || loadingSignals
 
   const initialPosts = postsData?.data ?? []
 
@@ -84,10 +90,10 @@ function CommunityFeed() {
   }, [loadingPosts, initialPosts.length])
 
   const feedItems = useMemo<FeedItem[]>(() => {
-    const base = buildFeed(spaces, initialPosts, signals)
+    const base = buildFeed(spaces, products, initialPosts, signals)
     const extra = extraPosts.map(p => ({ kind: 'post' as const, data: p }))
     return [...newPostItems, ...base, ...extra]
-  }, [spaces, initialPosts, signals, newPostItems, extraPosts])
+  }, [spaces, products, initialPosts, signals, newPostItems, extraPosts])
 
   async function loadMorePosts() {
     try {
@@ -185,6 +191,9 @@ function CommunityFeed() {
         {feedItems.map((item, idx) => {
           if (item.kind === 'service') {
             return <ProfessionalSpaceCard key={`service-${item.data.id}`} service={item.data} />
+          }
+          if (item.kind === 'product') {
+            return <ProductCard key={`product-${item.data.id}`} product={item.data} />
           }
           if (item.kind === 'post') {
             return <PostCardEditorial key={`post-${item.data.id}`} post={item.data} currentUserId={userProfile?.id} />

@@ -4,6 +4,7 @@ import type { TrendingProfessional } from '@/app/api/trending-professionals/rout
 import type { PostWithUser } from '@/lib/supabase/posts'
 import type { ExternalSignal } from '@/lib/beauty-signals/external'
 import type { ServiceWithSpace, ProfessionalSpace, ProfessionalService } from '@/lib/supabase/professional-spaces'
+import type { ProductWithSpace } from '@/lib/supabase/products'
 import type { Comment } from '@/components/CommentsSection'
 
 // ── Query Keys ─────────────────────────────────────────────────────────────────
@@ -18,6 +19,7 @@ export const qk = {
   beautySignals:      () => ['beauty-signals'] as const,
   professionalSpaces: (limit: number) => ['professional-spaces', limit] as const,
   mySpaces:           () => ['my-spaces'] as const,
+  products:           (limit: number) => ['products', limit] as const,
 }
 
 // ── Internal fetch helper ──────────────────────────────────────────────────────
@@ -115,6 +117,16 @@ export function useMySpaces() {
       apiFetch<{ spaces: ProfessionalSpace[]; services: ProfessionalService[] }>('/api/users/me/spaces')
         .catch(() => ({ spaces: [] as ProfessionalSpace[], services: [] as ProfessionalService[] })),
     staleTime: 2 * 60 * 1000,
+  })
+}
+
+export function useProducts(limit = 20) {
+  return useQuery({
+    queryKey: qk.products(limit),
+    queryFn: () =>
+      apiFetch<ProductWithSpace[]>(`/api/products?limit=${limit}`)
+        .catch(() => [] as ProductWithSpace[]),
+    staleTime: 5 * 60 * 1000,
   })
 }
 
