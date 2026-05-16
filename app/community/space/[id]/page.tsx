@@ -3,12 +3,14 @@ import { notFound } from 'next/navigation'
 import { Avatar } from '@/components/Avatar'
 import { EditSpaceButton } from '@/components/EditSpaceButton'
 import { ServicesSection } from '@/components/ServicesSection'
+import { SpaceBookingsSection } from '@/components/SpaceBookingsSection'
 import { getLoggedUserProfile, getUserProfileById } from '@/lib/supabase/profile'
 import {
   getSpaceById,
   getServicesBySpaceIds,
   type ProfessionalSpace,
 } from '@/lib/supabase/professional-spaces'
+import { getBookingsBySpace } from '@/lib/supabase/bookings'
 
 export const dynamic = 'force-dynamic'
 
@@ -48,9 +50,10 @@ export default async function SpacePage({
 
   const isOwner = loggedUser?.id === space.owner
 
-  const [services, owner] = await Promise.all([
+  const [services, owner, bookings] = await Promise.all([
     getServicesBySpaceIds([space.id], !isOwner),
     getUserProfileById(space.owner),
+    isOwner ? getBookingsBySpace(space.id) : Promise.resolve([]),
   ])
 
   const loc = getLocation(space)
@@ -203,6 +206,11 @@ export default async function SpacePage({
           initialServices={services}
           isOwner={isOwner}
         />
+
+        {/* ── Bookings (owner only) ────────────────────────────────────── */}
+        {isOwner && (
+          <SpaceBookingsSection initialBookings={bookings} />
+        )}
 
         {/* ── Owner ───────────────────────────────────────────────────── */}
         {owner && (

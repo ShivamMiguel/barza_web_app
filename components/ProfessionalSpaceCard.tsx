@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ShareModal } from '@/components/ShareModal'
+import { BookingModal } from '@/components/BookingModal'
 import type { ServiceWithSpace } from '@/lib/supabase/professional-spaces'
 
 
@@ -24,6 +25,7 @@ export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }
   const space = service.professional_space
   const location = getLocation(space.location_space)
   const [shareOpen, setShareOpen] = useState(false)
+  const [bookingOpen, setBookingOpen] = useState(false)
 
   return (
     <article className="bg-surface-container rounded-3xl overflow-hidden shadow-[0_40px_60px_-15px_rgba(255,255,255,0.04)] border-t border-primary/20">
@@ -72,7 +74,10 @@ export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }
             <p className="text-white/70 text-sm">{service.duration_minutes}min · {service.price.toLocaleString('pt-AO')} Kz</p>
           </div>
           <div className="flex gap-4 w-full">
-            <button className="flex-1 volcanic-gradient text-on-primary py-3 rounded-xl font-bold active:scale-95 transition-all text-sm">
+            <button
+              onClick={() => setBookingOpen(true)}
+              className="flex-1 volcanic-gradient text-on-primary py-3 rounded-xl font-bold active:scale-95 transition-all text-sm"
+            >
               Agendar Agora
             </button>
             <Link
@@ -85,25 +90,11 @@ export function ProfessionalSpaceCard({ service }: { service: ServiceWithSpace }
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="p-6 flex justify-between items-center">
-        <div className="flex items-center gap-6">
-          <button className="flex items-center gap-2 hover:text-primary-container transition-colors text-on-surface/60">
-            <span className="material-symbols-outlined">favorite</span>
-          </button>
-          <button className="flex items-center gap-2 hover:text-primary-container transition-colors text-on-surface/60">
-            <span className="material-symbols-outlined">mode_comment</span>
-          </button>
-          <button
-            onClick={() => setShareOpen(true)}
-            className="flex items-center gap-2 hover:text-primary-container transition-colors text-on-surface/60"
-            aria-label="Partilhar serviço"
-          >
-            <span className="material-symbols-outlined">share</span>
-          </button>
-        </div>
-        <button className="material-symbols-outlined hover:text-primary-container transition-colors text-on-surface/60">bookmark</button>
-      </div>
+      <BookingModal
+        isOpen={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+        service={service}
+      />
 
       <ShareModal
         isOpen={shareOpen}

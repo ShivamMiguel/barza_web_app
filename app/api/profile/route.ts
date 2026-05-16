@@ -37,22 +37,31 @@ export async function PATCH(request: NextRequest) {
     }
 
     let cleanLocation:
-      | { country?: string; country_code?: string; city?: string; neighborhood?: string; dial_code?: string }
+      | { country?: string; country_code?: string; city?: string; neighborhood?: string; street?: string; address?: string; latitude?: number; longitude?: number; dial_code?: string }
       | undefined
     if (location !== undefined) {
       if (typeof location !== 'object' || location === null || Array.isArray(location)) {
         return NextResponse.json({ error: 'Localização inválida' }, { status: 400 })
       }
-      const allowed = ['country', 'country_code', 'city', 'neighborhood', 'dial_code'] as const
+      const loc = location as Record<string, unknown>
       cleanLocation = {}
-      for (const key of allowed) {
-        const v = (location as Record<string, unknown>)[key]
+      const stringFields = ['country', 'country_code', 'city', 'neighborhood', 'street', 'address', 'dial_code'] as const
+      for (const key of stringFields) {
+        const v = loc[key]
         if (v === undefined) continue
         if (typeof v !== 'string') {
           return NextResponse.json({ error: `Localização: campo "${key}" inválido` }, { status: 400 })
         }
         const trimmed = v.trim()
         if (trimmed) cleanLocation[key] = trimmed
+      }
+      for (const key of ['latitude', 'longitude'] as const) {
+        const v = loc[key]
+        if (v === undefined) continue
+        if (typeof v !== 'number' || !isFinite(v)) {
+          return NextResponse.json({ error: `Localização: campo "${key}" inválido` }, { status: 400 })
+        }
+        cleanLocation[key] = v
       }
     }
 
