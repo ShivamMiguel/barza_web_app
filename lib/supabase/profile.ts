@@ -5,6 +5,10 @@ export interface ProfileLocation {
   country_code?: string
   city?: string
   neighborhood?: string
+  street?: string
+  address?: string
+  latitude?: number
+  longitude?: number
   dial_code?: string
   bio?: string
 }
