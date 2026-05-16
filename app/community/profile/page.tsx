@@ -9,6 +9,7 @@ import { getLoggedUserProfile } from '@/lib/supabase/profile'
 import { getFollowSummary } from '@/lib/supabase/follows'
 import { getSpacesByOwner, type ProfessionalSpace } from '@/lib/supabase/professional-spaces'
 import { getBookingsByUser } from '@/lib/supabase/bookings'
+import { getProductsBySpaceIds, type Product } from '@/lib/supabase/products'
 
 export const metadata = {
   title: 'Perfil | BARZA',
@@ -93,6 +94,9 @@ export default async function ProfilePage() {
     getSpacesByOwner(profile.id),
     getBookingsByUser(profile.id),
   ])
+
+  const spaceIds = spaces.map((s) => s.id)
+  const products = await getProductsBySpaceIds(spaceIds)
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 pb-24 lg:pb-8">
@@ -185,6 +189,60 @@ export default async function ProfilePage() {
             </div>
           )}
         </div>
+
+        {/* ── Produtos ────────────────────────────────────────────────── */}
+        {products.length > 0 && (
+          <div>
+            <p className="text-[10px] font-label uppercase tracking-[0.2em] text-on-surface-variant/40 mb-5">
+              Produtos <span className="text-on-surface-variant/25">({products.length})</span>
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {products.map((product: Product) => {
+                const hasPromo = product.promo_price != null && product.promo_price < product.price
+                const displayPrice = hasPromo ? product.promo_price! : product.price
+                return (
+                  <div
+                    key={product.id}
+                    className="rounded-2xl bg-surface-container border border-[rgba(86,67,58,0.1)] overflow-hidden"
+                  >
+                    {product.image_url ? (
+                      <div className="w-full aspect-square overflow-hidden bg-surface-container-high relative">
+                        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                        {hasPromo && (
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-primary-container text-on-primary text-[8px] font-black uppercase tracking-widest">
+                            Promo
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="w-full aspect-square bg-surface-container-high flex items-center justify-center">
+                        <span className="material-symbols-outlined text-on-surface-variant/20 text-3xl">inventory_2</span>
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="font-bold text-xs text-on-surface truncate leading-snug">{product.name}</p>
+                      {product.category && (
+                        <p className="text-[9px] font-label uppercase tracking-wider text-on-surface-variant/40 mt-0.5 truncate">
+                          {product.category}
+                        </p>
+                      )}
+                      <div className="flex items-baseline gap-1.5 mt-2">
+                        <span className="text-sm font-black text-on-surface">
+                          {displayPrice.toLocaleString('pt-AO')} Kz
+                        </span>
+                        {hasPromo && (
+                          <span className="text-[10px] text-on-surface-variant/40 line-through">
+                            {product.price.toLocaleString('pt-AO')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* ── Agendamentos ────────────────────────────────────────────── */}
         <UserBookingsSection initialBookings={userBookings} />

@@ -4,6 +4,7 @@ import { Avatar } from '@/components/Avatar'
 import { EditSpaceButton } from '@/components/EditSpaceButton'
 import { ServicesSection } from '@/components/ServicesSection'
 import { SpaceBookingsSection } from '@/components/SpaceBookingsSection'
+import { SpaceProductsSection } from '@/components/SpaceProductsSection'
 import { getLoggedUserProfile, getUserProfileById } from '@/lib/supabase/profile'
 import {
   getSpaceById,
@@ -11,6 +12,7 @@ import {
   type ProfessionalSpace,
 } from '@/lib/supabase/professional-spaces'
 import { getBookingsBySpace } from '@/lib/supabase/bookings'
+import { getProductsBySpaceIds } from '@/lib/supabase/products'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,10 +52,11 @@ export default async function SpacePage({
 
   const isOwner = loggedUser?.id === space.owner
 
-  const [services, owner, bookings] = await Promise.all([
+  const [services, owner, bookings, products] = await Promise.all([
     getServicesBySpaceIds([space.id], !isOwner),
     getUserProfileById(space.owner),
     isOwner ? getBookingsBySpace(space.id) : Promise.resolve([]),
+    getProductsBySpaceIds([space.id]),
   ])
 
   const loc = getLocation(space)
@@ -205,6 +208,12 @@ export default async function SpacePage({
           spaces={[space]}
           initialServices={services}
           isOwner={isOwner}
+        />
+
+        {/* ── Produtos ────────────────────────────────────────────────── */}
+        <SpaceProductsSection
+          products={products}
+          space={{ id: space.id, space_name: space.space_name, logo: space.logo ?? null, owner: space.owner }}
         />
 
         {/* ── Bookings (owner only) ────────────────────────────────────── */}
