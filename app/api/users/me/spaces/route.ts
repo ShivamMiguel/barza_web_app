@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         .from('logo')
         .upload(path, logoFile, { upsert: true })
       if (!uploadError) {
-        const { data: pub } = supabase.storage.from('logos').getPublicUrl(path)
+        const { data: pub } = supabase.storage.from('logo').getPublicUrl(path)
         logoUrl = pub.publicUrl
       }
     }
